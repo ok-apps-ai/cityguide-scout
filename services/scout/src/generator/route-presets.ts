@@ -7,19 +7,19 @@ export const ROUTE_MODE_RADIUS_METERS: Record<RouteMode, number> = {
   [RouteMode.DRIVING]: 10000,
 };
 
-/** Default preset: single walking route for 1 hour (sufficient for tests). */
+/** Default preset: multiple walking routes across themes and clusters. */
 export const DEFAULT_ROUTE_GENERATION_OPTIONS: IRouteOptions = {
   minPoints: 1,
-  maxPoints: 100,
+  maxPoints: 25,
   minDurationMinutes: undefined,
   maxDurationMinutes: undefined,
-  minDistanceKm: 4,
+  minDistanceKm: 2,
   maxDistanceKm: undefined,
   minThemePlaces: 3,
   clusterRadiusMeters: 500,
-  maxClusters: 1,
+  maxClusters: 3,
   routeModes: [RouteMode.WALKING],
   durationPresetsMinutes: [60],
-  seedsPerCluster: 1,
-  candidateRadiusMeters: { ...ROUTE_MODE_RADIUS_METERS },
+  seedsPerCluster: 2,
+  candidateRadiusMeters: ROUTE_MODE_RADIUS_METERS,
 };

@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": ["node", "jest"],
     "alwaysStrict": true,
     "declaration": true,
     "emitDecoratorMetadata": true,
@@ -24,5 +25,5 @@
     "strictPropertyInitialization": false,
     "target": "ES2021"
   },
-  "exclude": ["node_modules", "dist", "scripts", "src/**/*.spec.ts", "src/**/*.e2e.spec.ts"]
+  "exclude": ["node_modules", "dist"]
 }

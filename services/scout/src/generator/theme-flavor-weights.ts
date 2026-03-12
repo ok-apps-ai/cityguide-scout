@@ -17,6 +17,7 @@ export const THEME_CATEGORY_WEIGHTS: Record<RouteTheme, Partial<Record<PlaceCate
     [PlaceCategory.SQUARE]: 7,
     [PlaceCategory.STREET]: 5,
     [PlaceCategory.STORE]: 4,
+    [PlaceCategory.POINT_OF_INTEREST]: 3,
   },
   [RouteTheme.NATURE]: {
     [PlaceCategory.PARK]: 8,

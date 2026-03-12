@@ -290,6 +290,7 @@ export const INCLUDED_SEARCH_TYPES: readonly GooglePlaceType[] = [
   "water_park",
   "wildlife_park",
   "zoo",
+  "restaurant",
   "winery",
   // Government
   "city_hall",
@@ -326,7 +327,6 @@ export const EXCLUDED_SEARCH_TYPES: readonly string[] = [
   "supermarket",
   "pharmacy",
   "store",
-  "restaurant",
 ];
 
 // =============================================================================

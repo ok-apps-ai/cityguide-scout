@@ -19,7 +19,13 @@ export const THEME_CATEGORIES: Record<RouteTheme, PlaceCategory[]> = {
     PlaceCategory.VIEWPOINT,
     PlaceCategory.SQUARE,
   ],
-  [RouteTheme.SHOPPING]: [PlaceCategory.SHOPPING_MALL, PlaceCategory.STORE, PlaceCategory.STREET, PlaceCategory.SQUARE],
+  [RouteTheme.SHOPPING]: [
+    PlaceCategory.SHOPPING_MALL,
+    PlaceCategory.STORE,
+    PlaceCategory.STREET,
+    PlaceCategory.SQUARE,
+    PlaceCategory.POINT_OF_INTEREST,
+  ],
   [RouteTheme.EVENING]: [
     PlaceCategory.TOURIST_ATTRACTION,
     PlaceCategory.AMUSEMENT_PARK,

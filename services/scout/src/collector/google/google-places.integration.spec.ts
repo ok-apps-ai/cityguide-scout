@@ -5,8 +5,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService } from "./places/places.service";
-import { GooglePlacesModule } from "./places/places.module";
+import { GooglePlacesService } from "./places";
+import { GoogleModule } from "./google.module";
 import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
@@ -38,7 +38,7 @@ describe("GooglePlacesService integration — Vatican City", () => {
         }),
         CitySeedModule,
         PlaceModule,
-        GooglePlacesModule,
+        GoogleModule,
       ],
     }).compile();
 
@@ -79,5 +79,14 @@ describe("GooglePlacesService integration — Vatican City", () => {
     expect(sample.googlePlaceId).toBeDefined();
     expect(sample.geom).toBeDefined();
     expect(sample.category).toBeDefined();
+
+    expect(sample.types).toBeDefined();
+    expect(sample.types).toBeInstanceOf(Array);
+    const withTypes = places.filter(p => p.types.length > 0);
+    expect(withTypes.length).toBeGreaterThan(0);
+    expect(withTypes[0].types.length).toBeGreaterThan(0);
+    console.info(
+      `  Sample Google types: [${withTypes[0].types.slice(0, 5).join(", ")}${withTypes[0].types.length > 5 ? "..." : ""}]`,
+    );
   });
 });

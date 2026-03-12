@@ -86,6 +86,14 @@ describe("OsmPlacesService integration — Marbella tile size benchmark", () => 
     console.info(`  Smoke test: completed in ${(elapsed / 1000).toFixed(1)}s, ${places.length} places`);
 
     expect(places.length).toBeGreaterThan(0);
+
+    const withTypes = places.filter(p => p.types && p.types.length > 0);
+    expect(withTypes.length).toBeGreaterThan(0);
+    expect(withTypes[0].types).toBeInstanceOf(Array);
+    expect(withTypes[0].types.length).toBeGreaterThan(0);
+    console.info(
+      `  Sample OSM types: [${withTypes[0].types.slice(0, 5).join(", ")}${withTypes[0].types.length > 5 ? "..." : ""}]`,
+    );
   });
 
   it("benchmarks OSM collection for Marbella with tile sizes 0.01, 0.02, 0.03", async () => {
@@ -135,8 +143,12 @@ describe("OsmPlacesService integration — Marbella tile size benchmark", () => 
     }
 
     console.info("\n  OSM Overpass — Marbella Tile Size Benchmark\n");
-    console.info("  | TILE_SIZE_DEG | nLat×nLng | Tiles | API requests | Unique places | Total time | Avg time/request |");
-    console.info("  |---------------|----------|-------|--------------|---------------|------------|------------------|");
+    console.info(
+      "  | TILE_SIZE_DEG | nLat×nLng | Tiles | API requests | Unique places | Total time | Avg time/request |",
+    );
+    console.info(
+      "  |---------------|----------|-------|--------------|---------------|------------|------------------|",
+    );
     for (const r of results) {
       const totalSec = (r.totalTimeMs / 1000).toFixed(1);
       const grid = `${r.nLat}×${r.nLng}`;

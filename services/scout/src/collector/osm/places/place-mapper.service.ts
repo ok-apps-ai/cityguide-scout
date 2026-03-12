@@ -75,6 +75,19 @@ export class OsmPlaceMapperService {
     return PlaceCategory.POINT_OF_INTEREST;
   }
 
+  /** Converts OSM element tags to a types array for DB storage (e.g. ["tourism:museum"]). */
+  public toTypes(element: IOverpassElement): string[] {
+    const tags = element.tags ?? {};
+    const result: string[] = [];
+    for (const key of ["tourism", "historic", "amenity", "leisure", "natural", "man_made", "building", "shop"]) {
+      const value = tags[key];
+      if (value) {
+        result.push(`${key}:${value}`);
+      }
+    }
+    return result;
+  }
+
   public toVisitDurationMinutes(category: PlaceCategory): number | null {
     return PLACE_VISIT_DURATION[category] ?? null;
   }

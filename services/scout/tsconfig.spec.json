@@ -4,5 +4,6 @@
     "typeRoots": ["../../node_modules/@types", "node_modules/@types"],
     "types": ["jest", "node"]
   },
-  "include": ["src/**/*.spec.ts", "src/**/*.e2e.spec.ts", "src/**/*.integration.spec.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.e2e.spec.ts", "src/**/*.integration.spec.ts"],
+  "exclude": ["node_modules", "dist", "scripts"]
 }

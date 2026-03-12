@@ -90,6 +90,7 @@ export class OsmPlacesService {
         source: PlaceSource.OSM,
         osmId: `${element.type}:${element.id}`,
         category,
+        types: this.mapper.toTypes(element),
         visitDurationMinutes: this.mapper.toVisitDurationMinutes(category),
       });
     } catch (error) {

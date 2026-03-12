@@ -24,7 +24,10 @@
     "build": "npm run build --workspace=@framework/constants --workspace=@framework/mui-form --workspace=@framework/types",
     "clean": "sh scripts/clean.sh",
     "lint": "npm run lint --workspaces --if-present",
-    "prepare": "husky"
+    "prepare": "husky",
+    "start:gateway": "npm run --prefix ./services/server dev",
+    "start:scout": "npm run --prefix ./services/scout dev",
+    "start:web": "npm run --prefix ./services/web dev"
   },
   "title": "CoArt - Portal",
   "version": "0.0.1",

@@ -1,4 +1,5 @@
 import typescriptRules from "@ethberry/eslint-config/presets/tsx.mjs";
+import jestRules from "@ethberry/eslint-config/tests/jest.mjs";
 
 // DON'T ADD ANY RULES!
 // FIX YOUR SHIT!!!
@@ -18,7 +19,6 @@ export default [
       parserOptions: {
         project: [
           "./tsconfig.eslint.json",
-          "./packages/*/tsconfig.eslint.json",
           "./services/*/tsconfig.eslint.json",
         ],
         tsconfigRootDir: process.dirname,
@@ -27,4 +27,5 @@ export default [
   },
 
   ...typescriptRules,
+  ...jestRules,
 ];
