@@ -1,12 +1,10 @@
-import { resolve } from "path";
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { GooglePlacesService } from "./places/places.service";
-import { GooglePlacesModule } from "./places/places.module";
+import { GoogleModule } from "./google.module";
 import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
@@ -14,18 +12,8 @@ import { CitySeedService } from "../../city/city.seed.service";
 import { PlaceModule } from "../../place/place.module";
 import ormconfig from "../../infrastructure/database/database.config";
 
-// Marbella bounding box (from production DB)
-const MARBELLA = {
-  name: "Marbella, Spain",
-  swLng: -4.997958053312195,
-  swLat: 36.46925543705756,
-  neLng: -4.732026189448817,
-  neLat: 36.53244634433455,
-};
-
-describe("GooglePlacesService integration — Marbella place count", () => {
-  // Marbella has 56 grid cells × 12 categories — allow up to 10 minutes
-  jest.setTimeout(600_000);
+describe("GooglePlacesService integration — Vatican City place count", () => {
+  jest.setTimeout(120_000);
 
   let testModule: TestingModule;
   let service: GooglePlacesService;
@@ -38,7 +26,7 @@ describe("GooglePlacesService integration — Marbella place count", () => {
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../../..", ".env.development"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -50,7 +38,7 @@ describe("GooglePlacesService integration — Marbella place count", () => {
         }),
         CitySeedModule,
         PlaceModule,
-        GooglePlacesModule,
+        GoogleModule,
       ],
     }).compile();
 
@@ -65,36 +53,23 @@ describe("GooglePlacesService integration — Marbella place count", () => {
   });
 
   beforeEach(async () => {
-    // Remove any pre-existing data (including production scraping runs) so
-    // google_place_id conflicts don't cause the upsert to keep a stale city_id.
     await cityEntityRepository.createQueryBuilder().delete().execute();
-    cityEntity = await citySeedService.seedCity(MARBELLA);
+    cityEntity = await citySeedService.seedCity();
   });
 
   afterEach(async () => {
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });
 
-  it("collects all places from Marbella and reports the breakdown by category", async () => {
-    await service.collectForCity(cityEntity);
+  it("collects all places from Vatican City and stores them in the database", async () => {
+    const collected = await service.fetchPointsForCity(cityEntity);
+    await service.savePointsToDb(cityEntity.id, collected);
 
-    const places = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
+    const saved = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
 
-    console.info(`\n  Total unique places stored: ${places.length}`);
-
-    const countByCategory = places.reduce<Record<string, number>>((acc, p) => {
-      acc[p.category] = (acc[p.category] ?? 0) + 1;
-      return acc;
-    }, {});
-
-    console.info(`\n  Breakdown by category:`);
-    Object.entries(countByCategory)
-      .sort(([, a], [, b]) => b - a)
-      .forEach(([cat, count]) => console.info(`    [${cat}] ${count}`));
-
-    console.info(`\n  Sample places (first 20):`);
-    places.slice(0, 20).forEach(p => console.info(`    [${p.category}] ${p.name} — rating: ${p.rating ?? "n/a"}`));
-
-    expect(places.length).toBeGreaterThan(0);
+    expect(saved.length).toBe(collected.length);
+    const savedIds = new Set(saved.map(p => p.googlePlaceId));
+    const collectedIds = collected.map(p => p.place_id);
+    expect(collectedIds.every(id => savedIds.has(id))).toBe(true);
   });
 });

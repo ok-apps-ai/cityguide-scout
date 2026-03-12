@@ -47,7 +47,7 @@ export class CityService {
 
     const cityEntity = await this.cityEntityRepository.findOneOrFail({ where: { id } });
 
-    await this.collectorService.collectForCity(cityEntity);
+    await this.collectorService.collectPointsForCity(cityEntity);
     await this.eventEmitter.emitAsync(CITY_CREATED_EVENT, cityEntity);
 
     return { id };

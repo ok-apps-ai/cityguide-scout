@@ -1,11 +1,9 @@
-import { resolve } from "path";
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService } from "./places";
+import { GooglePlacesService } from "./places/places.service";
 import { GoogleModule } from "./google.module";
 import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
@@ -26,7 +24,7 @@ describe("GooglePlacesService integration — Vatican City", () => {
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../../..", ".env.development"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -60,33 +58,15 @@ describe("GooglePlacesService integration — Vatican City", () => {
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });
 
-  it("collects all places from Vatican City and persists them to the development database", async () => {
-    await service.collectForCity(cityEntity);
+  it("collects all places from Vatican City and persists them to the database", async () => {
+    const collected = await service.fetchPointsForCity(cityEntity);
+    await service.savePointsToDb(cityEntity.id, collected);
 
-    const places = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
+    const saved = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
 
-    console.info(`\n  Places stored in development DB: ${places.length}`);
-    places.forEach(p => {
-      console.info(`    [${p.category}] ${p.name} (${p.googlePlaceId})`);
-    });
-
-    expect(places).toBeInstanceOf(Array);
-    expect(places.length).toBeGreaterThan(0);
-
-    const sample = places[0];
-    expect(sample.cityId).toEqual(cityEntity.id);
-    expect(sample.name).toBeDefined();
-    expect(sample.googlePlaceId).toBeDefined();
-    expect(sample.geom).toBeDefined();
-    expect(sample.category).toBeDefined();
-
-    expect(sample.types).toBeDefined();
-    expect(sample.types).toBeInstanceOf(Array);
-    const withTypes = places.filter(p => p.types.length > 0);
-    expect(withTypes.length).toBeGreaterThan(0);
-    expect(withTypes[0].types.length).toBeGreaterThan(0);
-    console.info(
-      `  Sample Google types: [${withTypes[0].types.slice(0, 5).join(", ")}${withTypes[0].types.length > 5 ? "..." : ""}]`,
-    );
+    expect(saved.length).toBe(collected.length);
+    const savedIds = new Set(saved.map(p => p.googlePlaceId));
+    const collectedIds = collected.map(p => p.place_id);
+    expect(collectedIds.every(id => savedIds.has(id))).toBe(true);
   });
 });

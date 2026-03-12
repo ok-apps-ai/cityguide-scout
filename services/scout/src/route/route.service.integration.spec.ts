@@ -1,5 +1,3 @@
-import { resolve } from "path";
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
@@ -29,7 +27,7 @@ describe("RouteService.findRoutesForApi — route mode filter", () => {
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../..", ".env.test"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],

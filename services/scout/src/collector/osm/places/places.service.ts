@@ -21,38 +21,45 @@ export class OsmPlacesService {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  public async collectForCity(
+  public async fetchPointsForCity(
     cityEntity: CityEntity,
     options: { limit?: number; tileSizeDeg?: number } = {},
-  ): Promise<void> {
-    this.logger.log(`Starting OSM collection for city: ${cityEntity.name}`);
-
+  ): Promise<IOverpassElement[]> {
     const bbox = await this.getBbox(cityEntity.id);
-    if (!bbox) {
-      this.logger.warn(`No boundary for city ${cityEntity.id}`);
-      return;
-    }
+    if (!bbox) return [];
 
     const elements = await this.fetcher.fetchElements({
       bbox: { south: bbox.minLat, west: bbox.minLng, north: bbox.maxLat, east: bbox.maxLng },
       tileSizeDeg: options.tileSizeDeg,
     });
 
-    let total = 0;
+    const results: IOverpassElement[] = [];
     for (const el of elements) {
-      if (options.limit !== undefined && total >= options.limit) {
-        this.logger.log(`Reached limit of ${options.limit} places, stopping collection`);
-        break;
-      }
+      if (options.limit !== undefined && results.length >= options.limit) break;
       const coords = this.mapper.getLatLng(el);
       const name = this.mapper.getName(el);
       if (!coords || name === "Unnamed") continue;
-
-      await this.upsertPlace(cityEntity.id, el);
-      total++;
+      results.push(el);
     }
 
-    this.logger.log(`OSM collection complete for city: ${cityEntity.name} (${total} places upserted)`);
+    return results;
+  }
+
+  public async savePointsToDb(cityId: string, elements: IOverpassElement[]): Promise<void> {
+    for (const el of elements) {
+      await this.upsertPlace(cityId, el);
+    }
+  }
+
+  public async collectPointsForCity(
+    cityEntity: CityEntity,
+    options: { limit?: number; tileSizeDeg?: number } = {},
+  ): Promise<void> {
+    this.logger.log(`Starting OSM collection for city: ${cityEntity.name}`);
+    const elements = await this.fetchPointsForCity(cityEntity, options);
+    this.logger.log(`Fetched ${elements.length} OSM elements for city: ${cityEntity.name}`);
+    await this.savePointsToDb(cityEntity.id, elements);
+    this.logger.log(`OSM collection complete for city: ${cityEntity.name} (${elements.length} places upserted)`);
   }
 
   private async getBbox(

@@ -13,11 +13,10 @@ export class CollectorService {
     private readonly osmPlacesService: OsmPlacesService,
   ) {}
 
-  public async collectForCity(cityEntity: CityEntity): Promise<void> {
+  public async collectPointsForCity(cityEntity: CityEntity): Promise<void> {
     await Promise.all([
-      this.googlePlacesService.collectForCity(cityEntity),
-      this.osmPlacesService.collectForCity(cityEntity),
+      this.googlePlacesService.collectPointsForCity(cityEntity),
+      this.osmPlacesService.collectPointsForCity(cityEntity),
     ]);
   }
-
 }

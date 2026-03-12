@@ -1,17 +1,15 @@
-import { resolve } from "path";
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { GooglePlacesService } from "./places/places.service";
-import { GooglePlacesModule } from "./places/places.module";
-import { PlaceService } from "../../place/place.service";
-import type { IUpsertPlacePayload } from "../../place/types";
+import { GoogleModule } from "./google.module";
+import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
+import { PlaceModule } from "../../place/place.module";
 import ormconfig from "../../infrastructure/database/database.config";
 
 describe("GooglePlacesService — Vatican City", () => {
@@ -19,14 +17,14 @@ describe("GooglePlacesService — Vatican City", () => {
   let service: GooglePlacesService;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
+  let placeEntityRepository: Repository<PlaceEntity>;
   let cityEntity: CityEntity;
-  let collected: IUpsertPlacePayload[];
 
   beforeAll(async () => {
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../../..", ".env.test"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -37,20 +35,15 @@ describe("GooglePlacesService — Vatican City", () => {
           inject: [ConfigService],
         }),
         CitySeedModule,
-        GooglePlacesModule,
+        PlaceModule,
+        GoogleModule,
       ],
-    })
-      .overrideProvider(PlaceService)
-      .useValue({
-        upsert: jest.fn((payload: IUpsertPlacePayload) => {
-          collected.push(payload);
-        }),
-      })
-      .compile();
+    }).compile();
 
     service = testModule.get(GooglePlacesService);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
+    placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
   });
 
   afterAll(async () => {
@@ -58,7 +51,6 @@ describe("GooglePlacesService — Vatican City", () => {
   });
 
   beforeEach(async () => {
-    collected = [];
     cityEntity = await citySeedService.seedCity();
   });
 
@@ -66,26 +58,15 @@ describe("GooglePlacesService — Vatican City", () => {
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });
 
-  it("collects places from Vatican City", async () => {
-    await service.collectForCity(cityEntity);
+  it("collects places from Vatican City and stores them in the database", async () => {
+    const collected = await service.fetchPointsForCity(cityEntity);
+    await service.savePointsToDb(cityEntity.id, collected);
 
-    console.info(`\n  Total upsert calls: ${collected.length}`);
+    const saved = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
 
-    const unique = [...new Map(collected.map(p => [p.googlePlaceId, p])).values()];
-    console.info(`  Unique places: ${unique.length}`);
-    unique.slice(0, 15).forEach(p => {
-      console.info(`    [${p.category}] ${p.name} (${p.googlePlaceId})`);
-    });
-
-    expect(collected).toBeInstanceOf(Array);
-    expect(collected.length).toBeGreaterThan(0);
-
-    const sample = collected[0];
-    expect(sample.cityId).toEqual(cityEntity.id);
-    expect(sample.name).toBeDefined();
-    expect(sample.googlePlaceId).toBeDefined();
-    expect(sample.lat).toBeDefined();
-    expect(sample.lng).toBeDefined();
-    expect(sample.category).toBeDefined();
+    expect(saved.length).toBe(collected.length);
+    const savedIds = new Set(saved.map(p => p.googlePlaceId));
+    const collectedIds = collected.map(p => p.place_id);
+    expect(collectedIds.every(id => savedIds.has(id))).toBe(true);
   });
 });

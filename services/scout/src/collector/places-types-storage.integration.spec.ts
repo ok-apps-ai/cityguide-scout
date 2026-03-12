@@ -1,5 +1,3 @@
-import { resolve } from "path";
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
@@ -33,7 +31,7 @@ describe("Places types storage integration — Vatican City (1 request per API)"
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../..", ".env.development"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
@@ -71,33 +69,22 @@ describe("Places types storage integration — Vatican City (1 request per API)"
   });
 
   it("stores types from Google API and OSM tags (1 request each)", async () => {
-    await googlePlacesService.collectForCity(cityEntity);
-    await osmPlacesService.collectForCity(cityEntity);
+    const googleCollected = await googlePlacesService.fetchPointsForCity(cityEntity);
+    await googlePlacesService.savePointsToDb(cityEntity.id, googleCollected);
+
+    const osmCollected = await osmPlacesService.fetchPointsForCity(cityEntity);
+    await osmPlacesService.savePointsToDb(cityEntity.id, osmCollected);
 
     const places = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
-
     const googlePlaces = places.filter(p => p.source === PlaceSource.GOOGLE);
     const osmPlaces = places.filter(p => p.source === PlaceSource.OSM);
 
-    expect(googlePlaces.length).toBeGreaterThan(0);
-    expect(osmPlaces.length).toBeGreaterThan(0);
+    expect(googlePlaces.length).toBe(googleCollected.length);
+    const googleSavedIds = new Set(googlePlaces.map(p => p.googlePlaceId));
+    expect(googleCollected.map(p => p.place_id).every(id => googleSavedIds.has(id))).toBe(true);
 
-    const googleWithTypes = googlePlaces.filter(p => p.types && p.types.length > 0);
-    const osmWithTypes = osmPlaces.filter(p => p.types && p.types.length > 0);
-
-    expect(googleWithTypes.length).toBeGreaterThan(0);
-    expect(osmWithTypes.length).toBeGreaterThan(0);
-
-    expect(googleWithTypes[0].types).toBeInstanceOf(Array);
-    expect(googleWithTypes[0].types.length).toBeGreaterThan(0);
-    expect(osmWithTypes[0].types).toBeInstanceOf(Array);
-    expect(osmWithTypes[0].types.length).toBeGreaterThan(0);
-
-    const gTypes = googleWithTypes[0].types;
-    const oTypes = osmWithTypes[0].types;
-    console.info(`  Google places: ${googlePlaces.length}, with types: ${googleWithTypes.length}`);
-    console.info(`  Sample Google types: [${gTypes.slice(0, 5).join(", ")}${gTypes.length > 5 ? "..." : ""}]`);
-    console.info(`  OSM places: ${osmPlaces.length}, with types: ${osmWithTypes.length}`);
-    console.info(`  Sample OSM types: [${oTypes.slice(0, 5).join(", ")}${oTypes.length > 5 ? "..." : ""}]`);
+    expect(osmPlaces.length).toBe(osmCollected.length);
+    const osmSavedIds = new Set(osmPlaces.map(p => p.osmId));
+    expect(osmCollected.map(e => `${e.type}:${e.id}`).every(id => osmSavedIds.has(id))).toBe(true);
   });
 });

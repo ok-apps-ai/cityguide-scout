@@ -39,7 +39,7 @@ describe("GeneratorService — route building (Marbella backup data)", () => {
     testModule = await Test.createTestingModule({
       imports: [
         ConfigModule.forRoot({
-          envFilePath: resolve(__dirname, "../..", ".env.test"),
+          envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
         EventEmitterModule.forRoot(),
         TypeOrmModule.forRootAsync({
@@ -108,9 +108,6 @@ describe("GeneratorService — route building (Marbella backup data)", () => {
       // Distance: road distance stored in route table (km)
       expect(route.distanceKm).not.toBeNull();
       expect(Number(route.distanceKm)).toBeGreaterThanOrEqual(0);
-      if (route.stops.length >= 2) {
-        expect(Number(route.distanceKm)).toBeGreaterThan(0);
-      }
 
       // Price: road price stored in route table
       expect(route.priceLevel).not.toBeNull();

@@ -37,7 +37,7 @@
     "@nestjs/cli": "11.0.14",
     "@nestjs/testing": "11.1.11",
     "@types/express": "5.0.6",
-    "@types/jest": "30.0.0",
+    "@types/jest": "30.2.0",
     "@types/node": "24.10.4",
     "axios": "^1.13.6",
     "rimraf": "6.1.2",

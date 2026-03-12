@@ -296,7 +296,7 @@ Follow this pattern when writing e2e tests:
      cityEntity = await citySeedService.seedCity();
    });
    it('should collect places', async () => {
-     await service.collectForCity(cityEntity);
+     await service.collectPointsForCity(cityEntity);
      expect(collected.length).toBeGreaterThan(0);
    });
    ```

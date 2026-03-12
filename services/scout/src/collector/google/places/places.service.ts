@@ -25,12 +25,9 @@ export class GooglePlacesService {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  public async collectForCity(cityEntity: CityEntity, options: { limit?: number } = {}): Promise<void> {
-    this.logger.log(`Starting Google Places collection for city: ${cityEntity.name}`);
-
+  public async fetchPointsForCity(cityEntity: CityEntity, options: { limit?: number } = {}): Promise<INearbyPlace[]> {
     const gridPoints = await this.buildGrid(cityEntity);
-    this.logger.log(`Grid has ${gridPoints.length} points for city: ${cityEntity.name}`);
-
+    const results: INearbyPlace[] = [];
     let total = 0;
 
     outer: for (const [lat, lng] of gridPoints) {
@@ -42,16 +39,27 @@ export class GooglePlacesService {
       });
 
       for (const place of places) {
-        if (options.limit !== undefined && total >= options.limit) {
-          this.logger.log(`Reached limit of ${options.limit} places, stopping collection`);
-          break outer;
-        }
-        await this.upsertPlace(cityEntity.id, place);
+        if (options.limit !== undefined && total >= options.limit) break outer;
+        results.push(place);
         total++;
       }
     }
 
-    this.logger.log(`Collection complete for city: ${cityEntity.name} (${total} places upserted)`);
+    return results;
+  }
+
+  public async savePointsToDb(cityId: string, places: INearbyPlace[]): Promise<void> {
+    for (const place of places) {
+      await this.upsertPlace(cityId, place);
+    }
+  }
+
+  public async collectPointsForCity(cityEntity: CityEntity, options: { limit?: number } = {}): Promise<void> {
+    this.logger.log(`Starting Google Places collection for city: ${cityEntity.name}`);
+    const places = await this.fetchPointsForCity(cityEntity, options);
+    this.logger.log(`Grid fetched ${places.length} places for city: ${cityEntity.name}`);
+    await this.savePointsToDb(cityEntity.id, places);
+    this.logger.log(`Collection complete for city: ${cityEntity.name} (${places.length} places upserted)`);
   }
 
   private async buildGrid(cityEntity: CityEntity): Promise<Array<[number, number]>> {
