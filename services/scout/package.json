@@ -1,0 +1,78 @@
+{
+  "author": {
+    "email": "trejgun@gmail.com",
+    "name": "TrejGun",
+    "url": "https://ethberry.io/"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.1.31",
+    "@langchain/langgraph": "^1.2.2",
+    "@langchain/openai": "^1.2.12",
+    "@nestjs/axios": "4.0.0",
+    "@nestjs/common": "11.0.8",
+    "@nestjs/config": "4.0.0",
+    "@nestjs/core": "11.0.8",
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nestjs/microservices": "11.0.8",
+    "@nestjs/platform-express": "11.0.8",
+    "@nestjs/terminus": "11.0.0",
+    "@nestjs/typeorm": "^11.0.0",
+    "ai": "^6.0.116",
+    "axios": "1.13.6",
+    "express": "4.21.2",
+    "pg": "^8.20.0",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "typeorm": "^0.3.28",
+    "typeorm-naming-strategies": "^4.1.0",
+    "zod": "^3.24.0"
+  },
+  "description": "Email microservice",
+  "devDependencies": {
+    "@ethberry/cross-env": "0.0.5",
+    "@nestjs/cli": "^11.0.16",
+    "@nestjs/testing": "11.0.8",
+    "@types/jest": "30.2.0",
+    "@types/node": "22.13.1",
+    "jest": "30.2.0",
+    "rimraf": "6.0.1",
+    "ts-jest": "^29.4.6",
+    "tsc-watch": "6.2.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "UNLICENSED",
+  "main": "./dist/main.js",
+  "name": "@framework/eml",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ethberry/framework"
+  },
+  "scripts": {
+    "build": "nest build",
+    "dev": "cross-env NODE_ENV=${NODE_ENV:=development} nest start --watch",
+    "lint": "eslint . --fix --ext .ts,.tsx",
+    "prebuild": "rimraf dist",
+    "prepublish": "npm run build",
+    "test": "jest --config jest.config.json",
+    "db:generate-types": "npx ts-node scripts/generate-types-from-db.ts",
+    "db:backup-dev": "sh ../../scripts/backup-dev-db.sh",
+    "db:restore-test": "sh ../../scripts/restore-test-db.sh ../../backups/scout-development-20260311-165321.sql",
+    "db:restore-dev": "sh ../../scripts/restore-test-db.sh ../../backups/scout-development-20260311-165321.sql cityguide-scout-postgres-1 scout-development",
+    "db:reset-dev": "sh ../../scripts/reset-dev-db.sh",
+    "db:drop-and-create": "sh ../../scripts/drop-and-create-databases.sh",
+    "db:add-marbella": "sh ../../scripts/add-marbella-via-api.sh",
+    "db:truncate-routes": "sh ../../scripts/truncate-routes-only.sh",
+    "db:regenerate-routes": "sh ../../scripts/regenerate-routes-with-place.sh",
+    "db:trigger-routes": "sh ../../scripts/trigger-routes.sh",
+    "db:generate-routes-debug": "npx ts-node --transpile-only scripts/generate-routes-debug.ts",
+    "test:e2e": "cross-env NODE_ENV=test jest --config jest.e2e.json --runInBand",
+    "test:integration": "cross-env NODE_ENV=development jest --config jest.integration.json --runInBand"
+  },
+  "title": "Gemunion Framework - Email microservice",
+  "version": "0.0.1"
+}

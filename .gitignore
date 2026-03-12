@@ -1,0 +1,33 @@
+# Project
+**/dist/
+/postgres/
+/contracts/typechain-types/
+/contracts/artifacts/
+/contracts/cache/
+/contracts/coverage/
+/besu/
+/services/server/temp/
+coverage.json
+
+# IDE
+.idea
+.vscode
+
+# OS
+.DS_Store
+
+# NODE
+node_modules/
+npm-debug.log
+package-lock.json
+yarn.lock
+/lerna-debug.log
+/report.*.json
+
+# env
+.env.*
+!.env.sample
+
+coart-marketplace-staging.json
+ardrive-wallet.json
+ardrive-wallet.json.base64

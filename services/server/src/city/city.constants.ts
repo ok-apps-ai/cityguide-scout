@@ -1,0 +1,1 @@
+export const SCOUT_SERVICE = "SCOUT_SERVICE";

@@ -1,0 +1,11 @@
+{
+  "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+  "preset": "ts-jest",
+  "rootDir": "src",
+  "testMatch": ["**/*.e2e.spec.ts"],
+  "verbose": true,
+  "testTimeout": 60000,
+  "transform": {
+    "^.+\\.[tj]sx?$": ["ts-jest", { "tsconfig": "./tsconfig.spec.json" }]
+  }
+}

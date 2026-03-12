@@ -1,0 +1,13 @@
+{
+  "coverageDirectory": "../coverage",
+  "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+  "preset": "ts-jest",
+  "rootDir": "src",
+  "testMatch": ["**/*.spec.ts"],
+  "testPathIgnorePatterns": ["\\.e2e\\.spec\\.ts$", "\\.integration\\.spec\\.ts$"],
+  "verbose": true,
+  "transform": {
+    "^.+\\.[tj]sx?$": ["ts-jest", { "useESM": true }]
+  },
+  "transformIgnorePatterns": ["node_modules/(?!(uuid)/)"]
+}

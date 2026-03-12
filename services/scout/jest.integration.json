@@ -1,0 +1,14 @@
+{
+  "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+  "preset": "ts-jest",
+  "rootDir": "src",
+  "testMatch": ["**/*.integration.spec.ts"],
+  "verbose": true,
+  "testTimeout": 120000,
+  "transform": {
+    "^.+\\.[tj]sx?$": ["ts-jest", { "tsconfig": "./tsconfig.spec.json" }]
+  },
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  }
+}

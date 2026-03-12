@@ -1,0 +1,70 @@
+{
+  "author": {
+    "email": "oleg@ethberry.io",
+    "name": "Oleg Gun",
+    "url": "https://ethberry.io/"
+  },
+  "bugs": {
+    "url": "https://github.com/coartmarket/coart-marketplace-back-front/"
+  },
+  "dependencies": {
+    "@golevelup/nestjs-modules": "1.1.1",
+    "@nestjs/axios": "4.0.1",
+    "@nestjs/cli": "11.0.14",
+    "@nestjs/common": "11.1.11",
+    "@nestjs/config": "4.0.2",
+    "@nestjs/core": "11.1.11",
+    "@nestjs/jwt": "11.0.2",
+    "@nestjs/microservices": "^11.1.16",
+    "@nestjs/passport": "11.0.5",
+    "@nestjs/platform-express": "11.1.11",
+    "@nestjs/schedule": "6.1.0",
+    "@nestjs/swagger": "11.2.3",
+    "@nestjs/terminus": "11.0.0",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.3",
+    "dotenv": "17.2.3",
+    "express": "5.2.1",
+    "pg": "8.16.3",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2",
+    "ts-mixer": "6.0.4",
+    "ts-node": "10.9.2",
+    "typedi": "0.10.0"
+  },
+  "devDependencies": {
+    "@ethberry/cross-env": "0.0.5",
+    "@nestjs/cli": "11.0.14",
+    "@nestjs/testing": "11.1.11",
+    "@types/express": "5.0.6",
+    "@types/jest": "30.0.0",
+    "@types/node": "24.10.4",
+    "axios": "^1.13.6",
+    "rimraf": "6.1.2",
+    "ts-jest": "29.4.6",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "UNLICENSED",
+  "main": "./dist/main.js",
+  "name": "@framework/server",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/coartmarket/marketplace/"
+  },
+  "scripts": {
+    "build": "nest build",
+    "dev": "cross-env NODE_ENV=${NODE_ENV:=development} nest start --watch",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint . --fix",
+    "prebuild": "rimraf dist/",
+    "start": "cross-env NODE_ENV=${NODE_ENV:=production} node .",
+    "test": "cross-env NODE_ENV=${NODE_ENV:=test} jest --config jest.config.json --detectOpenHandles --runInBand --forceExit",
+    "test:e2e": "cross-env NODE_ENV=development jest --config jest.e2e.json --runInBand"
+  },
+  "title": "CoArt - Portal API",
+  "version": "0.0.1"
+}

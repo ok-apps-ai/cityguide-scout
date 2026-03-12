@@ -1,0 +1,114 @@
+import { PriceLevel, PlaceCategory } from "../../../place/place.entity";
+import { ROUTE_MODE_SPEED_KMH } from "../../route-mode-constants";
+import { IBuiltRoute, RouteGenerationState } from "../state";
+import { RouteTheme } from "../../../route/route.entity";
+
+const haversineMeters = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
+  const R = 6371000;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+};
+
+const PRICE_SCORE: Record<PriceLevel, number> = {
+  [PriceLevel.FREE]: 0,
+  [PriceLevel.INEXPENSIVE]: 1,
+  [PriceLevel.MODERATE]: 2,
+  [PriceLevel.EXPENSIVE]: 3,
+  [PriceLevel.VERY_EXPENSIVE]: 4,
+};
+
+const FREE_CATEGORIES = new Set<PlaceCategory>([
+  PlaceCategory.POINT_OF_INTEREST,
+  PlaceCategory.PARK,
+  PlaceCategory.NATURAL_FEATURE,
+  PlaceCategory.HIKING_AREA,
+  PlaceCategory.TOURIST_ATTRACTION,
+  PlaceCategory.VIEWPOINT,
+  PlaceCategory.MONUMENT,
+  PlaceCategory.SQUARE,
+  PlaceCategory.STREET,
+]);
+
+const THEME_NAMES: Record<RouteTheme, string> = {
+  history: "Historic Walk",
+  nature: "Nature Walk",
+  viewpoints: "Viewpoints Route",
+  shopping: "Shopping Route",
+  evening: "Evening Walk",
+  highlights: "City Highlights",
+};
+
+export const makeCostCalculationNode = (coordCache: Map<string, { lat: number; lng: number }>) => {
+  return (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
+    if (!state.currentSeed || state.trimmedStops.length === 0) {
+      return Promise.resolve({ builtRoute: null });
+    }
+
+    const { theme, routeMode, startPlace } = state.currentSeed;
+    const stops = state.trimmedStops;
+    const speedKmh = ROUTE_MODE_SPEED_KMH[routeMode];
+
+    let totalScore = 0;
+    let totalDurationMinutes = 0;
+    let totalDistanceMeters = 0;
+
+    for (let i = 0; i < stops.length; i++) {
+      const stop = stops[i];
+      const place = stop.place;
+
+      const pl = FREE_CATEGORIES.has(place.category) ? PriceLevel.FREE : (place.priceLevel ?? PriceLevel.FREE);
+
+      totalScore += PRICE_SCORE[pl];
+      totalDurationMinutes += stop.visitDurationMinutes;
+
+      if (i > 0) {
+        const prev = stops[i - 1];
+        const c1 = coordCache.get(prev.place.id) ?? { lat: 0, lng: 0 };
+        const c2 = coordCache.get(place.id) ?? { lat: 0, lng: 0 };
+        const dist = haversineMeters(c1.lat, c1.lng, c2.lat, c2.lng);
+        totalDistanceMeters += dist;
+        totalDurationMinutes += (dist / 1000) / (speedKmh / 60);
+      }
+    }
+
+    const avgScore = totalScore / stops.length;
+    let priceLevel: PriceLevel;
+    if (avgScore < 0.3) priceLevel = PriceLevel.FREE;
+    else if (avgScore < 1.2) priceLevel = PriceLevel.INEXPENSIVE;
+    else if (avgScore < 2.2) priceLevel = PriceLevel.MODERATE;
+    else if (avgScore < 3.2) priceLevel = PriceLevel.EXPENSIVE;
+    else priceLevel = PriceLevel.VERY_EXPENSIVE;
+
+    const coords = stops
+      .map(s => coordCache.get(s.place.id))
+      .filter(Boolean)
+      .map(c => `${c!.lng} ${c!.lat}`)
+      .join(", ");
+
+    const parts = coords.split(", ");
+    const routeGeometryWkt =
+      parts.length >= 2
+        ? `LINESTRING(${coords})`
+        : parts.length === 1
+          ? `LINESTRING(${parts[0]}, ${parts[0]})`
+          : "LINESTRING(0 0, 0.001 0.001)";
+
+    const builtRoute: IBuiltRoute = {
+      name: THEME_NAMES[theme],
+      theme,
+      routeMode,
+      durationMinutes: Math.round(totalDurationMinutes),
+      distanceKm: Math.round((totalDistanceMeters / 1000) * 100) / 100,
+      priceLevel,
+      startPlaceId: startPlace.id,
+      routeGeometryWkt,
+      stops: stops.map((s, i) => ({ ...s, orderIndex: i })),
+    };
+
+    return Promise.resolve({ builtRoute });
+  };
+};

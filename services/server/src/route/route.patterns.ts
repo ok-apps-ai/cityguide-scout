@@ -1,0 +1,2 @@
+export const ROUTE_FIND_BY_CITY = "ROUTE_FIND_BY_CITY";
+export const ROUTE_GENERATE = "ROUTE_GENERATE";
