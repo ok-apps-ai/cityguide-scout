@@ -1,26 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, RefreshCw, X } from "lucide-react";
 
 import type { ICity, IPendingCity } from "../types";
 import { CitySearch } from "./CitySearch";
 
 const GRID_STEP_DEGREES = Number(import.meta.env.VITE_GRID_STEP_DEGREES ?? 0.02);
 
-const Spinner = () => (
-  <svg
-    className="animate-spin h-3.5 w-3.5 text-gray-400"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    aria-hidden="true"
-  >
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-    <path
-      className="opacity-75"
-      fill="currentColor"
-      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-    />
-  </svg>
-);
+const Spinner = () => <Loader2 className="animate-spin h-3.5 w-3.5 text-gray-400" strokeWidth={2} aria-hidden />;
 
 const countGridCells = (city: ICity): number => {
   const coords = city.boundary.coordinates[0];
@@ -72,11 +58,11 @@ export const CityPanel = (props: ICityPanelProps) => {
       <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
         <h2 className="text-sm font-semibold text-gray-900 tracking-wide">Cities</h2>
         <button
-          className="text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded p-1 text-lg leading-none transition-colors cursor-pointer"
+          className="text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded p-1 transition-colors cursor-pointer"
           onClick={handleRefetch}
           title="Refresh"
         >
-          ↻
+          <RefreshCw className="w-4 h-4" strokeWidth={2} />
         </button>
       </div>
 
@@ -139,7 +125,7 @@ export const CityPanel = (props: ICityPanelProps) => {
                     onDeleteCity(city.id);
                   }}
                 >
-                  ✕
+                  <X className="w-3.5 h-3.5" strokeWidth={2} />
                 </button>
               )}
             </li>

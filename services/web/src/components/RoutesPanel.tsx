@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useMapsLibrary } from "@vis.gl/react-google-maps";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bike, Car, PersonStanding, RefreshCw, Search, X } from "lucide-react";
 
 import type { ICity, IRoute } from "../types";
 import { fetchRoutesByCityId } from "../api";
@@ -42,6 +43,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
   const [selectedRoute, setSelectedRoute] = useState<IRoute | null>(null);
   const [routeModeFilter, setRouteModeFilter] = useState<"walking" | "cycling" | "driving" | null>(null);
 
+  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- AutocompleteSessionToken from @types/google.maps */
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -188,9 +190,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
             title="Walking"
             aria-label="Filter by walking"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+            <PersonStanding className="w-4 h-4" strokeWidth={2} />
           </button>
           <button
             className={`rounded p-1.5 transition-colors cursor-pointer ${
@@ -202,9 +202,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
             title="Cycling"
             aria-label="Filter by cycling"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 18a2 2 0 1 1 4 0 2 2 0 1 1 4 0M5 18h14M5 18v-4l3-4h8l3 4v4" />
-            </svg>
+            <Bike className="w-4 h-4" strokeWidth={2} />
           </button>
           <button
             className={`rounded p-1.5 transition-colors cursor-pointer ${
@@ -216,9 +214,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
             title="Driving"
             aria-label="Filter by driving"
           >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 17h14v-1a2 2 0 00-2-2H7a2 2 0 00-2 2v1m0 0h14M5 17v-4m14 4v-4m-4-4 4 4 4 4 4-4m0-4 4 4 4 4 4-4m-4 0h4" />
-            </svg>
+            <Car className="w-4 h-4" strokeWidth={2} />
           </button>
         </div>
         <button
@@ -228,25 +224,13 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
           title="Refresh"
           aria-label="Refresh routes"
         >
-          <span className={isRefreshing ? "inline-block animate-spin" : ""}>↻</span>
+          <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} strokeWidth={2} />
         </button>
       </div>
 
       <div ref={containerRef} className="relative px-3 py-2 border-b border-gray-100">
-        <div className="flex gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 focus-within:border-blue-400 focus-within:bg-white transition-colors">
-          <svg
-            className="w-3.5 h-3.5 text-gray-400 shrink-0"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-            />
-          </svg>
+        <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200 focus-within:border-blue-400 focus-within:bg-white transition-colors">
+          <Search className="w-3.5 h-3.5 text-gray-400 shrink-0" strokeWidth={2} />
           <input
             className="bg-transparent text-sm text-gray-800 placeholder-gray-400 outline-none w-full"
             type="text"
@@ -257,7 +241,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
           />
           {inputValue && (
             <button
-              className="text-gray-400 hover:text-gray-600 cursor-pointer leading-none"
+              className="text-gray-400 hover:text-gray-600 cursor-pointer flex items-center justify-center"
               onClick={() => {
                 setInputValue("");
                 setSuggestions([]);
@@ -269,7 +253,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
                 onRouteSelect(null);
               }}
             >
-              ✕
+              <X className="w-3.5 h-3.5" strokeWidth={2} />
             </button>
           )}
         </div>
@@ -281,8 +265,8 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
                 key={s.placeId}
                 className="px-3 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 cursor-pointer transition-colors"
                 onMouseDown={() => {
-                void handleSelect(s);
-              }}
+                  void handleSelect(s);
+                }}
               >
                 <span className="font-medium">{s.mainText?.text ?? s.text?.text}</span>
                 {s.secondaryText?.text && <span className="text-xs text-gray-400 ml-1.5">{s.secondaryText.text}</span>}
