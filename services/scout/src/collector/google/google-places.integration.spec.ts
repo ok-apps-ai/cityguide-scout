@@ -5,7 +5,6 @@ import { Repository } from "typeorm";
 
 import { GooglePlacesService } from "./places/places.service";
 import { GoogleModule } from "./google.module";
-import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
@@ -17,7 +16,6 @@ describe("GooglePlacesService integration — Vatican City", () => {
   let service: GooglePlacesService;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
-  let placeEntityRepository: Repository<PlaceEntity>;
   let cityEntity: CityEntity;
 
   beforeAll(async () => {
@@ -43,7 +41,6 @@ describe("GooglePlacesService integration — Vatican City", () => {
     service = testModule.get(GooglePlacesService);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
-    placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
   });
 
   afterAll(async () => {
@@ -60,9 +57,7 @@ describe("GooglePlacesService integration — Vatican City", () => {
 
   it("collects all places from Vatican City and persists them to the database", async () => {
     const collected = await service.fetchPointsForCity(cityEntity);
-    await service.savePointsToDb(cityEntity.id, collected);
-
-    const saved = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
+    const saved = await service.savePointsToDb(cityEntity.id, collected);
 
     expect(saved.length).toBe(collected.length);
     const savedIds = new Set(saved.map(p => p.googlePlaceId));

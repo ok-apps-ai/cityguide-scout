@@ -46,19 +46,24 @@ export const makePoiScoringNode = (openaiApiKey: string) => {
     }
 
     try {
-      const model = new ChatOpenAI({ openAIApiKey: openaiApiKey, modelName: "gpt-4o-mini", temperature: 0 });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any -- LangChain zod inference is excessively deep
-      const structured = model.withStructuredOutput(rankingsSchema as any) as any;
+      const model = new ChatOpenAI({
+        openAIApiKey: openaiApiKey,
+        model: "gpt-4o-mini",
+        temperature: 0,
+      });
+
+      // @ts-expect-error — LangChain withStructuredOutput type instantiation is excessively deep
+      const structured = model.withStructuredOutput(rankingsSchema);
 
       const placeList = top20
         .map((w, i) => `${i + 1}. ${w.place.name} (${w.place.category}, rating: ${w.place.rating ?? "n/a"})`)
         .join("\n");
 
-      const result = (await structured.invoke(
+      const result = await structured.invoke(
         `You are a tourist route expert. Given the theme "${theme}", score each place with a bonus (0-5) based on how well it fits the theme and tourist value.\n\nPlaces:\n${placeList}`,
-      )) as z.infer<typeof rankingsSchema>;
+      );
 
-      const bonusMap = new Map(
+      const bonusMap = new Map<number, number>(
         result.rankings.map((r: { index: number; bonus: number }) => [r.index - 1, r.bonus]),
       );
 

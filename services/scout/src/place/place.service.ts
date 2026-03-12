@@ -16,9 +16,10 @@ export class PlaceService {
   ) {}
 
   /**
-   * Inserts a place. If it already exists (by google_place_id or city_id+osm_id), does nothing.
+   * Inserts a place. If it already exists (by google_place_id or city_id+osm_id), returns the existing one.
+   * Returns the saved (or existing) place entity.
    */
-  public async insertPlace(payload: IUpsertPlacePayload): Promise<void> {
+  public async insertPlace(payload: IUpsertPlacePayload): Promise<PlaceEntity | null> {
     const { lat, lng, geomExpression, source, types, ...rest } = payload;
     const geom = geomExpression ?? `ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326)`;
 
@@ -33,18 +34,35 @@ export class PlaceService {
 
     try {
       await this.placeEntityRepository.createQueryBuilder().insert().into(PlaceEntity).values(values).execute();
+
+      if (source === PlaceSource.GOOGLE && payload.googlePlaceId) {
+        return this.findByGooglePlaceIdAndCity(payload.googlePlaceId, payload.cityId);
+      }
+      if (source === PlaceSource.OSM && payload.osmId) {
+        return this.placeEntityRepository.findOne({
+          where: { cityId: payload.cityId, osmId: payload.osmId },
+        });
+      }
+      return null;
     } catch (err: unknown) {
       const code = (err as { code?: string })?.code;
-      if (code === "23505") return; // unique_violation — place already exists
+      if (code === "23505") {
+        if (source === PlaceSource.GOOGLE && payload.googlePlaceId) {
+          return this.findByGooglePlaceIdAndCity(payload.googlePlaceId, payload.cityId);
+        }
+        if (source === PlaceSource.OSM && payload.osmId) {
+          return this.placeEntityRepository.findOne({
+            where: { cityId: payload.cityId, osmId: payload.osmId },
+          });
+        }
+        return null;
+      }
       throw err;
     }
   }
 
   public async updateGooglePlaceId(placeId: string, googlePlaceId: string): Promise<void> {
-    await this.placeEntityRepository.update(
-      { id: placeId },
-      { googlePlaceId, updatedAt: new Date() },
-    );
+    await this.placeEntityRepository.update({ id: placeId }, { googlePlaceId, updatedAt: new Date() });
   }
 
   public async updateDescription(googlePlaceId: string, description: string | null): Promise<void> {

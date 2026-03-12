@@ -1,15 +1,11 @@
 import { PlaceEntity } from "../../../place/place.entity";
-import { RouteMode, RouteTheme } from "../../../route/route.entity";
+import { RouteTheme } from "../../../route/route.entity";
 import { IRouteSeed, RouteGenerationState } from "../state";
 import { CATEGORY_BASE_WEIGHT } from "./compute-weights.node";
 import { THEME_CATEGORY_WEIGHTS } from "../../theme-flavor-weights";
 import { THEME_CATEGORIES } from "../../theme-categories";
 
-const getThemeWeight = (
-  place: PlaceEntity,
-  theme: RouteTheme,
-  globalWeight: number,
-): number => {
+const getThemeWeight = (place: PlaceEntity, theme: RouteTheme, globalWeight: number): number => {
   const themeBase = THEME_CATEGORY_WEIGHTS[theme]?.[place.category] ?? CATEGORY_BASE_WEIGHT[place.category] ?? 5;
   const globalBase = CATEGORY_BASE_WEIGHT[place.category] ?? 5;
   const delta = globalWeight - globalBase;

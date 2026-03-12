@@ -62,11 +62,7 @@ describe("POST /cities — e2e", () => {
   it.each(cities)(
     "geocodes %s and registers it via POST /cities",
     async cityName => {
-      const { northeast, southwest, formattedAddress } = await getCityBounds(cityName);
-
-      console.info(`\n  Geocoded: ${formattedAddress}`);
-      console.info(`  SW: [${southwest.lat}, ${southwest.lng}]`);
-      console.info(`  NE: [${northeast.lat}, ${northeast.lng}]`);
+      const { northeast, southwest } = await getCityBounds(cityName);
 
       const response = await axios.post<{ id: string }>(
         `${SERVER_URL}/cities`,
@@ -76,8 +72,6 @@ describe("POST /cities — e2e", () => {
 
       expect(response.status).toEqual(201);
       expect(response.data.id).toBeDefined();
-
-      console.info(`  City registered: id=${response.data.id}`);
     },
     30000,
   );

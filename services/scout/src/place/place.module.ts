@@ -1,9 +1,9 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from "@nestjs/config";
 
-import { GoogleModule } from "../collector/google/google.module";
+import { GooglePlacesFetcherModule } from "../collector/google/fetcher/fetcher.module";
 import { PlaceEntity } from "./place.entity";
 import { PlaceService } from "./place.service";
 import { PlaceEnrichmentService } from "./place-enrichment.service";
@@ -11,7 +11,7 @@ import { PlaceOsmResolutionService } from "./place-osm-resolution.service";
 import { GooglePlaceMediaUrlProvider } from "./google-place-media-url-provider.service";
 
 @Module({
-  imports: [ConfigModule, HttpModule, TypeOrmModule.forFeature([PlaceEntity]), forwardRef(() => GoogleModule)],
+  imports: [ConfigModule, HttpModule, TypeOrmModule.forFeature([PlaceEntity]), GooglePlacesFetcherModule],
   providers: [
     PlaceService,
     PlaceEnrichmentService,

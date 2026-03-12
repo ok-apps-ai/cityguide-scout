@@ -147,11 +147,7 @@ export class GooglePlacesFetcherService {
    * Finds the nearest Google Place at the given coordinates.
    * Returns place_id or null if none found within radius.
    */
-  public async findPlaceByLocation(
-    lat: number,
-    lng: number,
-    radiusMeters: number = 50,
-  ): Promise<string | null> {
+  public async findPlaceByLocation(lat: number, lng: number, radiusMeters = 50): Promise<string | null> {
     const apiKey = this.configService.get<string>("GOOGLE_API_KEY", "");
     if (!apiKey) return null;
 
@@ -173,7 +169,7 @@ export class GooglePlacesFetcherService {
     name: string,
     lat: number,
     lng: number,
-    radiusMeters: number = 500,
+    radiusMeters = 500,
   ): Promise<string | null> {
     const apiKey = this.configService.get<string>("GOOGLE_API_KEY", "");
     if (!apiKey || !name.trim()) return null;
@@ -212,9 +208,7 @@ export class GooglePlacesFetcherService {
    * Fetches Place Details (editorialSummary, photos) from Google Places API.
    * Name comes from initial collection; description and photoName used for enrichment.
    */
-  public async getPlaceDetails(
-    placeId: string,
-  ): Promise<{ description: string | null; photoName: string | null }> {
+  public async getPlaceDetails(placeId: string): Promise<{ description: string | null; photoName: string | null }> {
     const apiKey = this.configService.get<string>("GOOGLE_API_KEY", "");
     if (!apiKey) return { description: null, photoName: null };
 

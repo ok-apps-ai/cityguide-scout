@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService } from "./places/places.service";
+import { GooglePlacesService } from "./places";
 import { GoogleModule } from "./google.module";
 import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
@@ -19,7 +19,6 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
   let service: GooglePlacesService;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
-  let placeEntityRepository: Repository<PlaceEntity>;
   let cityEntity: CityEntity;
 
   beforeAll(async () => {
@@ -63,9 +62,7 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
 
   it("collects all places from Vatican City and stores them in the database", async () => {
     const collected = await service.fetchPointsForCity(cityEntity);
-    await service.savePointsToDb(cityEntity.id, collected);
-
-    const saved = await placeEntityRepository.find({ where: { cityId: cityEntity.id } });
+    const saved = await service.savePointsToDb(cityEntity.id, collected);
 
     expect(saved.length).toBe(collected.length);
     const savedIds = new Set(saved.map(p => p.googlePlaceId));

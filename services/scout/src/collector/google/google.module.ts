@@ -1,10 +1,10 @@
-import { Module, forwardRef } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 
 import { GooglePlacesFetcherModule } from "./fetcher/fetcher.module";
 import { GooglePlacesModule } from "./places/places.module";
 
 @Module({
-  imports: [GooglePlacesFetcherModule, forwardRef(() => GooglePlacesModule)],
-  exports: [GooglePlacesFetcherModule, forwardRef(() => GooglePlacesModule)],
+  imports: [GooglePlacesFetcherModule, GooglePlacesModule],
+  exports: [GooglePlacesFetcherModule, GooglePlacesModule],
 })
 export class GoogleModule {}

@@ -4,8 +4,8 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
 import { ns } from "../../../common/constants";
+import { PlaceEntity, PlaceSource } from "../../../place/place.entity";
 import { PlaceService } from "../../../place/place.service";
-import { PlaceSource } from "../../../place/place.entity";
 import { CityEntity } from "../../../city/city.entity";
 import { INCLUDED_SEARCH_TYPES, EXCLUDED_SEARCH_TYPES } from "../../../place/google-place-types";
 import { GooglePlacesFetcherService } from "../fetcher/fetcher.service";
@@ -48,10 +48,13 @@ export class GooglePlacesService {
     return results;
   }
 
-  public async savePointsToDb(cityId: string, places: INearbyPlace[]): Promise<void> {
+  public async savePointsToDb(cityId: string, places: INearbyPlace[]): Promise<PlaceEntity[]> {
+    const saved: PlaceEntity[] = [];
     for (const place of places) {
-      await this.upsertPlace(cityId, place);
+      const entity = await this.upsertPlace(cityId, place);
+      if (entity) saved.push(entity);
     }
+    return saved;
   }
 
   public async collectPointsForCity(cityEntity: CityEntity, options: { limit?: number } = {}): Promise<void> {
@@ -92,12 +95,12 @@ export class GooglePlacesService {
     return points;
   }
 
-  private async upsertPlace(cityId: string, place: INearbyPlace): Promise<void> {
+  private async upsertPlace(cityId: string, place: INearbyPlace): Promise<PlaceEntity | null> {
     const category = this.mapper.inferCategoryFromTypes(place);
     const geomType = this.mapper.inferGeometryType(place);
 
     try {
-      await this.placeService.insertPlace({
+      return await this.placeService.insertPlace({
         cityId,
         name: place.name,
         lat: place.geometry.location.lat,
@@ -114,6 +117,7 @@ export class GooglePlacesService {
       });
     } catch (error) {
       this.logger.warn(`Failed to insert place ${place.place_id}: ${(error as Error).message}`);
+      return null;
     }
   }
 }
