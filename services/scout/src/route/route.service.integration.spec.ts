@@ -54,7 +54,7 @@ describe("RouteService.findRoutesForApi — route mode filter", () => {
   beforeEach(async () => {
     cityEntity = await citySeedService.seedCity();
     await routeSeedService.seedRoute({ cityId: cityEntity.id, routeMode: RouteMode.WALKING });
-    await routeSeedService.seedRoute({ cityId: cityEntity.id, routeMode: RouteMode.CYCLING });
+    await routeSeedService.seedRoute({ cityId: cityEntity.id, routeMode: RouteMode.BICYCLING });
     await routeSeedService.seedRoute({ cityId: cityEntity.id, routeMode: RouteMode.DRIVING });
   });
 
@@ -73,49 +73,49 @@ describe("RouteService.findRoutesForApi — route mode filter", () => {
     expect(routes).toBeInstanceOf(Array);
     expect(routes).toHaveLength(3);
     const modes = new Set(routes.map(r => r.routeMode));
-    expect(modes).toContain("walking");
-    expect(modes).toContain("cycling");
-    expect(modes).toContain("driving");
+    expect(modes).toContain(RouteMode.WALKING);
+    expect(modes).toContain(RouteMode.BICYCLING);
+    expect(modes).toContain(RouteMode.DRIVING);
   });
 
-  it("returns only walking routes when routeMode=walking", async () => {
-    const routes = await routeService.findRoutesForApi(cityEntity.id, "walking");
+  it("returns only walking routes when routeMode=WALKING", async () => {
+    const routes = await routeService.findRoutesForApi(cityEntity.id, RouteMode.WALKING);
 
     expect(routes).toBeInstanceOf(Array);
     expect(routes).toHaveLength(1);
-    expect(routes[0].routeMode).toEqual("walking");
+    expect(routes[0].routeMode).toEqual(RouteMode.WALKING);
   });
 
-  it("returns only cycling routes when routeMode=cycling", async () => {
-    const routes = await routeService.findRoutesForApi(cityEntity.id, "cycling");
+  it("returns only bicycling routes when routeMode=BICYCLING", async () => {
+    const routes = await routeService.findRoutesForApi(cityEntity.id, RouteMode.BICYCLING);
 
     expect(routes).toBeInstanceOf(Array);
     expect(routes).toHaveLength(1);
-    expect(routes[0].routeMode).toEqual("cycling");
+    expect(routes[0].routeMode).toEqual(RouteMode.BICYCLING);
   });
 
-  it("returns only driving routes when routeMode=driving", async () => {
-    const routes = await routeService.findRoutesForApi(cityEntity.id, "driving");
+  it("returns only driving routes when routeMode=DRIVING", async () => {
+    const routes = await routeService.findRoutesForApi(cityEntity.id, RouteMode.DRIVING);
 
     expect(routes).toBeInstanceOf(Array);
     expect(routes).toHaveLength(1);
-    expect(routes[0].routeMode).toEqual("driving");
+    expect(routes[0].routeMode).toEqual(RouteMode.DRIVING);
   });
 
   it("returns different counts for different filters", async () => {
     const [all, walking, cycling, driving] = await Promise.all([
       routeService.findRoutesForApi(cityEntity.id),
-      routeService.findRoutesForApi(cityEntity.id, "walking"),
-      routeService.findRoutesForApi(cityEntity.id, "cycling"),
-      routeService.findRoutesForApi(cityEntity.id, "driving"),
+      routeService.findRoutesForApi(cityEntity.id, RouteMode.WALKING),
+      routeService.findRoutesForApi(cityEntity.id, RouteMode.BICYCLING),
+      routeService.findRoutesForApi(cityEntity.id, RouteMode.DRIVING),
     ]);
 
     expect(all).toHaveLength(3);
     expect(walking).toHaveLength(1);
     expect(cycling).toHaveLength(1);
     expect(driving).toHaveLength(1);
-    expect(walking[0].routeMode).toEqual("walking");
-    expect(cycling[0].routeMode).toEqual("cycling");
-    expect(driving[0].routeMode).toEqual("driving");
+    expect(walking[0].routeMode).toEqual(RouteMode.WALKING);
+    expect(cycling[0].routeMode).toEqual(RouteMode.BICYCLING);
+    expect(driving[0].routeMode).toEqual(RouteMode.DRIVING);
   });
 });

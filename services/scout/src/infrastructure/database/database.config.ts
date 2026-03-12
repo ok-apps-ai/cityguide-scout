@@ -12,7 +12,6 @@ import { CreateCitiesTable1773218686204 } from "../../migrations/1773218686204-C
 import { CreatePlacesTable1773218691204 } from "../../migrations/1773218691204-CreatePlacesTable";
 import { CreateRoutesTable1773218696204 } from "../../migrations/1773218696204-CreateRoutesTable";
 import { CreateRouteStopsTable1773218701204 } from "../../migrations/1773218701204-CreateRouteStopsTable";
-import { DropPlacesTitleColumn1773331991929 } from "../../migrations/1773331991929-DropPlacesTitleColumn";
 
 const config: PostgresConnectionOptions = {
   name: "default",
@@ -31,7 +30,6 @@ const config: PostgresConnectionOptions = {
     CreatePlacesTable1773218691204,
     CreateRoutesTable1773218696204,
     CreateRouteStopsTable1773218701204,
-    DropPlacesTitleColumn1773331991929,
   ],
 };
 

@@ -5,7 +5,6 @@ import { Repository } from "typeorm";
 
 import { GooglePlacesService } from "./places";
 import { GoogleModule } from "./google.module";
-import { PlaceEntity } from "../../place/place.entity";
 import { CityEntity } from "../../city/city.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
@@ -44,7 +43,6 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
     service = testModule.get(GooglePlacesService);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
-    placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
   });
 
   afterAll(async () => {

@@ -40,7 +40,6 @@ export class CreatePlacesTable1773218691204 implements MigrationInterface {
         id                     UUID NOT NULL DEFAULT gen_random_uuid(),
         city_id                UUID NOT NULL,
         name                   VARCHAR(512) NOT NULL,
-        title                  VARCHAR(512) NULL,
         geom                   geometry(Geometry, 4326) NOT NULL,
         google_place_id        VARCHAR(255) NULL,
         source                 ${ns}.place_source_enum NOT NULL DEFAULT 'google',

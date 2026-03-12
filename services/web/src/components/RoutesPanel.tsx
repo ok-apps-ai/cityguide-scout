@@ -5,6 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Bike, Car, PersonStanding, RefreshCw, Search, X } from "lucide-react";
 
 import type { ICity, IRoute } from "../types";
+import { RouteMode } from "../route-mode";
 import { fetchRoutesByCityId } from "../api";
 
 const PRICE_LABELS: Record<string, string> = {
@@ -41,7 +42,7 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
   const [selectedCity, setSelectedCity] = useState<ICity | null>(null);
   const [searchedName, setSearchedName] = useState<string | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<IRoute | null>(null);
-  const [routeModeFilter, setRouteModeFilter] = useState<"walking" | "cycling" | "driving" | null>(null);
+  const [routeModeFilter, setRouteModeFilter] = useState<RouteMode>(RouteMode.WALKING);
 
   /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- AutocompleteSessionToken from @types/google.maps */
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
@@ -85,10 +86,6 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
         setIsOpen(false);
       });
   }, [placesLib, inputValue]);
-
-  useEffect(() => {
-    setRouteModeFilter(null);
-  }, [selectedCity?.id]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -143,7 +140,12 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
     [placesLib, findMatchingCity, onCitySelect],
   );
 
-  const { data: routes = [], isPending: isRoutesPending } = useQuery({
+  const {
+    data: routes = [],
+    isPending: isRoutesPending,
+    isError: isRoutesError,
+    error: routesError,
+  } = useQuery({
     queryKey: ["routes", selectedCity?.id, routeModeFilter],
     queryFn: () => fetchRoutesByCityId(selectedCity!.id, routeModeFilter),
     enabled: !!selectedCity?.id,
@@ -169,11 +171,11 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
       const first = routes[0];
       setSelectedRoute(first);
       onRouteSelect(first);
-    } else {
+    } else if (!isRoutesPending) {
       setSelectedRoute(null);
       onRouteSelect(null);
     }
-  }, [routes, selectedRoute, onRouteSelect]);
+  }, [routes, selectedRoute, onRouteSelect, isRoutesPending]);
 
   return (
     <aside className="w-70 shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden shadow-[2px_0_8px_rgba(0,0,0,0.06)] z-10">
@@ -182,11 +184,11 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
         <div className="flex items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 p-0.5">
           <button
             className={`rounded p-1.5 transition-colors cursor-pointer ${
-              routeModeFilter === "walking"
+              routeModeFilter === RouteMode.WALKING
                 ? "bg-blue-100 text-blue-700"
                 : "text-gray-500 hover:text-blue-600 hover:bg-gray-100"
             }`}
-            onClick={() => setRouteModeFilter(m => (m === "walking" ? null : "walking"))}
+            onClick={() => setRouteModeFilter(RouteMode.WALKING)}
             title="Walking"
             aria-label="Filter by walking"
           >
@@ -194,11 +196,11 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
           </button>
           <button
             className={`rounded p-1.5 transition-colors cursor-pointer ${
-              routeModeFilter === "cycling"
+              routeModeFilter === RouteMode.BICYCLING
                 ? "bg-blue-100 text-blue-700"
                 : "text-gray-500 hover:text-blue-600 hover:bg-gray-100"
             }`}
-            onClick={() => setRouteModeFilter(m => (m === "cycling" ? null : "cycling"))}
+            onClick={() => setRouteModeFilter(RouteMode.BICYCLING)}
             title="Cycling"
             aria-label="Filter by cycling"
           >
@@ -206,11 +208,11 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
           </button>
           <button
             className={`rounded p-1.5 transition-colors cursor-pointer ${
-              routeModeFilter === "driving"
+              routeModeFilter === RouteMode.DRIVING
                 ? "bg-blue-100 text-blue-700"
                 : "text-gray-500 hover:text-blue-600 hover:bg-gray-100"
             }`}
-            onClick={() => setRouteModeFilter(m => (m === "driving" ? null : "driving"))}
+            onClick={() => setRouteModeFilter(RouteMode.DRIVING)}
             title="Driving"
             aria-label="Filter by driving"
           >
@@ -279,6 +281,25 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
       {isCitiesPending && <p className="px-4 py-3 text-xs text-gray-400">Loading cities…</p>}
       {citiesError && <p className="px-4 py-3 text-xs text-red-600">{citiesError.message}</p>}
 
+      {!isCitiesPending && !citiesError && cities.length > 0 && !selectedCity && (
+        <ul className="px-2 py-2 border-b border-gray-100 max-h-32 overflow-y-auto">
+          {cities.map(c => (
+            <li
+              key={c.id}
+              className="px-2 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded cursor-pointer"
+              onClick={() => {
+                setSelectedCity(c);
+                setInputValue(c.name);
+                setSearchedName(null);
+                onCitySelect(c);
+              }}
+            >
+              {c.name}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {searchedName && !selectedCity && (
         <p className="px-4 py-3 text-xs text-amber-600">
           City not in database.{" "}
@@ -297,10 +318,10 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
 
           {isRoutesPending && <p className="px-4 py-3 text-xs text-gray-400">Loading routes…</p>}
 
-          {!isRoutesPending && routes.length === 0 && (
-            <p className="px-4 py-3 text-xs text-gray-400">
-              {routeModeFilter ? "No routes match the selected filter." : "No routes for this city yet."}
-            </p>
+          {isRoutesError && routesError && <p className="px-4 py-3 text-xs text-red-600">{routesError.message}</p>}
+
+          {!isRoutesPending && !isRoutesError && routes.length === 0 && (
+            <p className="px-4 py-3 text-xs text-gray-400">No routes for this mode.</p>
           )}
 
           <ul className="overflow-y-auto flex-1 py-2">
@@ -328,7 +349,11 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
       )}
 
       {!selectedCity && !isCitiesPending && !citiesError && (
-        <p className="px-4 py-3 text-xs text-gray-400">Search for a city to view its routes.</p>
+        <p className="px-4 py-3 text-xs text-gray-400">
+          {cities.length > 0
+            ? "Select a city above or search to view its routes."
+            : "Search for a city to view its routes."}
+        </p>
       )}
     </aside>
   );

@@ -57,6 +57,7 @@
     "db:add-marbella": "sh ../../scripts/add-marbella-via-api.sh",
     "db:backup-dev": "sh ../../scripts/backup-dev-db.sh",
     "db:drop-and-create": "sh ../../scripts/drop-and-create-databases.sh",
+    "db:migrate": "npm run build && npx typeorm migration:run -d dist/infrastructure/database/data-source.js",
     "db:generate-routes-debug": "npx ts-node --transpile-only scripts/generate-routes-debug.ts",
     "db:generate-types": "npx ts-node scripts/generate-types-from-db.ts",
     "db:regenerate-routes": "sh ../../scripts/regenerate-routes-with-place.sh",

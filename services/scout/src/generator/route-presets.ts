@@ -3,7 +3,7 @@ import type { IRouteOptions } from "./dto/route-generation-options.interface";
 
 export const ROUTE_MODE_RADIUS_METERS: Record<RouteMode, number> = {
   [RouteMode.WALKING]: 3000,
-  [RouteMode.CYCLING]: 6000,
+  [RouteMode.BICYCLING]: 6000,
   [RouteMode.DRIVING]: 10000,
 };
 

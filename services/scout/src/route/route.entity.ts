@@ -5,6 +5,13 @@ import { CityEntity } from "../city/city.entity";
 import { PlaceEntity, PriceLevel } from "../place/place.entity";
 import { RouteStopEntity } from "./route-stop.entity";
 
+/** Matches google.maps.TravelMode for Directions API. */
+export enum RouteMode {
+  WALKING = "WALKING",
+  BICYCLING = "BICYCLING",
+  DRIVING = "DRIVING",
+}
+
 export enum RouteTheme {
   HISTORY = "history",
   NATURE = "nature",
@@ -12,12 +19,6 @@ export enum RouteTheme {
   SHOPPING = "shopping",
   EVENING = "evening",
   HIGHLIGHTS = "highlights",
-}
-
-export enum RouteMode {
-  WALKING = "walking",
-  CYCLING = "cycling",
-  DRIVING = "driving",
 }
 
 @Entity({ name: "routes", schema: ns })

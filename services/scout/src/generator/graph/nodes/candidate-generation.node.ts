@@ -45,7 +45,7 @@ export const makeCandidateGenerationNode = (dataSource: DataSource) =>
   buildCandidateNode(dataSource, RouteMode.WALKING);
 
 export const makeCandidateGenerationCyclingNode = (dataSource: DataSource) =>
-  buildCandidateNode(dataSource, RouteMode.CYCLING);
+  buildCandidateNode(dataSource, RouteMode.BICYCLING);
 
 export const makeCandidateGenerationDrivingNode = (dataSource: DataSource) =>
   buildCandidateNode(dataSource, RouteMode.DRIVING);

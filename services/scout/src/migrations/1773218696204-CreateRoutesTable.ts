@@ -11,7 +11,7 @@ export class CreateRoutesTable1773218696204 implements MigrationInterface {
     `);
 
     await queryRunner.query(`
-      CREATE TYPE ${ns}.route_mode_enum AS ENUM ('walking', 'cycling', 'driving')
+      CREATE TYPE ${ns}.route_mode_enum AS ENUM ('WALKING', 'BICYCLING', 'DRIVING')
     `);
 
     await queryRunner.query(`
@@ -20,7 +20,7 @@ export class CreateRoutesTable1773218696204 implements MigrationInterface {
         city_id          UUID NOT NULL,
         name             VARCHAR(255) NOT NULL,
         theme            ${ns}.route_theme_enum NOT NULL,
-        route_mode       ${ns}.route_mode_enum NOT NULL DEFAULT 'walking',
+        route_mode       ${ns}.route_mode_enum NOT NULL DEFAULT 'WALKING',
         duration_minutes INTEGER NOT NULL,
         distance_km      DECIMAL(6, 2) NOT NULL,
         price_level      ${ns}.price_level_enum NOT NULL,

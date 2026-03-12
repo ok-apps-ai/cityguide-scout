@@ -206,6 +206,12 @@ DELETE FROM scout WHERE name = 'OldMigrationName';
 INSERT INTO scout (timestamp, name) VALUES (1773218686204, 'CreateCitiesTable1773218686204');
 ```
 
+When migrations are squashed (alter migrations merged into create migrations and removed), delete the orphan records from the tracking table:
+
+```sql
+DELETE FROM scout WHERE name IN ('DropPlacesTitleColumn1773331991929', 'AlterRouteModeEnumToGoogleTravelMode1773340341251');
+```
+
 
 ## Tests
 - Backend tests use Jest with `*.spec.ts` (see `services/server`).

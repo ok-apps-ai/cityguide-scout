@@ -75,7 +75,7 @@ type CandidateNode = "candidateGeneration" | "candidateGenerationCycling" | "can
 const routeModeBranch = (state: GraphState): CandidateNode => {
   const mode = state.currentSeed?.routeMode;
   if (mode === RouteMode.DRIVING) return "candidateGenerationDriving";
-  if (mode === RouteMode.CYCLING) return "candidateGenerationCycling";
+  if (mode === RouteMode.BICYCLING) return "candidateGenerationCycling";
   return "candidateGeneration";
 };
 
