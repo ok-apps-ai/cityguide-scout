@@ -21,7 +21,7 @@
     "url": "https://github.com/coartmarket/marketplace/"
   },
   "scripts": {
-    "build": "npm run build --workspace=@framework/constants --workspace=@framework/mui-form --workspace=@framework/types",
+    "build": "npm run build --workspace=@framework/types && npm run build --workspace=@framework/server && npm run build --workspace=@framework/eml",
     "clean": "sh scripts/clean.sh",
     "lint": "npm run lint --workspaces --if-present",
     "prepare": "husky",
@@ -32,6 +32,7 @@
   "title": "CoArt - Portal",
   "version": "0.0.1",
   "workspaces": [
+    "packages/*",
     "services/*"
   ]
 }

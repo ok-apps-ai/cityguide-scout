@@ -1,2 +1,1 @@
-export * from "./overpass-element.interface";
-export * from "./overpass-response.interface";
+export type { IOverpassElement, IOverpassResponse, IBbox, IOverpassFetcherOptions } from "@framework/types";

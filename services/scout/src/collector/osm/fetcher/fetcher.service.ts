@@ -3,24 +3,9 @@ import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 
 import { withRetry } from "../../../common/retry";
-import type { IOverpassElement, IOverpassResponse } from "./types";
+import type { IBbox, IOverpassElement, IOverpassFetcherOptions, IOverpassResponse } from "./types";
 
 const OVERPASS_BASE_URL = "https://overpass-api.de/api/interpreter";
-
-export interface IBbox {
-  south: number;
-  west: number;
-  north: number;
-  east: number;
-}
-
-export interface IOverpassFetcherOptions {
-  bbox: IBbox;
-  /** Overpass QL query. Default fetches tourism, historic, amenity, leisure nodes and ways. */
-  query?: string;
-  /** Tile size in degrees. Bbox is split into nLat×nLng tiles where each dimension uses ceil(span / tileSizeDeg). Omit for single tile. */
-  tileSizeDeg?: number;
-}
 
 function splitBbox(bbox: IBbox, nLat: number, nLng: number): IBbox[] {
   if (nLat <= 1 && nLng <= 1) return [bbox];
@@ -74,10 +59,8 @@ export class OsmOverpassFetcherService {
     const { bbox, query, tileSizeDeg } = options;
     const latSpan = bbox.north - bbox.south;
     const lngSpan = bbox.east - bbox.west;
-    const nLat =
-      tileSizeDeg != null && tileSizeDeg > 0 ? Math.ceil(latSpan / tileSizeDeg) : 1;
-    const nLng =
-      tileSizeDeg != null && tileSizeDeg > 0 ? Math.ceil(lngSpan / tileSizeDeg) : 1;
+    const nLat = tileSizeDeg != null && tileSizeDeg > 0 ? Math.ceil(latSpan / tileSizeDeg) : 1;
+    const nLng = tileSizeDeg != null && tileSizeDeg > 0 ? Math.ceil(lngSpan / tileSizeDeg) : 1;
     const tiles = splitBbox(bbox, nLat, nLng);
 
     const seen = new Set<string>();

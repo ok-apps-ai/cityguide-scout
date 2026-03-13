@@ -12,7 +12,9 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 
-class LatLngDto {
+import type { ILatLng } from "@framework/types";
+
+class LatLngDto implements ILatLng {
   @ApiProperty({ example: 50.59, description: "Latitude (-90 to 90)" })
   @IsLatitude()
   lat: number;

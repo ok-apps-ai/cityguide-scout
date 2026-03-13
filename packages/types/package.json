@@ -1,0 +1,37 @@
+{
+  "author": {
+    "email": "oleg@ethberry.io",
+    "name": "Oleg Gun",
+    "url": "https://ethberry.io/"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "rimraf": "6.1.2",
+    "tsc": "2.0.4",
+    "typescript": "5.9.3"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "files": [
+    "dist/*"
+  ],
+  "license": "UNLICENSED",
+  "main": "./dist/index.js",
+  "name": "@framework/types",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint . --fix",
+    "prebuild": "rimraf dist",
+    "prepublish": "npm run build",
+    "test": "exit 0",
+    "watch-types": "tsc --watch"
+  },
+  "sideEffects": false,
+  "title": "-=EthBerry Studio=-",
+  "types": "./dist/index.d.ts",
+  "version": "0.0.1"
+}

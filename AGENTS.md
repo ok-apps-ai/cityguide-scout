@@ -3,6 +3,7 @@
 This file captures project conventions and workflows for humans and AI agents.
 
 ## Repo layout
+- `packages/types`: TypeScript interfaces shared between microservices (entities, DTOs, Google/OSM integrations). Build this package whenever it changes so apps consume updated types.
 - `services/server`: NestJS API. used for testing purposes and acts as gateway to scout microservice
 - `services/scout`: NestJS API with Typeorm. makes request to google places and open street map to collect data about tourists attractions in the city and build route
 
@@ -93,6 +94,7 @@ import { IGenerateRoutesBody } from "./dto";
 
 ## Build and development
 - Root build command: `npm run build` (builds shared packages).
+- **packages/types**: Build `@framework/types` whenever it changes so server and scout consume updated types. Run `npm run build` from repo root.
 
 ## Migrations
 

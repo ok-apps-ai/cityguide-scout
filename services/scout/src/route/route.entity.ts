@@ -1,25 +1,13 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+import { PriceLevel, RouteMode, RouteTheme } from "@framework/types";
+
 import { ns } from "../common/constants";
 import { CityEntity } from "../city/city.entity";
-import { PlaceEntity, PriceLevel } from "../place/place.entity";
+import { PlaceEntity } from "../place/place.entity";
 import { RouteStopEntity } from "./route-stop.entity";
 
-/** Matches google.maps.TravelMode for Directions API. */
-export enum RouteMode {
-  WALKING = "WALKING",
-  BICYCLING = "BICYCLING",
-  DRIVING = "DRIVING",
-}
-
-export enum RouteTheme {
-  HISTORY = "history",
-  NATURE = "nature",
-  VIEWPOINTS = "viewpoints",
-  SHOPPING = "shopping",
-  EVENING = "evening",
-  HIGHLIGHTS = "highlights",
-}
+export { RouteMode, RouteTheme };
 
 @Entity({ name: "routes", schema: ns })
 export class RouteEntity {

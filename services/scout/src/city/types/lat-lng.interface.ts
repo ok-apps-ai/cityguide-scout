@@ -1,4 +1,1 @@
-export interface ILatLng {
-  lat: number;
-  lng: number;
-}
+export type { ILatLng } from "@framework/types";

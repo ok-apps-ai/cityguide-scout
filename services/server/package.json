@@ -8,6 +8,7 @@
     "url": "https://github.com/coartmarket/coart-marketplace-back-front/"
   },
   "dependencies": {
+    "@framework/types": "file:../../packages/types",
     "@golevelup/nestjs-modules": "1.1.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/cli": "11.0.14",
@@ -37,7 +38,7 @@
     "@nestjs/cli": "11.0.14",
     "@nestjs/testing": "11.1.11",
     "@types/express": "5.0.6",
-    "@types/jest": "30.2.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "24.10.4",
     "axios": "^1.13.6",
     "rimraf": "6.1.2",
