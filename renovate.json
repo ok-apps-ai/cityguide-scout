@@ -1,4 +1,35 @@
 {
-  "extends": ["github>coartmarket/renovate-config"],
-  "baseBranchPatterns": ["dev"]
+  "extends": ["config:base", ":disableRateLimiting", ":semanticCommits", "group:allNonMajor"],
+  "timezone": "Europe/Kyiv",
+  "schedule": ["before 5am on Saturday"],
+  "baseBranchPatterns": ["master"],
+  "packageRules": [
+    {
+      "matchPackageNames": ["node"],
+      "allowedVersions": "<=25"
+    },
+    {
+      "matchPackageNames": ["@nestjs/**"],
+      "commitMessageTopic": "NestJS",
+      "groupName": "NestJS packages",
+      "groupSlug": "nestjs-packages"
+    },
+    {
+      "matchPackageNames": ["@aws-sdk/**"],
+      "commitMessageTopic": "AWS SDK",
+      "groupName": "AWS packages",
+      "groupSlug": "aws-sdk"
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    }
+  ],
+  "major": {
+    "dependencyDashboardApproval": true
+  },
+  "lockFileMaintenance": {
+    "enabled": true
+  },
+  "dependencyDashboard": true
 }
