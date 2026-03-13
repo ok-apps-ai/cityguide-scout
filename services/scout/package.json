@@ -64,6 +64,7 @@
     "db:reset-dev": "sh ../../scripts/reset-dev-db.sh",
     "db:restore-dev": "sh ../../scripts/restore-test-db.sh ../../backups/scout-development-20260311-165321.sql cityguide-scout-postgres-1 scout-development",
     "db:restore-test": "sh ../../scripts/restore-test-db.sh ../../backups/scout-development-20260312-151457.sql",
+    "db:enrich-route-stops": "cross-env NODE_ENV=development npx ts-node --transpile-only scripts/enrich-route-stops.ts",
     "db:trigger-routes": "sh ../../scripts/trigger-routes.sh",
     "db:truncate-routes": "sh ../../scripts/truncate-routes-only.sh",
     "dev": "cross-env NODE_ENV=${NODE_ENV:=development} nest start --watch",

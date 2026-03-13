@@ -253,6 +253,13 @@ To reset `scout-development` from a backup and trigger routes:
    ```
    Or for any city: `curl -X POST http://localhost:3001/cities/{cityId}/generate-routes`
 
+To enrich all places in existing route stops (e.g. after restoring a backup without descriptions):
+
+```bash
+npm run --prefix ./services/scout db:enrich-route-stops
+```
+
+Requires `GOOGLE_API_KEY` in `.env.development`. Skips places that already have a description.
 
 ### E2E test structure
 

@@ -1,13 +1,13 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
-import { PlaceModule } from "../../../place/place.module";
-import { GooglePlacesFetcherModule } from "../fetcher/fetcher.module";
+import { PlaceCoreModule } from "../../../place/place-core.module";
+import { GooglePlacesFetcherModule } from "../fetcher";
 import { GooglePlaceMapperService } from "./place-mapper.service";
 import { GooglePlacesService } from "./places.service";
 
 @Module({
-  imports: [ConfigModule, PlaceModule, GooglePlacesFetcherModule],
+  imports: [ConfigModule, PlaceCoreModule, GooglePlacesFetcherModule],
   providers: [GooglePlaceMapperService, GooglePlacesService],
   exports: [GooglePlacesService],
 })

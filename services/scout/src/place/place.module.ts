@@ -1,19 +1,16 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
 import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from "@nestjs/config";
 
-import { GooglePlacesFetcherModule } from "../collector/google/fetcher/fetcher.module";
-import { PlaceEntity } from "./place.entity";
-import { PlaceService } from "./place.service";
+import { GooglePlacesFetcherModule } from "../collector/google";
+import { PlaceCoreModule } from "./place-core.module";
 import { PlaceEnrichmentService } from "./place-enrichment.service";
 import { PlaceOsmResolutionService } from "./place-osm-resolution.service";
 import { GooglePlaceMediaUrlProvider } from "./google-place-media-url-provider.service";
 
 @Module({
-  imports: [ConfigModule, HttpModule, TypeOrmModule.forFeature([PlaceEntity]), GooglePlacesFetcherModule],
+  imports: [ConfigModule, HttpModule, PlaceCoreModule, GooglePlacesFetcherModule],
   providers: [
-    PlaceService,
     PlaceEnrichmentService,
     PlaceOsmResolutionService,
     {
@@ -21,6 +18,6 @@ import { GooglePlaceMediaUrlProvider } from "./google-place-media-url-provider.s
       useClass: GooglePlaceMediaUrlProvider,
     },
   ],
-  exports: [PlaceService, PlaceOsmResolutionService],
+  exports: [PlaceCoreModule, PlaceOsmResolutionService],
 })
 export class PlaceModule {}
