@@ -6,8 +6,8 @@ export interface IRouteOptions {
   maxPoints: number;
   minDurationMinutes: number | undefined;
   maxDurationMinutes: number | undefined;
-  minDistanceKm: number | undefined;
-  maxDistanceKm: number | undefined;
+  minDistanceKm: Record<RouteMode, number | undefined>;
+  maxDistanceKm: Record<RouteMode, number | undefined>;
   minThemePlaces: number;
   clusterRadiusMeters: number;
   maxClusters: number;

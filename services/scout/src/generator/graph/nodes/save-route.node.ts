@@ -18,8 +18,9 @@ export const makeSaveRouteNode = (routeService: RouteService, eventEmitter: Even
     const durationOk =
       (minDurationMinutes == null || durationMinutes >= minDurationMinutes) &&
       (maxDurationMinutes == null || durationMinutes <= maxDurationMinutes);
-    const distanceOk =
-      (minDistanceKm == null || distanceKm >= minDistanceKm) && (maxDistanceKm == null || distanceKm <= maxDistanceKm);
+    const minDist = minDistanceKm[routeMode];
+    const maxDist = maxDistanceKm[routeMode];
+    const distanceOk = (minDist == null || distanceKm >= minDist) && (maxDist == null || distanceKm <= maxDist);
 
     if (stops.length < minPoints || stops.length > maxPoints || !durationOk || !distanceOk) {
       return {

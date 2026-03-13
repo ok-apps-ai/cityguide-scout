@@ -113,7 +113,9 @@ describe("makeSaveRouteNode", () => {
     const p2 = createPlace("p2");
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minDistanceKm: undefined },
+      routeGenerationOptions: {
+        ...DEFAULT_ROUTE_GENERATION_OPTIONS,
+      },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -159,7 +161,19 @@ describe("makeSaveRouteNode", () => {
     const p2 = createPlace("p2");
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minDistanceKm: undefined },
+      routeGenerationOptions: {
+        ...DEFAULT_ROUTE_GENERATION_OPTIONS,
+        minDistanceKm: {
+          [RouteMode.WALKING]: undefined,
+          [RouteMode.BICYCLING]: undefined,
+          [RouteMode.DRIVING]: undefined,
+        },
+        maxDistanceKm: {
+          [RouteMode.WALKING]: undefined,
+          [RouteMode.BICYCLING]: undefined,
+          [RouteMode.DRIVING]: undefined,
+        },
+      },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -193,8 +207,6 @@ describe("makeSaveRouteNode", () => {
         ...DEFAULT_ROUTE_GENERATION_OPTIONS,
         minDurationMinutes: 60,
         maxDurationMinutes: 120,
-        minDistanceKm: 1,
-        maxDistanceKm: 5,
       },
       places: [],
       weightedPlaces: [],

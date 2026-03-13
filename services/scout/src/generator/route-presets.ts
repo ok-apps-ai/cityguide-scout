@@ -7,13 +7,25 @@ export const ROUTE_MODE_RADIUS_METERS: Record<RouteMode, number> = {
   [RouteMode.DRIVING]: 10000,
 };
 
+export const ROUTE_MODE_MIN_DISTANCE_KM: Record<RouteMode, number> = {
+  [RouteMode.WALKING]: 2,
+  [RouteMode.BICYCLING]: 5,
+  [RouteMode.DRIVING]: 10,
+};
+
+export const ROUTE_MODE_MAX_DISTANCE_KM: Record<RouteMode, number | undefined> = {
+  [RouteMode.WALKING]: 8,
+  [RouteMode.BICYCLING]: 25,
+  [RouteMode.DRIVING]: 50,
+};
+
 export const FULL_ROUTE_GENERATION_OPTIONS: IRouteOptions = {
   minPoints: 20,
   maxPoints: 50,
   minDurationMinutes: undefined,
   maxDurationMinutes: undefined,
-  minDistanceKm: 2,
-  maxDistanceKm: undefined,
+  minDistanceKm: ROUTE_MODE_MIN_DISTANCE_KM,
+  maxDistanceKm: ROUTE_MODE_MAX_DISTANCE_KM,
   minThemePlaces: 3,
   clusterRadiusMeters: 500,
   maxClusters: 3,
@@ -28,8 +40,8 @@ export const DEFAULT_ROUTE_GENERATION_OPTIONS: IRouteOptions = {
   maxPoints: 25,
   minDurationMinutes: undefined,
   maxDurationMinutes: undefined,
-  minDistanceKm: 2,
-  maxDistanceKm: undefined,
+  minDistanceKm: ROUTE_MODE_MIN_DISTANCE_KM,
+  maxDistanceKm: ROUTE_MODE_MAX_DISTANCE_KM,
   minThemePlaces: 3,
   clusterRadiusMeters: 500,
   maxClusters: 3,
