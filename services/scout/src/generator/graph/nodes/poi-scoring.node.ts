@@ -52,7 +52,6 @@ export const makePoiScoringNode = (openaiApiKey: string) => {
         temperature: 0,
       });
 
-      // @ts-expect-error — LangChain withStructuredOutput type instantiation is excessively deep
       const structured = model.withStructuredOutput(rankingsSchema);
 
       const placeList = top20
