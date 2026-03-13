@@ -33,8 +33,5 @@
   "major": {
     "dependencyDashboardApproval": true
   },
-  "lockFileMaintenance": {
-    "enabled": true
-  },
   "dependencyDashboard": true
 }
