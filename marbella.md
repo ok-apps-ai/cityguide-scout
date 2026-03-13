@@ -18,6 +18,6 @@ Tiles use aspect-ratio-aware split (nLat×nLng from lat/lng spans). Element coun
 
 | TILE_SIZE_DEG | nLat×nLng | Tiles | API requests | Elements | Total time | Avg time/request |
 |---------------|-----------|-------|--------------|----------|------------|------------------|
-| 0.03          | 3×9       | 27    | 27           | ~2089    | ~109 s     | ~4035 ms         |
-| 0.02          | 4×14      | 56    | 56           | ~2094    | ~368 s     | ~6570 ms         |
 | 0.01          | 7×27      | 189   | 189          | ~2094    | ~553 s     | ~2927 ms         |
+| 0.02          | 4×14      | 56    | 56           | ~2094    | ~368 s     | ~6570 ms         |
+| 0.03          | 3×9       | 27    | 27           | ~2089    | ~109 s     | ~4035 ms         |
