@@ -2,10 +2,12 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 
 import { PlaceEnrichmentService } from "./place-enrichment.service";
 import { PlaceService } from "./place.service";
 import { PlaceCategory, PlaceSource } from "./place.entity";
+import { PLACE_ACCEPTED } from "./place.patterns";
 import { CityEntity } from "../city/city.entity";
 import { CitySeedModule } from "../city/city.seed.module";
 import { CitySeedService } from "../city/city.seed.service";
@@ -20,6 +22,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
   let testModule: TestingModule;
   let placeEnrichmentService: PlaceEnrichmentService;
   let placeService: PlaceService;
+  let eventEmitter: EventEmitter2;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
   let cityEntity: CityEntity;
@@ -38,6 +41,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
           }),
           inject: [ConfigService],
         }),
+        EventEmitterModule.forRoot(),
         CitySeedModule,
         PlaceModule,
       ],
@@ -45,6 +49,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
 
     placeEnrichmentService = testModule.get(PlaceEnrichmentService);
     placeService = testModule.get(PlaceService);
+    eventEmitter = testModule.get(EventEmitter2);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
   });
@@ -76,6 +81,30 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
     expect(place!.mediaUrl).toBeNull();
 
     await placeEnrichmentService.onPlaceAccepted({ placeIds: [place!.id] });
+
+    const enriched = await placeService.findById(place!.id);
+    expect(enriched).toBeDefined();
+    expect(enriched!.description).toBeDefined();
+    expect(enriched!.description!.length).toBeGreaterThan(0);
+    expect(enriched!.mediaUrl).toBeDefined();
+    expect(enriched!.mediaUrl!.length).toBeGreaterThan(0);
+  });
+
+  it("enriches place when PLACE_ACCEPTED event is emitted", async () => {
+    const place = await placeService.insertPlace({
+      cityId: cityEntity.id,
+      name: "Basilica di San Pietro",
+      lat: BASILICA_LAT,
+      lng: BASILICA_LNG,
+      source: PlaceSource.GOOGLE,
+      googlePlaceId: BASILICA_GOOGLE_PLACE_ID,
+      category: PlaceCategory.CHURCH,
+    });
+    expect(place).toBeDefined();
+    expect(place!.description).toBeNull();
+    expect(place!.mediaUrl).toBeNull();
+
+    await eventEmitter.emitAsync(PLACE_ACCEPTED, { placeIds: [place!.id] });
 
     const enriched = await placeService.findById(place!.id);
     expect(enriched).toBeDefined();
