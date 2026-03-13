@@ -4,8 +4,7 @@ import { RouteTheme } from "../../../route/route.entity";
 import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 
-const createPlace = (id: string, category: PlaceCategory) =>
-  ({ id, category }) as unknown as ICluster["places"][0];
+const createPlace = (id: string, category: PlaceCategory) => ({ id, category }) as unknown as ICluster["places"][0];
 
 const createCluster = (id: number, places: ICluster["places"], seedPlace: ICluster["places"][0]): ICluster => ({
   id,

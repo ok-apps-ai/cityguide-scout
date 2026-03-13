@@ -103,7 +103,11 @@ describe("PlaceOsmResolutionService", () => {
 
   it("uses text search result when found, does not call findPlaceByLocation", async () => {
     const place = createOsmPlace({ name: "Marbella Club Hotel" });
-    const updatedPlace = createOsmPlace({ id: place.id, name: "Marbella Club Hotel", googlePlaceId: "ChIJMarbellaClub" });
+    const updatedPlace = createOsmPlace({
+      id: place.id,
+      name: "Marbella Club Hotel",
+      googlePlaceId: "ChIJMarbellaClub",
+    });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
     jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue("ChIJMarbellaClub");
     jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(null);

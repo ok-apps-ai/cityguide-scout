@@ -9,7 +9,6 @@ export default [
     ignores: [
       "**/dist",
       "**/static",
-      "contracts",
       "eslint.config.mjs"
     ]
   },
@@ -19,6 +18,7 @@ export default [
       parserOptions: {
         project: [
           "./tsconfig.eslint.json",
+          "./packages/*/tsconfig.eslint.json",
           "./services/*/tsconfig.eslint.json",
         ],
         tsconfigRootDir: process.dirname,

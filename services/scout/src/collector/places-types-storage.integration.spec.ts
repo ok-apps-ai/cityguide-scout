@@ -3,12 +3,12 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService } from "./google/places/places.service";
-import { OsmPlacesService } from "./osm/places/places.service";
-import { GoogleModule } from "./google/google.module";
-import { OsmModule } from "./osm/osm.module";
+import { GooglePlacesService , GoogleModule } from "./google";
+import { OsmPlacesService , OsmModule } from "./osm";
 import { PlaceEntity, PlaceSource } from "../place/place.entity";
 import { CityEntity } from "../city/city.entity";
+import { RouteEntity } from "../route/route.entity";
+import { RouteStopEntity } from "../route/route-stop.entity";
 import { CitySeedModule } from "../city/city.seed.module";
 import { CitySeedService } from "../city/city.seed.service";
 import { PlaceModule } from "../place/place.module";
@@ -25,6 +25,8 @@ describe("Places types storage integration — Vatican City (1 request per API)"
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
   let placeEntityRepository: Repository<PlaceEntity>;
+  let routeStopEntityRepository: Repository<RouteStopEntity>;
+  let routeEntityRepository: Repository<RouteEntity>;
   let cityEntity: CityEntity;
 
   beforeAll(async () => {
@@ -41,6 +43,7 @@ describe("Places types storage integration — Vatican City (1 request per API)"
           }),
           inject: [ConfigService],
         }),
+        TypeOrmModule.forFeature([RouteEntity, RouteStopEntity]),
         CitySeedModule,
         PlaceModule,
         GoogleModule,
@@ -53,6 +56,8 @@ describe("Places types storage integration — Vatican City (1 request per API)"
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
     placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
+    routeStopEntityRepository = testModule.get<Repository<RouteStopEntity>>(getRepositoryToken(RouteStopEntity));
+    routeEntityRepository = testModule.get<Repository<RouteEntity>>(getRepositoryToken(RouteEntity));
   });
 
   afterAll(async () => {
@@ -64,6 +69,8 @@ describe("Places types storage integration — Vatican City (1 request per API)"
   });
 
   afterEach(async () => {
+    await routeStopEntityRepository.createQueryBuilder().delete().execute();
+    await routeEntityRepository.createQueryBuilder().delete().execute();
     await placeEntityRepository.createQueryBuilder().delete().execute();
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });

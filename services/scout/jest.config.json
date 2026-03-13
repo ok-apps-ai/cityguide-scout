@@ -1,13 +1,18 @@
 {
   "coverageDirectory": "../coverage",
-  "moduleFileExtensions": ["js", "jsx", "ts", "tsx", "json"],
+  "moduleNameMapper": {
+    "^(\\.{1,2}/.*)\\.js$": "$1"
+  },
   "preset": "ts-jest",
   "rootDir": "src",
-  "testMatch": ["**/*.spec.ts"],
-  "testPathIgnorePatterns": ["\\.e2e\\.spec\\.ts$", "\\.integration\\.spec\\.ts$"],
-  "verbose": true,
+  "testMatch": ["**/*.unit.spec.ts", "**/*.e2e.spec.ts", "**/*.integration.spec.ts"],
+  "testTimeout": 120000,
   "transform": {
-    "^.+\\.[tj]sx?$": ["ts-jest", { "useESM": true }]
-  },
-  "transformIgnorePatterns": ["node_modules/(?!(uuid)/)"]
+    "^.+\\.[tj]sx?$": [
+      "ts-jest",
+      {
+        "tsconfig": "./tsconfig.spec.json"
+      }
+    ]
+  }
 }

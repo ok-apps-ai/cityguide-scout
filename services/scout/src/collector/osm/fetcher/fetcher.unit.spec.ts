@@ -56,9 +56,7 @@ describe("OsmOverpassFetcherService", () => {
     const el = overpassElement(1);
     jest
       .spyOn(httpService, "get")
-      .mockReturnValueOnce(
-        throwError(() => Object.assign(new Error("Rate limited"), { response: { status: 429 } })),
-      )
+      .mockReturnValueOnce(throwError(() => Object.assign(new Error("Rate limited"), { response: { status: 429 } })))
       .mockReturnValueOnce(
         of({
           data: { elements: [el] },
@@ -80,9 +78,7 @@ describe("OsmOverpassFetcherService", () => {
     const el = overpassElement(42);
     jest
       .spyOn(httpService, "get")
-      .mockReturnValueOnce(
-        throwError(() => Object.assign(new Error("Server error"), { response: { status: 500 } })),
-      )
+      .mockReturnValueOnce(throwError(() => Object.assign(new Error("Server error"), { response: { status: 500 } })))
       .mockReturnValueOnce(
         of({
           data: { elements: [el] },
@@ -101,9 +97,9 @@ describe("OsmOverpassFetcherService", () => {
   });
 
   it("does not retry on 400", async () => {
-    jest.spyOn(httpService, "get").mockReturnValue(
-      throwError(() => Object.assign(new Error("Bad request"), { response: { status: 400 } })),
-    );
+    jest
+      .spyOn(httpService, "get")
+      .mockReturnValue(throwError(() => Object.assign(new Error("Bad request"), { response: { status: 400 } })));
 
     await expect(service.fetchElements({ bbox })).rejects.toThrow("Bad request");
 

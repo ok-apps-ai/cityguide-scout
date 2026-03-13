@@ -6,6 +6,7 @@ import { Repository } from "typeorm";
 import { GooglePlacesService } from "./places";
 import { GoogleModule } from "./google.module";
 import { CityEntity } from "../../city/city.entity";
+import { PlaceEntity } from "../../place/place.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
 import { PlaceModule } from "../../place/place.module";
@@ -18,6 +19,7 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
   let service: GooglePlacesService;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
+  let placeEntityRepository: Repository<PlaceEntity>;
   let cityEntity: CityEntity;
 
   beforeAll(async () => {
@@ -43,6 +45,7 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
     service = testModule.get(GooglePlacesService);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
+    placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
   });
 
   afterAll(async () => {
@@ -50,11 +53,11 @@ describe("GooglePlacesService integration — Vatican City place count", () => {
   });
 
   beforeEach(async () => {
-    await cityEntityRepository.createQueryBuilder().delete().execute();
     cityEntity = await citySeedService.seedCity();
   });
 
   afterEach(async () => {
+    await placeEntityRepository.createQueryBuilder().delete().execute();
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });
 
