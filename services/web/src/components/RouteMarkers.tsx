@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "@vis.gl/react-google-maps";
 
-import type { IRoute } from "../types";
+import type { IRoute, IRouteStop } from "../types";
 
 const parseLinestringWkt = (wkt: string): Array<{ lat: number; lng: number }> => {
   const match = /LINESTRING\s*\((.+)\)/i.exec(wkt);
@@ -33,18 +33,64 @@ const toDataUrl = (svg: string): string => `data:image/svg+xml;charset=UTF-8,${e
 const escapeHtml = (s: string): string =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 
-const getStopInfo = (
-  index: number,
-  isStart: boolean,
-  isEnd: boolean,
-  stops: IRoute["stops"] | undefined,
-): { title: string; description: string } => {
-  const stop = stops?.[index];
-  const role = isStart ? "Start" : isEnd ? "End" : `Stop ${index + 1}`;
+const row = (label: string, value: string | null | undefined): string =>
+  value != null && value !== ""
+    ? `<tr><td style="padding:2px 8px 2px 0;color:#666;font-size:12px">${escapeHtml(label)}</td><td style="padding:2px 0;font-size:12px">${escapeHtml(String(value))}</td></tr>`
+    : "";
+
+const buildPopupContent = (stop: IRouteStop | undefined, role: string): string => {
   const title = stop?.placeName ?? role;
   const description = stop?.placeDescription ?? "";
-  return { title, description };
+  const hasMedia = stop?.mediaUrl?.startsWith("https://");
+  const hasMeta =
+    stop &&
+    (stop.placeId != null ||
+      stop.rating != null ||
+      stop.reviewCount != null ||
+      stop.priceLevel != null ||
+      stop.source != null ||
+      stop.category != null ||
+      (stop.types != null && stop.types.length > 0) ||
+      (stop.coordinates != null && (stop.coordinates.lat != null || stop.coordinates.lng != null)));
+
+  const descHtml = description
+    ? `<p style="margin:8px 0 0;color:#555;font-size:13px;white-space:pre-wrap">${escapeHtml(description)}</p>`
+    : "";
+  const imgHtml = hasMedia
+    ? `<img src="${escapeHtml(stop!.mediaUrl!)}" alt="" style="margin-top:8px;max-width:100%;max-height:160px;border-radius:4px;display:block" loading="lazy" />`
+    : "";
+
+  let metaHtml = "";
+  if (hasMeta && stop) {
+    const coords =
+      stop.coordinates?.lat != null && stop.coordinates.lng != null
+        ? `${Number(stop.coordinates.lat).toFixed(6)}, ${Number(stop.coordinates.lng).toFixed(6)}`
+        : null;
+    metaHtml = `
+      <details style="margin-top:10px">
+        <summary style="cursor:pointer;font-size:12px;color:#666">Metadata</summary>
+        <table style="margin-top:6px;border-collapse:collapse;font-size:12px;width:100%">
+          ${row("Point ID", stop.placeId ?? null)}
+          ${row("Rating", stop.rating != null ? String(stop.rating) : null)}
+          ${row("Review count", stop.reviewCount != null ? String(stop.reviewCount) : null)}
+          ${row("Price level", stop.priceLevel ?? null)}
+          ${row("Source", stop.source ?? null)}
+          ${row("Category", stop.category ?? null)}
+          ${row("Types", stop.types?.length ? stop.types.join(", ") : null)}
+          ${row("Coordinates", coords)}
+        </table>
+      </details>`;
+  }
+
+  return `<div style="padding:12px;font-family:sans-serif;font-size:14px;max-width:280px;line-height:1.5">
+    <strong style="font-size:15px">${escapeHtml(title)}</strong>
+    ${descHtml}
+    ${imgHtml}
+    ${metaHtml}
+  </div>`;
 };
+
+const getStop = (index: number, stops: IRoute["stops"] | undefined): IRouteStop | undefined => stops?.[index];
 
 interface IRouteMarkersProps {
   route: IRoute | null;
@@ -54,6 +100,7 @@ export const RouteMarkers = (props: IRouteMarkersProps) => {
   const { route } = props;
   const map = useMap();
   const markersRef = useRef<google.maps.Marker[]>([]);
+  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- InfoWindow from @types/google.maps */
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
   useEffect(() => {
@@ -83,7 +130,9 @@ export const RouteMarkers = (props: IRouteMarkersProps) => {
       const svg = isStart ? START_SVG : isEnd ? END_SVG : PIN_SVG;
       const size = isStart || isEnd ? 28 : 22;
       const anchorY = isStart || isEnd ? size / 2 : size;
-      const { title, description } = getStopInfo(i, isStart, isEnd, stops.length > 0 ? stops : undefined);
+      const stop = getStop(i, stops.length > 0 ? stops : undefined);
+      const role = isStart ? "Start" : isEnd ? "End" : `Stop ${i + 1}`;
+      const title = stop?.placeName ?? role;
 
       const marker = new google.maps.Marker({
         position: point,
@@ -96,29 +145,22 @@ export const RouteMarkers = (props: IRouteMarkersProps) => {
         title,
       });
 
-      marker.addListener("mouseover", () => {
-        const descHtml = description
-          ? `<p style="margin:8px 0 0;color:#555;font-size:13px">${escapeHtml(description)}</p>`
-          : "";
-        infoWindow.setContent(
-          `<div style="padding:12px;font-family:sans-serif;font-size:14px;max-width:280px;line-height:1.5">
-            <strong style="font-size:15px">${escapeHtml(title)}</strong>
-            ${descHtml}
-          </div>`,
-        );
+      marker.addListener("click", () => {
+        infoWindow.setContent(buildPopupContent(stop, role));
         infoWindow.open(map, marker);
-      });
-
-      marker.addListener("mouseout", () => {
-        infoWindow.close();
       });
 
       markers.push(marker);
     });
 
+    const mapClickListener = map.addListener("click", () => {
+      infoWindow.close();
+    });
+
     markersRef.current = markers;
 
     return () => {
+      google.maps.event.removeListener(mapClickListener);
       markers.forEach(m => google.maps.event.clearInstanceListeners(m));
       markers.forEach(m => m.setMap(null));
       markersRef.current = [];

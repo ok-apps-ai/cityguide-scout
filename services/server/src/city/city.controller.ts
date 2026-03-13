@@ -17,9 +17,17 @@ export interface ICityListItem {
 
 export interface IRouteStop {
   orderIndex: number;
+  placeId?: string | null;
   placeName: string;
   placeDescription: string | null;
   mediaUrl: string | null;
+  rating?: number | null;
+  reviewCount?: number | null;
+  priceLevel?: string | null;
+  source?: string | null;
+  category?: string | null;
+  types?: string[] | null;
+  coordinates?: { lat: number; lng: number } | null;
 }
 
 export interface IRouteListItem {
@@ -70,10 +78,7 @@ export class CityController {
 
   @Post("/:id/routes")
   @ApiOperation({ summary: "List routes for a city, optionally filtered by route mode" })
-  public async findRoutesByCityId(
-    @Param("id") cityId: string,
-    @Body() dto: FindRoutesDto,
-  ): Promise<IRouteListItem[]> {
+  public async findRoutesByCityId(@Param("id") cityId: string, @Body() dto: FindRoutesDto): Promise<IRouteListItem[]> {
     const { routeMode } = dto;
     return this.send<IRouteListItem[]>(ROUTE_FIND_BY_CITY, { cityId, routeMode });
   }

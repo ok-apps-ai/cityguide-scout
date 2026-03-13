@@ -25,6 +25,14 @@ export interface IRouteStop {
   placeName: string;
   placeDescription: string | null;
   mediaUrl: string | null;
+  placeId?: string | null;
+  rating?: number | null;
+  reviewCount?: number | null;
+  priceLevel?: string | null;
+  source?: string | null;
+  category?: string | null;
+  types?: string[] | null;
+  coordinates?: { lat: number; lng: number } | null;
 }
 
 export interface IRoute {

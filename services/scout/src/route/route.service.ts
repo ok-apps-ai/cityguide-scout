@@ -2,7 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
+import { GooglePlacesFetcherService } from "../collector/google";
 import { ns } from "../common/constants";
 import { PlaceService } from "../place/place.service";
 import { RouteEntity } from "./route.entity";
@@ -71,7 +71,10 @@ export class RouteService {
     });
   }
 
-  public async findRoutesForApi(cityId: string, routeMode?: string): Promise<
+  public async findRoutesForApi(
+    cityId: string,
+    routeMode?: string,
+  ): Promise<
     Array<{
       id: string;
       name: string;
@@ -83,9 +86,17 @@ export class RouteService {
       routeGeometryWkt: string;
       stops: Array<{
         orderIndex: number;
+        placeId: string | null;
         placeName: string;
         placeDescription: string | null;
         mediaUrl: string | null;
+        rating: number | null;
+        reviewCount: number | null;
+        priceLevel: string | null;
+        source: string | null;
+        category: string | null;
+        types: string[] | null;
+        coordinates: { lat: number; lng: number } | null;
       }>;
     }>
   > {
@@ -102,8 +113,12 @@ export class RouteService {
     if (routeIds.length === 0) return [];
 
     const stopRows = await this.routeEntityRepository.query(
-      `SELECT rs.route_id::text, rs.order_index, p.name AS place_name,
-              p.description AS place_description, p.media_url AS place_media_url
+      `SELECT rs.route_id::text, rs.order_index, p.id::text AS place_id,
+              p.name AS place_name, p.description AS place_description, p.media_url AS place_media_url,
+              p.rating, p.review_count, p.price_level::text, p.source::text, p.category::text,
+              p.types,
+              json_build_object('lat', ST_Y(ST_Centroid(p.geom::geometry)),
+                                'lng', ST_X(ST_Centroid(p.geom::geometry))) AS coordinates
        FROM ${ns}.route_stops rs
        JOIN ${ns}.places p ON p.id = rs.place_id
        WHERE rs.route_id = ANY($1::uuid[])
@@ -115,9 +130,17 @@ export class RouteService {
       string,
       Array<{
         orderIndex: number;
+        placeId: string | null;
         placeName: string;
         placeDescription: string | null;
         mediaUrl: string | null;
+        rating: number | null;
+        reviewCount: number | null;
+        priceLevel: string | null;
+        source: string | null;
+        category: string | null;
+        types: string[] | null;
+        coordinates: { lat: number; lng: number } | null;
       }>
     >();
 
@@ -125,9 +148,17 @@ export class RouteService {
       const list = stopsByRoute.get(s.route_id) ?? [];
       list.push({
         orderIndex: s.order_index,
+        placeId: s.place_id ?? null,
         placeName: s.place_name,
         placeDescription: s.place_description,
         mediaUrl: s.place_media_url,
+        rating: s.rating != null ? Number(s.rating) : null,
+        reviewCount: s.review_count != null ? Number(s.review_count) : null,
+        priceLevel: s.price_level ?? null,
+        source: s.source ?? null,
+        category: s.category ?? null,
+        types: Array.isArray(s.types) ? s.types : null,
+        coordinates: s.coordinates ?? null,
       });
       stopsByRoute.set(s.route_id, list);
     }
