@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { OnEvent } from "@nestjs/event-emitter";
 
-import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
+import { GooglePlacesFetcherService } from "../collector/google";
 import { sleep, withRetry } from "../common/retry";
 import type { IPlaceMediaUrlProvider } from "./types";
 import { PlaceService } from "./place.service";
@@ -22,7 +22,7 @@ export class PlaceEnrichmentService {
     private readonly configService: ConfigService,
   ) {}
 
-  @OnEvent(PLACE_ACCEPTED)
+  @OnEvent(PLACE_ACCEPTED, { async: true, promisify: true })
   public async onPlaceAccepted(payload: { placeIds: string[] }): Promise<void> {
     const { placeIds } = payload;
     if (placeIds.length === 0) return;
@@ -47,17 +47,11 @@ export class PlaceEnrichmentService {
           continue;
         }
 
-        const details = await withRetry(
-          () => this.placesFetcher.getPlaceDetails(googlePlaceId),
-          { maxRetries },
-        );
+        const details = await withRetry(() => this.placesFetcher.getPlaceDetails(googlePlaceId), { maxRetries });
 
         let mediaUrl: string | null = null;
         if (details.photoName) {
-          mediaUrl = await withRetry(
-            () => this.mediaUrlProvider.getPlaceMediaUrl(details.photoName!),
-            { maxRetries },
-          );
+          mediaUrl = await withRetry(() => this.mediaUrlProvider.getPlaceMediaUrl(details.photoName!), { maxRetries });
         }
 
         await this.placeService.updateEnrichment(placeId, {

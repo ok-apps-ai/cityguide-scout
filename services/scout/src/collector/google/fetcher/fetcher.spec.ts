@@ -161,9 +161,9 @@ describe("GooglePlacesFetcherService", () => {
   });
 
   it("throws on API error", async () => {
-    jest.spyOn(httpService, "post").mockReturnValue(
-      throwError(() => Object.assign(new Error("API key invalid"), { response: { status: 400 } })),
-    );
+    jest
+      .spyOn(httpService, "post")
+      .mockReturnValue(throwError(() => Object.assign(new Error("API key invalid"), { response: { status: 400 } })));
 
     await expect(
       service.fetchNearbyPlaces({
@@ -177,9 +177,7 @@ describe("GooglePlacesFetcherService", () => {
     const museum = newApiPlace("p1", "Museum A", ["museum"]);
     jest
       .spyOn(httpService, "post")
-      .mockReturnValueOnce(
-        throwError(() => Object.assign(new Error("Rate limited"), { response: { status: 429 } })),
-      )
+      .mockReturnValueOnce(throwError(() => Object.assign(new Error("Rate limited"), { response: { status: 429 } })))
       .mockReturnValueOnce(
         of({
           data: { places: [museum] },
@@ -201,9 +199,7 @@ describe("GooglePlacesFetcherService", () => {
     const park = newApiPlace("p2", "Park B", ["park"]);
     jest
       .spyOn(httpService, "post")
-      .mockReturnValueOnce(
-        throwError(() => Object.assign(new Error("Server error"), { response: { status: 500 } })),
-      )
+      .mockReturnValueOnce(throwError(() => Object.assign(new Error("Server error"), { response: { status: 500 } })))
       .mockReturnValueOnce(
         of({
           data: { places: [park] },
@@ -222,13 +218,13 @@ describe("GooglePlacesFetcherService", () => {
   });
 
   it("does not retry on 400", async () => {
-    jest.spyOn(httpService, "post").mockReturnValue(
-      throwError(() => Object.assign(new Error("Bad request"), { response: { status: 400 } })),
-    );
+    jest
+      .spyOn(httpService, "post")
+      .mockReturnValue(throwError(() => Object.assign(new Error("Bad request"), { response: { status: 400 } })));
 
-    await expect(
-      service.fetchNearbyPlaces({ ...baseOptions, includedTypes: ["museum"] }),
-    ).rejects.toThrow("Bad request");
+    await expect(service.fetchNearbyPlaces({ ...baseOptions, includedTypes: ["museum"] })).rejects.toThrow(
+      "Bad request",
+    );
 
     expect(httpService.post).toHaveBeenCalledTimes(1);
   });
@@ -439,7 +435,7 @@ describe("GooglePlacesFetcherService", () => {
       jest.spyOn(httpService, "get").mockReturnValue(
         of({
           data: {
-            editorialSummary: { overview: "A leading contemporary art museum." },
+            editorialSummary: { text: "A leading contemporary art museum." },
             photos: [{ name: "places/ChIJ123/photos/Atxxx" }],
           },
           status: 200,
@@ -488,7 +484,7 @@ describe("GooglePlacesFetcherService", () => {
       jest.spyOn(httpService, "get").mockReturnValue(
         of({
           data: {
-            editorialSummary: { overview: "Desc" },
+            editorialSummary: { text: "Desc" },
             photos: [],
           },
           status: 200,

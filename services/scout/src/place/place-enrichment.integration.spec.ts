@@ -6,7 +6,7 @@ import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 
 import { PlaceEnrichmentService } from "./place-enrichment.service";
 import { PlaceService } from "./place.service";
-import { PlaceCategory, PlaceSource } from "./place.entity";
+import { PlaceCategory, PlaceEntity, PlaceSource } from "./place.entity";
 import { PLACE_ACCEPTED } from "./place.patterns";
 import { CityEntity } from "../city/city.entity";
 import { CitySeedModule } from "../city/city.seed.module";
@@ -25,6 +25,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
   let eventEmitter: EventEmitter2;
   let citySeedService: CitySeedService;
   let cityEntityRepository: Repository<CityEntity>;
+  let placeEntityRepository: Repository<PlaceEntity>;
   let cityEntity: CityEntity;
 
   beforeAll(async () => {
@@ -47,11 +48,14 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
       ],
     }).compile();
 
+    await testModule.init();
+
     placeEnrichmentService = testModule.get(PlaceEnrichmentService);
     placeService = testModule.get(PlaceService);
     eventEmitter = testModule.get(EventEmitter2);
     citySeedService = testModule.get(CitySeedService);
     cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
+    placeEntityRepository = testModule.get<Repository<PlaceEntity>>(getRepositoryToken(PlaceEntity));
   });
 
   afterAll(async () => {
@@ -63,6 +67,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
   });
 
   afterEach(async () => {
+    await placeEntityRepository.createQueryBuilder().delete().execute();
     await cityEntityRepository.createQueryBuilder().delete().execute();
   });
 
@@ -88,6 +93,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
     expect(enriched!.description!.length).toBeGreaterThan(0);
     expect(enriched!.mediaUrl).toBeDefined();
     expect(enriched!.mediaUrl!.length).toBeGreaterThan(0);
+    expect(enriched!.mediaUrl).toMatch(/^https?:\/\//);
   });
 
   it("enriches place when PLACE_ACCEPTED event is emitted", async () => {
@@ -112,5 +118,6 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
     expect(enriched!.description!.length).toBeGreaterThan(0);
     expect(enriched!.mediaUrl).toBeDefined();
     expect(enriched!.mediaUrl!.length).toBeGreaterThan(0);
+    expect(enriched!.mediaUrl).toMatch(/^https?:\/\//);
   });
 });

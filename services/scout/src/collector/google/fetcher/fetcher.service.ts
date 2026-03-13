@@ -215,7 +215,7 @@ export class GooglePlacesFetcherService {
     const url = `https://places.googleapis.com/v1/places/${placeId}`;
     const response = await firstValueFrom(
       this.httpService.get<{
-        editorialSummary?: { overview?: string };
+        editorialSummary?: { text?: string };
         photos?: Array<{ name?: string }>;
       }>(url, {
         headers: {
@@ -226,7 +226,8 @@ export class GooglePlacesFetcherService {
       }),
     );
 
-    const description = response.data.editorialSummary?.overview ?? null;
+    const description =
+      typeof response.data.editorialSummary?.text === "string" ? response.data.editorialSummary.text : null;
     const photoName = response.data.photos?.[0]?.name ?? null;
     return { description, photoName };
   }
