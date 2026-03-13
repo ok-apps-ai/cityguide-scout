@@ -3,7 +3,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { APIProvider, Map, useMap } from "@vis.gl/react-google-maps";
 
 import type { ICity, IPendingCity } from "../types";
+import type { MapMode } from "../components/CityPanel";
 import { CityPolygon } from "../components/CityPolygon";
+import { CityCircles } from "../components/CityCircles";
 import { CityGrid } from "../components/CityGrid";
 import { PreviewPolygon } from "../components/PreviewPolygon";
 import { CityPanel } from "../components/CityPanel";
@@ -43,6 +45,7 @@ export const CitiesPage = () => {
   const { data: cities = [], isPending, error } = useCities();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pendingCity, setPendingCity] = useState<IPendingCity | null>(null);
+  const [mapMode, setMapMode] = useState<MapMode>("osm");
 
   const selectedCity = cities.find(c => c.id === selectedId) ?? null;
 
@@ -92,6 +95,8 @@ export const CitiesPage = () => {
           isSaving={isSaving}
           deletingId={isDeleting ? (deletingId ?? null) : null}
           deleteError={deleteError}
+          mapMode={mapMode}
+          onMapModeChange={setMapMode}
           onSelect={handleSelect}
           onCitySelected={handleCitySelected}
           onAddCity={() => addCity()}
@@ -112,7 +117,7 @@ export const CitiesPage = () => {
             {selectedCity && (
               <>
                 <CityPolygon city={selectedCity} isSelected onClick={() => handleSelect(selectedCity)} />
-                <CityGrid city={selectedCity} />
+                {mapMode === "osm" ? <CityGrid city={selectedCity} /> : <CityCircles city={selectedCity} />}
               </>
             )}
           </Map>

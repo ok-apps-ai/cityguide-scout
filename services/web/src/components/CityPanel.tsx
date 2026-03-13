@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { Loader2, RefreshCw, X } from "lucide-react";
+import { CircleDot, Loader2, Map, RefreshCw, X } from "lucide-react";
 
 import type { ICity, IPendingCity } from "../types";
 import { CitySearch } from "./CitySearch";
@@ -17,6 +17,8 @@ const countGridCells = (city: ICity): number => {
   return cols * rows;
 };
 
+export type MapMode = "osm" | "google";
+
 interface ICityPanelProps {
   cities: ICity[];
   isPending: boolean;
@@ -26,6 +28,8 @@ interface ICityPanelProps {
   isSaving: boolean;
   deletingId: string | null;
   deleteError: Error | null;
+  mapMode: MapMode;
+  onMapModeChange: (mode: MapMode) => void;
   onSelect: (city: ICity) => void;
   onCitySelected: (city: IPendingCity) => void;
   onAddCity: () => void;
@@ -42,6 +46,8 @@ export const CityPanel = (props: ICityPanelProps) => {
     isSaving,
     deletingId,
     deleteError,
+    mapMode,
+    onMapModeChange,
     onSelect,
     onCitySelected,
     onAddCity,
@@ -55,10 +61,32 @@ export const CityPanel = (props: ICityPanelProps) => {
 
   return (
     <aside className="w-70 shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden shadow-[2px_0_8px_rgba(0,0,0,0.06)] z-10">
-      <div className="flex items-center justify-between px-4 py-4 border-b border-gray-100">
-        <h2 className="text-sm font-semibold text-gray-900 tracking-wide">Cities</h2>
+      <div className="flex items-center justify-between gap-2 px-4 py-4 border-b border-gray-100">
+        <h2 className="text-sm font-semibold text-gray-900 tracking-wide shrink-0">Cities</h2>
+        <div className="flex items-center gap-0.5 rounded-lg border border-gray-200 bg-gray-50 p-0.5">
+          <button
+            className={`rounded p-1.5 transition-colors cursor-pointer ${
+              mapMode === "osm" ? "bg-blue-100 text-blue-700" : "text-gray-500 hover:text-blue-600 hover:bg-gray-100"
+            }`}
+            onClick={() => onMapModeChange("osm")}
+            title="OSM tiles"
+            aria-label="Show OSM grid"
+          >
+            <Map className="w-4 h-4" strokeWidth={2} />
+          </button>
+          <button
+            className={`rounded p-1.5 transition-colors cursor-pointer ${
+              mapMode === "google" ? "bg-blue-100 text-blue-700" : "text-gray-500 hover:text-blue-600 hover:bg-gray-100"
+            }`}
+            onClick={() => onMapModeChange("google")}
+            title="Google circles"
+            aria-label="Show Google circles"
+          >
+            <CircleDot className="w-4 h-4" strokeWidth={2} />
+          </button>
+        </div>
         <button
-          className="text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded p-1 transition-colors cursor-pointer"
+          className="text-gray-500 hover:text-blue-600 hover:bg-gray-100 rounded p-1 transition-colors cursor-pointer shrink-0"
           onClick={handleRefetch}
           title="Refresh"
         >
