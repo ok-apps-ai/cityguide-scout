@@ -1,0 +1,87 @@
+import { Test, TestingModule } from "@nestjs/testing";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+
+import { PlaceEnrichmentService } from "./place-enrichment.service";
+import { PlaceService } from "./place.service";
+import { PlaceCategory, PlaceSource } from "./place.entity";
+import { CityEntity } from "../city/city.entity";
+import { CitySeedModule } from "../city/city.seed.module";
+import { CitySeedService } from "../city/city.seed.service";
+import { PlaceModule } from "./place.module";
+import ormconfig from "../infrastructure/database/database.config";
+
+const BASILICA_GOOGLE_PLACE_ID = "ChIJWZsUt2FgLxMRg1KHzXfwS3I";
+const BASILICA_LAT = 41.9022;
+const BASILICA_LNG = 12.4532;
+
+describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => {
+  let testModule: TestingModule;
+  let placeEnrichmentService: PlaceEnrichmentService;
+  let placeService: PlaceService;
+  let citySeedService: CitySeedService;
+  let cityEntityRepository: Repository<CityEntity>;
+  let cityEntity: CityEntity;
+
+  beforeAll(async () => {
+    testModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+        TypeOrmModule.forRootAsync({
+          imports: [ConfigModule],
+          useFactory: (configService: ConfigService) => ({
+            ...ormconfig,
+            url: configService.get<string>("POSTGRES_URL"),
+          }),
+          inject: [ConfigService],
+        }),
+        CitySeedModule,
+        PlaceModule,
+      ],
+    }).compile();
+
+    placeEnrichmentService = testModule.get(PlaceEnrichmentService);
+    placeService = testModule.get(PlaceService);
+    citySeedService = testModule.get(CitySeedService);
+    cityEntityRepository = testModule.get<Repository<CityEntity>>(getRepositoryToken(CityEntity));
+  });
+
+  afterAll(async () => {
+    await testModule.close();
+  });
+
+  beforeEach(async () => {
+    cityEntity = await citySeedService.seedCity();
+  });
+
+  afterEach(async () => {
+    await cityEntityRepository.createQueryBuilder().delete().execute();
+  });
+
+  it("enriches Basilica di San Pietro with description and mediaUrl", async () => {
+    const place = await placeService.insertPlace({
+      cityId: cityEntity.id,
+      name: "Basilica di San Pietro",
+      lat: BASILICA_LAT,
+      lng: BASILICA_LNG,
+      source: PlaceSource.GOOGLE,
+      googlePlaceId: BASILICA_GOOGLE_PLACE_ID,
+      category: PlaceCategory.CHURCH,
+    });
+    expect(place).toBeDefined();
+    expect(place!.description).toBeNull();
+    expect(place!.mediaUrl).toBeNull();
+
+    await placeEnrichmentService.onPlaceAccepted({ placeIds: [place!.id] });
+
+    const enriched = await placeService.findById(place!.id);
+    expect(enriched).toBeDefined();
+    expect(enriched!.description).toBeDefined();
+    expect(enriched!.description!.length).toBeGreaterThan(0);
+    expect(enriched!.mediaUrl).toBeDefined();
+    expect(enriched!.mediaUrl!.length).toBeGreaterThan(0);
+  });
+});
