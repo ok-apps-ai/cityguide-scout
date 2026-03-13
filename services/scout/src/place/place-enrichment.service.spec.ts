@@ -29,7 +29,7 @@ describe("PlaceEnrichmentService", () => {
     mediaUrlProvider = { getPlaceMediaUrl: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true })],
+      imports: [ConfigModule.forRoot({})],
       providers: [
         PlaceEnrichmentService,
         {
@@ -146,13 +146,10 @@ describe("PlaceEnrichmentService", () => {
   });
 
   it("continues on failure for one place and enriches others", async () => {
+    process.env.ENRICHMENT_MAX_RETRIES = "0";
+    process.env.ENRICHMENT_DELAY_BETWEEN_PLACES_MS = "0";
     const moduleWithNoRetries = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          isGlobal: true,
-          load: [() => ({ ENRICHMENT_MAX_RETRIES: 0, ENRICHMENT_DELAY_BETWEEN_PLACES_MS: 0 })],
-        }),
-      ],
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` })],
       providers: [
         PlaceEnrichmentService,
         {

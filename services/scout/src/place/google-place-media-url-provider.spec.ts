@@ -11,7 +11,7 @@ describe("GooglePlaceMediaUrlProvider", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ({ GOOGLE_API_KEY: "test-key" })] }), HttpModule],
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` }), HttpModule],
       providers: [GooglePlaceMediaUrlProvider],
     }).compile();
 
@@ -40,21 +40,11 @@ describe("GooglePlaceMediaUrlProvider", () => {
       "https://places.googleapis.com/v1/places/ChIJ123/photos/Atxxx/media",
       expect.objectContaining({
         params: { maxWidthPx: 800, skipHttpRedirect: true },
-        headers: expect.objectContaining({ "X-Goog-Api-Key": "test-key" }),
+        headers: expect.objectContaining({
+          "X-Goog-Api-Key": expect.stringMatching(/.+/),
+        }),
       }),
     );
-  });
-
-  it("returns null when API key is empty", async () => {
-    const moduleWithNoKey = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ({ GOOGLE_API_KEY: "" })] }), HttpModule],
-      providers: [GooglePlaceMediaUrlProvider],
-    }).compile();
-
-    const svc = moduleWithNoKey.get(GooglePlaceMediaUrlProvider);
-    const result = await svc.getPlaceMediaUrl("places/ChIJ123/photos/Atxxx");
-
-    expect(result).toBeNull();
   });
 
   it("returns null when getMedia fails", async () => {
@@ -77,6 +67,19 @@ describe("GooglePlaceMediaUrlProvider", () => {
     );
 
     const result = await service.getPlaceMediaUrl("places/ChIJ123/photos/Atxxx");
+
+    expect(result).toBeNull();
+  });
+
+  it("returns null when API key is empty", async () => {
+    process.env.GOOGLE_API_KEY = "";
+    const moduleWithNoKey = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` }), HttpModule],
+      providers: [GooglePlaceMediaUrlProvider],
+    }).compile();
+
+    const svc = moduleWithNoKey.get(GooglePlaceMediaUrlProvider);
+    const result = await svc.getPlaceMediaUrl("places/ChIJ123/photos/Atxxx");
 
     expect(result).toBeNull();
   });

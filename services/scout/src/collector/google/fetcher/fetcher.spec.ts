@@ -28,7 +28,7 @@ describe("GooglePlacesFetcherService", () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ({ GOOGLE_API_KEY: "test-key" })] }), HttpModule],
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` }), HttpModule],
       providers: [GooglePlacesFetcherService],
     }).compile();
 
@@ -377,18 +377,6 @@ describe("GooglePlacesFetcherService", () => {
       expect(result).toBeNull();
       expect(postSpy).not.toHaveBeenCalled();
     });
-
-    it("returns null when API key is missing", async () => {
-      const moduleWithNoKey = await Test.createTestingModule({
-        imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ({ GOOGLE_API_KEY: "" })] }), HttpModule],
-        providers: [GooglePlacesFetcherService],
-      }).compile();
-
-      const svc = moduleWithNoKey.get(GooglePlacesFetcherService);
-      const result = await svc.findPlaceByTextSearch("Marbella Club Hotel", 36.516, -4.43);
-
-      expect(result).toBeNull();
-    });
   });
 
   it("splits 125 types into 3 requests", async () => {
@@ -498,17 +486,31 @@ describe("GooglePlacesFetcherService", () => {
 
       expect(result.photoName).toBeNull();
     });
+  });
 
-    it("returns null when API key is missing", async () => {
-      const moduleWithNoKey = await Test.createTestingModule({
-        imports: [ConfigModule.forRoot({ isGlobal: true, load: [() => ({ GOOGLE_API_KEY: "" })] }), HttpModule],
-        providers: [GooglePlacesFetcherService],
-      }).compile();
+  it("returns null when API key is missing (findPlaceByTextSearch)", async () => {
+    process.env.GOOGLE_API_KEY = "";
+    const moduleWithNoKey = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` }), HttpModule],
+      providers: [GooglePlacesFetcherService],
+    }).compile();
 
-      const svc = moduleWithNoKey.get(GooglePlacesFetcherService);
-      const result = await svc.getPlaceDetails("ChIJ123");
+    const svc = moduleWithNoKey.get(GooglePlacesFetcherService);
+    const result = await svc.findPlaceByTextSearch("Marbella Club Hotel", 36.516, -4.43);
 
-      expect(result).toEqual({ description: null, photoName: null });
-    });
+    expect(result).toBeNull();
+  });
+
+  it("returns null when API key is missing (getPlaceDetails)", async () => {
+    process.env.GOOGLE_API_KEY = "";
+    const moduleWithNoKey = await Test.createTestingModule({
+      imports: [ConfigModule.forRoot({ envFilePath: `.env.${process.env.NODE_ENV}` }), HttpModule],
+      providers: [GooglePlacesFetcherService],
+    }).compile();
+
+    const svc = moduleWithNoKey.get(GooglePlacesFetcherService);
+    const result = await svc.getPlaceDetails("ChIJ123");
+
+    expect(result).toEqual({ description: null, photoName: null });
   });
 });
