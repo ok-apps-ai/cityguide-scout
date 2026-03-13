@@ -6,9 +6,9 @@
   },
   "dependencies": {
     "@framework/types": "file:../../packages/types",
-    "@langchain/core": "1.1.31",
+    "@langchain/core": "1.1.32",
     "@langchain/langgraph": "1.2.2",
-    "@langchain/openai": "1.2.12",
+    "@langchain/openai": "1.2.13",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.16",
     "@nestjs/config": "4.0.3",
