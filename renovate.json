@@ -1,5 +1,10 @@
 {
-  "extends": ["config:base", ":disableRateLimiting", ":semanticCommits", "group:allNonMajor"],
+  "extends": [
+    "config:recommended",
+    ":disableRateLimiting",
+    ":semanticCommits",
+    "group:allNonMajor"
+  ],
   "timezone": "Europe/Kyiv",
   "schedule": ["before 5am on Saturday"],
   "baseBranchPatterns": ["master"],
