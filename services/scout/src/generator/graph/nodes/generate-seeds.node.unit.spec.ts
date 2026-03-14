@@ -1,6 +1,6 @@
+import { PlaceCategory, RouteTheme } from "@framework/types";
+
 import { generateSeedsNode } from "./generate-seeds.node";
-import { PlaceCategory } from "../../../place/place.entity";
-import { RouteTheme } from "../../../route/route.entity";
 import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 

@@ -1,9 +1,10 @@
 import { DataSource } from "typeorm";
 
+import { RouteMode } from "@framework/types";
+import type { IPlace } from "@framework/types";
+
 import { ns } from "../../../common/constants";
-import { RouteMode } from "../../../route/route.entity";
 import { RouteGenerationState } from "../state";
-import { PlaceEntity } from "../../../place/place.entity";
 import { THEME_CATEGORIES } from "../../theme-categories";
 
 const buildCandidateNode = (dataSource: DataSource, routeMode: RouteMode) => {
@@ -35,7 +36,7 @@ const buildCandidateNode = (dataSource: DataSource, routeMode: RouteMode) => {
     }
 
     const idSet = new Set(rows.map(r => r.id));
-    const candidatePlaces: PlaceEntity[] = state.places.filter(p => idSet.has(p.id));
+    const candidatePlaces: IPlace[] = state.places.filter(p => idSet.has(p.id));
 
     return { candidatePlaces };
   };

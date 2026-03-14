@@ -1,9 +1,9 @@
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
-import { makeSaveRouteNode } from "./save-route.node";
+import { PlaceCategory, PriceLevel, RouteMode, RouteTheme } from "@framework/types";
+
+import { isRouteWithinConstraints, makeSaveRouteNode } from "./save-route.node";
 import { PLACE_ACCEPTED } from "../../../place/place.patterns";
-import { PlaceCategory, PriceLevel } from "../../../place/place.entity";
-import { RouteMode, RouteTheme } from "../../../route/route.entity";
 import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { IBuiltRoute, IRouteStop, RouteGenerationState } from "../state";
 
@@ -37,6 +37,57 @@ const createEventEmitter = () => {
   const emit = jest.fn();
   return { emit } as unknown as EventEmitter2;
 };
+
+describe("isRouteWithinConstraints", () => {
+  it("returns true when all constraints satisfied", () => {
+    const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)]);
+    expect(isRouteWithinConstraints(route, DEFAULT_ROUTE_GENERATION_OPTIONS)).toBe(true);
+  });
+
+  it("returns false when stops below minPoints", () => {
+    const route = createBuiltRoute([createStop(createPlace("p1"), 0)]);
+    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 2 };
+    expect(isRouteWithinConstraints(route, options)).toBe(false);
+  });
+
+  it("returns false when stops above maxPoints", () => {
+    const p1 = createPlace("p1");
+    const p2 = createPlace("p2");
+    const p3 = createPlace("p3");
+    const route = createBuiltRoute([createStop(p1, 0), createStop(p2, 1), createStop(p3, 2)]);
+    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, maxPoints: 2 };
+    expect(isRouteWithinConstraints(route, options)).toBe(false);
+  });
+
+  it("returns false when duration below minDurationMinutes", () => {
+    const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
+      durationMinutes: 30,
+    });
+    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minDurationMinutes: 60 };
+    expect(isRouteWithinConstraints(route, options)).toBe(false);
+  });
+
+  it("returns false when duration above maxDurationMinutes", () => {
+    const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
+      durationMinutes: 150,
+    });
+    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, maxDurationMinutes: 120 };
+    expect(isRouteWithinConstraints(route, options)).toBe(false);
+  });
+
+  it("returns false when distance below minDistanceKm for route mode", () => {
+    const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
+      routeMode: RouteMode.WALKING,
+      distanceKm: 1,
+    });
+    const options = {
+      ...DEFAULT_ROUTE_GENERATION_OPTIONS,
+      minDistanceKm: { [RouteMode.WALKING]: 2, [RouteMode.BICYCLING]: 5, [RouteMode.DRIVING]: 10 },
+      maxDistanceKm: { [RouteMode.WALKING]: 8, [RouteMode.BICYCLING]: 25, [RouteMode.DRIVING]: 50 },
+    };
+    expect(isRouteWithinConstraints(route, options)).toBe(false);
+  });
+});
 
 describe("makeSaveRouteNode", () => {
   it("drops route with 0 stops and does not call routeService.create", async () => {

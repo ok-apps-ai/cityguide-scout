@@ -2,14 +2,15 @@ import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
+import type { IPlace } from "@framework/types";
+
 import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
 import { PlaceService } from "../../place/place.service";
 import { RouteService } from "../../route/route.service";
 import { IBuiltRoute, ICluster, IRouteSeed, IRouteStop, IWeightedPlace } from "./state";
-import { PlaceEntity } from "../../place/place.entity";
-import { RouteMode } from "../../route/route.entity";
 import { makeLoadPoiNode } from "./nodes/load-poi.node";
 import { makePopulateCoordCacheNode } from "./nodes/populate-coord-cache.node";
+import { pickNextSeed, routeModeBranch, shouldContinue } from "./nodes/pick-next-seed.node";
 import { computeWeightsNode } from "./nodes/compute-weights.node";
 import { makeSpatialClusteringNode } from "./nodes/spatial-clustering.node";
 import { selectCentersNode } from "./nodes/select-centers.node";
@@ -38,12 +39,12 @@ export interface IGraphDeps {
 const StateAnnotation = Annotation.Root({
   cityId: Annotation<string>,
   routeGenerationOptions: Annotation<import("../generator.options").IRouteOptions>(),
-  places: Annotation<PlaceEntity[]>,
+  places: Annotation<IPlace[]>,
   weightedPlaces: Annotation<IWeightedPlace[]>,
   clusters: Annotation<ICluster[]>,
   seeds: Annotation<IRouteSeed[]>,
   currentSeed: Annotation<IRouteSeed | null>,
-  candidatePlaces: Annotation<PlaceEntity[]>,
+  candidatePlaces: Annotation<IPlace[]>,
   scoredPlaces: Annotation<IWeightedPlace[]>,
   orderedStops: Annotation<IRouteStop[]>,
   trimmedStops: Annotation<IRouteStop[]>,
@@ -58,26 +59,15 @@ const StateAnnotation = Annotation.Root({
 type GraphState = typeof StateAnnotation.State;
 
 const pickNextSeedNode = (state: GraphState): Promise<Partial<GraphState>> => {
-  if (state.seeds.length === 0) {
-    return Promise.resolve({ currentSeed: null });
-  }
-
-  const [next, ...remaining] = state.seeds;
-  return Promise.resolve({ currentSeed: next, seeds: remaining });
+  const { currentSeed, seeds } = pickNextSeed(state.seeds);
+  return Promise.resolve({ currentSeed, seeds });
 };
 
-const shouldContinue = (state: GraphState): "pickNextSeed" | typeof END => {
-  return state.seeds.length > 0 ? "pickNextSeed" : END;
+const shouldContinueBranch = (state: GraphState): "pickNextSeed" | typeof END => {
+  return shouldContinue(state.seeds) ? "pickNextSeed" : END;
 };
 
-type CandidateNode = "candidateGeneration" | "candidateGenerationCycling" | "candidateGenerationDriving";
-
-const routeModeBranch = (state: GraphState): CandidateNode => {
-  const mode = state.currentSeed?.routeMode;
-  if (mode === RouteMode.DRIVING) return "candidateGenerationDriving";
-  if (mode === RouteMode.BICYCLING) return "candidateGenerationCycling";
-  return "candidateGeneration";
-};
+const routeModeBranchNode = (state: GraphState) => routeModeBranch(state.currentSeed?.routeMode);
 
 export const buildRouteGraph = (deps: IGraphDeps) => {
   const { placeService, placeOsmResolutionService, routeService, dataSource, openaiApiKey, eventEmitter } = deps;
@@ -108,7 +98,7 @@ export const buildRouteGraph = (deps: IGraphDeps) => {
     .addEdge("spatialClustering", "selectCenters")
     .addEdge("selectCenters", "generateSeeds")
     .addEdge("generateSeeds", "pickNextSeed")
-    .addConditionalEdges("pickNextSeed", routeModeBranch, {
+    .addConditionalEdges("pickNextSeed", routeModeBranchNode, {
       candidateGeneration: "candidateGeneration",
       candidateGenerationCycling: "candidateGenerationCycling",
       candidateGenerationDriving: "candidateGenerationDriving",
@@ -121,7 +111,7 @@ export const buildRouteGraph = (deps: IGraphDeps) => {
     .addEdge("durationLimiting", "costCalculation")
     .addEdge("costCalculation", "resolveOsmPlaces")
     .addEdge("resolveOsmPlaces", "saveRoute")
-    .addConditionalEdges("saveRoute", shouldContinue, {
+    .addConditionalEdges("saveRoute", shouldContinueBranch, {
       pickNextSeed: "pickNextSeed",
       [END]: END,
     });

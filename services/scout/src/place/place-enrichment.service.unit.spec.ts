@@ -22,7 +22,7 @@ const createPlaceEntity = (overrides: Partial<PlaceEntity> = {}): PlaceEntity =>
 describe("PlaceEnrichmentService", () => {
   let service: PlaceEnrichmentService;
   let placeService: PlaceService;
-  let placesFetcher: GooglePlacesFetcherService;
+  let googlePlacesFetcherService: GooglePlacesFetcherService;
   let mediaUrlProvider: { getPlaceMediaUrl: jest.Mock };
 
   beforeEach(async () => {
@@ -54,7 +54,7 @@ describe("PlaceEnrichmentService", () => {
 
     service = module.get(PlaceEnrichmentService);
     placeService = module.get(PlaceService);
-    placesFetcher = module.get(GooglePlacesFetcherService);
+    googlePlacesFetcherService = module.get(GooglePlacesFetcherService);
 
     jest.clearAllMocks();
   });
@@ -63,7 +63,7 @@ describe("PlaceEnrichmentService", () => {
     await service.onPlaceAccepted({ placeIds: [] });
 
     expect(placeService.findById).not.toHaveBeenCalled();
-    expect(placesFetcher.getPlaceDetails).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.getPlaceDetails).not.toHaveBeenCalled();
   });
 
   it("skips place when not found", async () => {
@@ -71,34 +71,34 @@ describe("PlaceEnrichmentService", () => {
 
     await service.onPlaceAccepted({ placeIds: ["missing-id"] });
 
-    expect(placesFetcher.getPlaceDetails).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.getPlaceDetails).not.toHaveBeenCalled();
     expect(placeService.updateEnrichment).not.toHaveBeenCalled();
   });
 
   it("skips place when googlePlaceId is null (OSM unresolved)", async () => {
-    const place = createPlaceEntity({ googlePlaceId: null });
-    jest.spyOn(placeService, "findById").mockResolvedValue(place);
+    const placeEntity = createPlaceEntity({ googlePlaceId: null });
+    jest.spyOn(placeService, "findById").mockResolvedValue(placeEntity);
 
     await service.onPlaceAccepted({ placeIds: ["place-1"] });
 
-    expect(placesFetcher.getPlaceDetails).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.getPlaceDetails).not.toHaveBeenCalled();
     expect(placeService.updateEnrichment).not.toHaveBeenCalled();
   });
 
   it("skips place when already enriched (description set)", async () => {
-    const place = createPlaceEntity({ description: "Done" });
-    jest.spyOn(placeService, "findById").mockResolvedValue(place);
+    const placeEntity = createPlaceEntity({ description: "Done" });
+    jest.spyOn(placeService, "findById").mockResolvedValue(placeEntity);
 
     await service.onPlaceAccepted({ placeIds: ["place-1"] });
 
-    expect(placesFetcher.getPlaceDetails).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.getPlaceDetails).not.toHaveBeenCalled();
     expect(placeService.updateEnrichment).not.toHaveBeenCalled();
   });
 
   it("enriches place with description and mediaUrl when photo exists", async () => {
-    const place = createPlaceEntity();
-    jest.spyOn(placeService, "findById").mockResolvedValue(place);
-    jest.spyOn(placesFetcher, "getPlaceDetails").mockResolvedValue({
+    const placeEntity = createPlaceEntity();
+    jest.spyOn(placeService, "findById").mockResolvedValue(placeEntity);
+    jest.spyOn(googlePlacesFetcherService, "getPlaceDetails").mockResolvedValue({
       description: "A great museum.",
       photoName: "places/ChIJ123/photos/Atxxx",
     });
@@ -106,7 +106,7 @@ describe("PlaceEnrichmentService", () => {
 
     await service.onPlaceAccepted({ placeIds: ["place-1"] });
 
-    expect(placesFetcher.getPlaceDetails).toHaveBeenCalledWith("ChIJ123");
+    expect(googlePlacesFetcherService.getPlaceDetails).toHaveBeenCalledWith("ChIJ123");
     expect(mediaUrlProvider.getPlaceMediaUrl).toHaveBeenCalledWith("places/ChIJ123/photos/Atxxx");
     expect(placeService.updateEnrichment).toHaveBeenCalledWith("place-1", {
       description: "A great museum.",
@@ -115,9 +115,9 @@ describe("PlaceEnrichmentService", () => {
   });
 
   it("enriches place without mediaUrl when no photo", async () => {
-    const place = createPlaceEntity();
-    jest.spyOn(placeService, "findById").mockResolvedValue(place);
-    jest.spyOn(placesFetcher, "getPlaceDetails").mockResolvedValue({
+    const placeEntity = createPlaceEntity();
+    jest.spyOn(placeService, "findById").mockResolvedValue(placeEntity);
+    jest.spyOn(googlePlacesFetcherService, "getPlaceDetails").mockResolvedValue({
       description: "A nice park.",
       photoName: null,
     });
@@ -132,9 +132,9 @@ describe("PlaceEnrichmentService", () => {
   });
 
   it("deduplicates place IDs", async () => {
-    const place = createPlaceEntity();
-    jest.spyOn(placeService, "findById").mockResolvedValue(place);
-    jest.spyOn(placesFetcher, "getPlaceDetails").mockResolvedValue({
+    const placeEntity = createPlaceEntity();
+    jest.spyOn(placeService, "findById").mockResolvedValue(placeEntity);
+    jest.spyOn(googlePlacesFetcherService, "getPlaceDetails").mockResolvedValue({
       description: "Desc",
       photoName: null,
     });
@@ -142,7 +142,7 @@ describe("PlaceEnrichmentService", () => {
     await service.onPlaceAccepted({ placeIds: ["place-1", "place-1", "place-1"] });
 
     expect(placeService.findById).toHaveBeenCalledTimes(1);
-    expect(placesFetcher.getPlaceDetails).toHaveBeenCalledTimes(1);
+    expect(googlePlacesFetcherService.getPlaceDetails).toHaveBeenCalledTimes(1);
   });
 
   it("continues on failure for one place and enriches others", async () => {

@@ -3,8 +3,9 @@
   "compilerOptions": {
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "rootDir": ".",
     "types": ["node", "jest"]
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

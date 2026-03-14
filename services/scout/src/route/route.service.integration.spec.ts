@@ -3,9 +3,11 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { RouteMode } from "@framework/types";
+
 import { RouteService } from "./route.service";
 import { RouteModule } from "./route.module";
-import { RouteEntity, RouteMode } from "./route.entity";
+import { RouteEntity } from "./route.entity";
 import { CityEntity } from "../city/city.entity";
 import { CitySeedModule } from "../city/city.seed.module";
 import { CitySeedService } from "../city/city.seed.service";

@@ -1,4 +1,4 @@
-import { RouteMode } from "../route/route.entity";
+import { RouteMode } from "@framework/types";
 
 export const ROUTE_MODE_SPEED_KMH: Record<RouteMode, number> = {
   [RouteMode.WALKING]: 5,

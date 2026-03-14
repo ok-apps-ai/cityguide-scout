@@ -1,5 +1,4 @@
-import { PlaceCategory } from "../place/place.entity";
-import { RouteTheme } from "../route/route.entity";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 
 /** Theme-specific base weights. Higher = more preferred for that theme. */
 export const THEME_CATEGORY_WEIGHTS: Record<RouteTheme, Partial<Record<PlaceCategory, number>>> = {

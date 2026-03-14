@@ -43,6 +43,7 @@ docker compose up -d
 - Always add `Logger` to new modules, even if the module is empty.
 - Variables holding DB entities use the `Entity` suffix (e.g., `merchantEntity`).
 - Variables holding DB repositories use the `EntityRepository` suffix (e.g., `merchantEntityRepository`).
+- Variables holding services use the `Service` suffix (e.g., `placeService`, `googlePlacesFetcherService`).
 
 ## Scout module structure
 

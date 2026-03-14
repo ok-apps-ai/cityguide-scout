@@ -23,7 +23,6 @@ export const CitySearch = (props: ICitySearchProps) => {
   >([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- AutocompleteSessionToken from @types/google.maps */
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 

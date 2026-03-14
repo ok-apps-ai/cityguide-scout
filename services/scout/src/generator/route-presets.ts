@@ -1,4 +1,5 @@
-import { RouteMode } from "../route/route.entity";
+import { RouteMode } from "@framework/types";
+
 import type { IRouteOptions } from "./dto";
 
 export const ROUTE_MODE_RADIUS_METERS: Record<RouteMode, number> = {

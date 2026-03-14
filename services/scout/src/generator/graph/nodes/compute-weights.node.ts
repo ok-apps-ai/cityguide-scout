@@ -1,4 +1,6 @@
-import { PlaceCategory } from "../../../place/place.entity";
+import { PlaceCategory } from "@framework/types";
+import type { IPlace } from "@framework/types";
+
 import { IWeightedPlace, RouteGenerationState } from "../state";
 
 export const CATEGORY_BASE_WEIGHT: Record<PlaceCategory, number> = {
@@ -20,14 +22,16 @@ export const CATEGORY_BASE_WEIGHT: Record<PlaceCategory, number> = {
   [PlaceCategory.STORE]: 4,
 };
 
-export const computeWeightsNode = (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
-  const weightedPlaces: IWeightedPlace[] = state.places.map(place => {
+export const computePlaceWeights = (places: IPlace[]): IWeightedPlace[] => {
+  return places.map(place => {
     const baseWeight = CATEGORY_BASE_WEIGHT[place.category] ?? 5;
     const ratingBonus = place.rating ? (place.rating / 5) * 4 : 0;
     const popularityBonus = place.reviewCount ? Math.min(Math.log10(place.reviewCount + 1), 4) : 0;
     const weight = baseWeight + ratingBonus + popularityBonus;
     return { place, weight };
   });
+};
 
-  return Promise.resolve({ weightedPlaces });
+export const computeWeightsNode = (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
+  return Promise.resolve({ weightedPlaces: computePlaceWeights(state.places) });
 };

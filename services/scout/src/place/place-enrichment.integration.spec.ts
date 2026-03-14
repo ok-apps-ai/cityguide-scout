@@ -72,7 +72,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
   });
 
   it("enriches Basilica di San Pietro with description and mediaUrl", async () => {
-    const place = await placeService.insertPlace({
+    const placeEntity = await placeService.insertPlace({
       cityId: cityEntity.id,
       name: "Basilica di San Pietro",
       lat: BASILICA_LAT,
@@ -81,13 +81,13 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
       googlePlaceId: BASILICA_GOOGLE_PLACE_ID,
       category: PlaceCategory.CHURCH,
     });
-    expect(place).toBeDefined();
-    expect(place!.description).toBeNull();
-    expect(place!.mediaUrl).toBeNull();
+    expect(placeEntity).toBeDefined();
+    expect(placeEntity!.description).toBeNull();
+    expect(placeEntity!.mediaUrl).toBeNull();
 
-    await placeEnrichmentService.onPlaceAccepted({ placeIds: [place!.id] });
+    await placeEnrichmentService.onPlaceAccepted({ placeIds: [placeEntity!.id] });
 
-    const enriched = await placeService.findById(place!.id);
+    const enriched = await placeService.findById(placeEntity!.id);
     expect(enriched).toBeDefined();
     expect(enriched!.description).toBeDefined();
     expect(enriched!.description!.length).toBeGreaterThan(0);
@@ -97,7 +97,7 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
   });
 
   it("enriches place when PLACE_ACCEPTED event is emitted", async () => {
-    const place = await placeService.insertPlace({
+    const placeEntity = await placeService.insertPlace({
       cityId: cityEntity.id,
       name: "Basilica di San Pietro",
       lat: BASILICA_LAT,
@@ -106,13 +106,13 @@ describe("PlaceEnrichmentService integration — Basilica di San Pietro", () => 
       googlePlaceId: BASILICA_GOOGLE_PLACE_ID,
       category: PlaceCategory.CHURCH,
     });
-    expect(place).toBeDefined();
-    expect(place!.description).toBeNull();
-    expect(place!.mediaUrl).toBeNull();
+    expect(placeEntity).toBeDefined();
+    expect(placeEntity!.description).toBeNull();
+    expect(placeEntity!.mediaUrl).toBeNull();
 
-    await eventEmitter.emitAsync(PLACE_ACCEPTED, { placeIds: [place!.id] });
+    await eventEmitter.emitAsync(PLACE_ACCEPTED, { placeIds: [placeEntity!.id] });
 
-    const enriched = await placeService.findById(place!.id);
+    const enriched = await placeService.findById(placeEntity!.id);
     expect(enriched).toBeDefined();
     expect(enriched!.description).toBeDefined();
     expect(enriched!.description!.length).toBeGreaterThan(0);

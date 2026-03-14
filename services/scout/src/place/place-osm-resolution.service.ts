@@ -1,7 +1,10 @@
 import { Injectable, Logger } from "@nestjs/common";
 
+import type { IPlace } from "@framework/types";
+import { PlaceSource } from "@framework/types";
+
 import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
-import { PlaceEntity, PlaceSource } from "./place.entity";
+import { PlaceEntity } from "./place.entity";
 import { PlaceService } from "./place.service";
 
 @Injectable()
@@ -9,7 +12,7 @@ export class PlaceOsmResolutionService {
   private readonly logger = new Logger(PlaceOsmResolutionService.name);
 
   constructor(
-    private readonly googlePlacesFetcher: GooglePlacesFetcherService,
+    private readonly googlePlacesFetcherService: GooglePlacesFetcherService,
     private readonly placeService: PlaceService,
   ) {}
 
@@ -18,9 +21,9 @@ export class PlaceOsmResolutionService {
    * Tries text search (place name) first, then falls back to coordinate-based nearby search.
    * Returns the place (updated or merged) or null if not resolvable.
    */
-  public async resolveOsmPlaceToGoogle(place: PlaceEntity): Promise<PlaceEntity | null> {
+  public async resolveOsmPlaceToGoogle(place: IPlace): Promise<PlaceEntity | null> {
     if (place.source !== PlaceSource.OSM) {
-      return place;
+      return place as PlaceEntity;
     }
 
     const coords = await this.placeService.getPlaceCoordinates(place.id);
@@ -29,17 +32,9 @@ export class PlaceOsmResolutionService {
       return null;
     }
 
-    let googlePlaceId = await this.googlePlacesFetcher.findPlaceByTextSearch(
-      place.name,
-      coords.lat,
-      coords.lng,
-    );
+    let googlePlaceId = await this.googlePlacesFetcherService.findPlaceByTextSearch(place.name, coords.lat, coords.lng);
     if (!googlePlaceId) {
-      googlePlaceId = await this.googlePlacesFetcher.findPlaceByLocation(
-        coords.lat,
-        coords.lng,
-        50,
-      );
+      googlePlaceId = await this.googlePlacesFetcherService.findPlaceByLocation(coords.lat, coords.lng, 50);
     }
     if (!googlePlaceId) {
       return null;

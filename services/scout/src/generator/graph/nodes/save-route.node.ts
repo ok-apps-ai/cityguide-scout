@@ -2,7 +2,23 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 
 import { RouteService } from "../../../route/route.service";
 import { PLACE_ACCEPTED } from "../../../place/place.patterns";
+import type { IBuiltRoute } from "../state";
+import type { IRouteOptions } from "../../dto";
 import { RouteGenerationState } from "../state";
+
+export const isRouteWithinConstraints = (builtRoute: IBuiltRoute, options: IRouteOptions): boolean => {
+  const { durationMinutes, distanceKm, routeMode, stops } = builtRoute;
+  const { minPoints, maxPoints, minDurationMinutes, maxDurationMinutes, minDistanceKm, maxDistanceKm } = options;
+
+  const durationOk =
+    (minDurationMinutes == null || durationMinutes >= minDurationMinutes) &&
+    (maxDurationMinutes == null || durationMinutes <= maxDurationMinutes);
+  const minDist = minDistanceKm[routeMode];
+  const maxDist = maxDistanceKm[routeMode];
+  const distanceOk = (minDist == null || distanceKm >= minDist) && (maxDist == null || distanceKm <= maxDist);
+
+  return stops.length >= minPoints && stops.length <= maxPoints && durationOk && distanceOk;
+};
 
 export const makeSaveRouteNode = (routeService: RouteService, eventEmitter: EventEmitter2) => {
   return async (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
@@ -12,17 +28,8 @@ export const makeSaveRouteNode = (routeService: RouteService, eventEmitter: Even
 
     const { name, theme, routeMode, durationMinutes, distanceKm, priceLevel, startPlaceId, routeGeometryWkt, stops } =
       state.builtRoute;
-    const { minPoints, maxPoints, minDurationMinutes, maxDurationMinutes, minDistanceKm, maxDistanceKm } =
-      state.routeGenerationOptions;
 
-    const durationOk =
-      (minDurationMinutes == null || durationMinutes >= minDurationMinutes) &&
-      (maxDurationMinutes == null || durationMinutes <= maxDurationMinutes);
-    const minDist = minDistanceKm[routeMode];
-    const maxDist = maxDistanceKm[routeMode];
-    const distanceOk = (minDist == null || distanceKm >= minDist) && (maxDist == null || distanceKm <= maxDist);
-
-    if (stops.length < minPoints || stops.length > maxPoints || !durationOk || !distanceOk) {
+    if (!isRouteWithinConstraints(state.builtRoute, state.routeGenerationOptions)) {
       return {
         builtRoute: null,
         currentSeed: null,

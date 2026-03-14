@@ -1,11 +1,11 @@
-import type { PlaceEntity } from "../../../place/place.entity";
-import type { RouteMode, RouteTheme } from "../../../route/route.entity";
+import type { IPlace, RouteMode, RouteTheme } from "@framework/types";
+
 import type { ICluster } from "./cluster.interface";
 
 export interface IRouteSeed {
   theme: RouteTheme;
   routeMode: RouteMode;
   durationBudgetMinutes: number;
-  startPlace: PlaceEntity;
+  startPlace: IPlace;
   cluster: ICluster;
 }

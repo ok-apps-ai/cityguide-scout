@@ -7,8 +7,6 @@ import { CityEntity } from "../city/city.entity";
 import { PlaceEntity } from "../place/place.entity";
 import { RouteStopEntity } from "./route-stop.entity";
 
-export { RouteMode, RouteTheme };
-
 @Entity({ name: "routes", schema: ns })
 export class RouteEntity {
   @PrimaryGeneratedColumn("uuid")

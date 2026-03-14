@@ -1,17 +1,8 @@
-import { PriceLevel, PlaceCategory } from "../../../place/place.entity";
-import { ROUTE_MODE_SPEED_KMH } from "../../route-mode-constants";
-import { IBuiltRoute, RouteGenerationState } from "../state";
-import { RouteTheme } from "../../../route/route.entity";
+import { PlaceCategory, PriceLevel, RouteTheme } from "@framework/types";
 
-const haversineMeters = (lat1: number, lng1: number, lat2: number, lng2: number): number => {
-  const R = 6371000;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-};
+import { ROUTE_MODE_SPEED_KMH } from "../../route-mode-constants";
+import { haversineMeters } from "../utils/haversine";
+import { IBuiltRoute, RouteGenerationState } from "../state";
 
 const PRICE_SCORE: Record<PriceLevel, number> = {
   [PriceLevel.FREE]: 0,
@@ -71,7 +62,7 @@ export const makeCostCalculationNode = (coordCache: Map<string, { lat: number; l
         const c2 = coordCache.get(place.id) ?? { lat: 0, lng: 0 };
         const dist = haversineMeters(c1.lat, c1.lng, c2.lat, c2.lng);
         totalDistanceMeters += dist;
-        totalDurationMinutes += (dist / 1000) / (speedKmh / 60);
+        totalDurationMinutes += dist / 1000 / (speedKmh / 60);
       }
     }
 

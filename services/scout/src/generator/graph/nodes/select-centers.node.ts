@@ -1,18 +1,19 @@
-import { ICluster, RouteGenerationState } from "../state";
+import { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 
-export const selectCentersNode = (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
-  const sorted = [...state.clusters].sort((a, b) => {
-    const aWeight = a.places.reduce((sum, p) => {
-      return sum + (state.weightedPlaces.find(w => w.place.id === p.id)?.weight ?? 0);
-    }, 0);
-    const bWeight = b.places.reduce((sum, p) => {
-      return sum + (state.weightedPlaces.find(w => w.place.id === p.id)?.weight ?? 0);
-    }, 0);
+export const selectTopClusters = (
+  clusters: ICluster[],
+  weightedPlaces: IWeightedPlace[],
+  maxClusters: number,
+): ICluster[] => {
+  const sorted = [...clusters].sort((a, b) => {
+    const aWeight = a.places.reduce((sum, p) => sum + (weightedPlaces.find(w => w.place.id === p.id)?.weight ?? 0), 0);
+    const bWeight = b.places.reduce((sum, p) => sum + (weightedPlaces.find(w => w.place.id === p.id)?.weight ?? 0), 0);
     return bWeight - aWeight;
   });
+  return sorted.slice(0, maxClusters);
+};
 
-  const { maxClusters } = state.routeGenerationOptions;
-  const topClusters: ICluster[] = sorted.slice(0, maxClusters);
-
+export const selectCentersNode = (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
+  const topClusters = selectTopClusters(state.clusters, state.weightedPlaces, state.routeGenerationOptions.maxClusters);
   return Promise.resolve({ clusters: topClusters });
 };

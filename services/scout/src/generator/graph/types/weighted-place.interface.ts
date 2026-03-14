@@ -1,6 +1,6 @@
-import type { PlaceEntity } from "../../../place/place.entity";
+import type { IPlace } from "@framework/types";
 
 export interface IWeightedPlace {
-  place: PlaceEntity;
+  place: IPlace;
   weight: number;
 }

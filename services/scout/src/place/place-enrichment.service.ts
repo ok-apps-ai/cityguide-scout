@@ -16,7 +16,7 @@ export class PlaceEnrichmentService {
   private readonly logger = new Logger(PlaceEnrichmentService.name);
 
   constructor(
-    private readonly placesFetcher: GooglePlacesFetcherService,
+    private readonly googlePlacesFetcherService: GooglePlacesFetcherService,
     @Inject("IPlaceMediaUrlProvider") private readonly mediaUrlProvider: IPlaceMediaUrlProvider,
     private readonly placeService: PlaceService,
     private readonly configService: ConfigService,
@@ -34,20 +34,22 @@ export class PlaceEnrichmentService {
 
     for (const placeId of uniqueIds) {
       try {
-        const place = await this.placeService.findById(placeId);
-        if (!place) {
+        const placeEntity = await this.placeService.findById(placeId);
+        if (!placeEntity) {
           this.logger.warn(`Place not found: ${placeId}`);
           continue;
         }
-        if (place.description != null) {
+        if (placeEntity.description != null) {
           continue;
         }
-        const googlePlaceId = place.googlePlaceId;
+        const googlePlaceId = placeEntity.googlePlaceId;
         if (googlePlaceId == null) {
           continue;
         }
 
-        const details = await withRetry(() => this.placesFetcher.getPlaceDetails(googlePlaceId), { maxRetries });
+        const details = await withRetry(() => this.googlePlacesFetcherService.getPlaceDetails(googlePlaceId), {
+          maxRetries,
+        });
 
         let mediaUrl: string | null = null;
         if (details.photoName) {

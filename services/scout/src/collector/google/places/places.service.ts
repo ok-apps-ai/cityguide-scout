@@ -20,8 +20,8 @@ export class GooglePlacesService {
   constructor(
     private readonly configService: ConfigService,
     private readonly placeService: PlaceService,
-    private readonly fetcher: GooglePlacesFetcherService,
-    private readonly mapper: GooglePlaceMapperService,
+    private readonly googlePlacesFetcherService: GooglePlacesFetcherService,
+    private readonly googlePlaceMapperService: GooglePlaceMapperService,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
@@ -31,7 +31,7 @@ export class GooglePlacesService {
     let total = 0;
 
     outer: for (const [lat, lng] of gridPoints) {
-      const places = await this.fetcher.fetchNearbyPlaces({
+      const places = await this.googlePlacesFetcherService.fetchNearbyPlaces({
         location: { lat, lng },
         includedTypes: INCLUDED_SEARCH_TYPES,
         excludedTypes: EXCLUDED_SEARCH_TYPES,
@@ -96,8 +96,8 @@ export class GooglePlacesService {
   }
 
   private async upsertPlace(cityId: string, place: INearbyPlace): Promise<PlaceEntity | null> {
-    const category = this.mapper.inferCategoryFromTypes(place);
-    const geomType = this.mapper.inferGeometryType(place);
+    const category = this.googlePlaceMapperService.inferCategoryFromTypes(place);
+    const geomType = this.googlePlaceMapperService.inferGeometryType(place);
 
     try {
       return await this.placeService.insertPlace({
@@ -108,12 +108,12 @@ export class GooglePlacesService {
         source: PlaceSource.GOOGLE,
         googlePlaceId: place.place_id,
         category,
-        geomExpression: this.mapper.buildGeomExpression(place, geomType),
+        geomExpression: this.googlePlaceMapperService.buildGeomExpression(place, geomType),
         types: place.types,
         rating: place.rating ?? null,
         reviewCount: place.user_ratings_total ?? null,
-        priceLevel: this.mapper.toPriceLevel(place.price_level),
-        visitDurationMinutes: this.mapper.toVisitDurationMinutes(category),
+        priceLevel: this.googlePlaceMapperService.toPriceLevel(place.price_level),
+        visitDurationMinutes: this.googlePlaceMapperService.toVisitDurationMinutes(category),
       });
     } catch (error) {
       this.logger.warn(`Failed to insert place ${place.place_id}: ${(error as Error).message}`);

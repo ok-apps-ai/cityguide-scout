@@ -33,7 +33,7 @@ const createGooglePlace = (overrides: Partial<PlaceEntity> = {}): PlaceEntity =>
 
 describe("PlaceOsmResolutionService", () => {
   let service: PlaceOsmResolutionService;
-  let googlePlacesFetcher: GooglePlacesFetcherService;
+  let googlePlacesFetcherService: GooglePlacesFetcherService;
   let placeService: PlaceService;
 
   beforeEach(async () => {
@@ -60,109 +60,117 @@ describe("PlaceOsmResolutionService", () => {
     }).compile();
 
     service = module.get(PlaceOsmResolutionService);
-    googlePlacesFetcher = module.get(GooglePlacesFetcherService);
+    googlePlacesFetcherService = module.get(GooglePlacesFetcherService);
     placeService = module.get(PlaceService);
 
     jest.clearAllMocks();
   });
 
   it("returns Google place unchanged", async () => {
-    const place = createGooglePlace();
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const placeEntity = createGooglePlace();
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
-    expect(result).toEqual(place);
+    expect(result).toEqual(placeEntity);
     expect(placeService.getPlaceCoordinates).not.toHaveBeenCalled();
-    expect(googlePlacesFetcher.findPlaceByTextSearch).not.toHaveBeenCalled();
-    expect(googlePlacesFetcher.findPlaceByLocation).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.findPlaceByTextSearch).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.findPlaceByLocation).not.toHaveBeenCalled();
   });
 
   it("returns null when coordinates unavailable", async () => {
-    const place = createOsmPlace();
+    const placeEntity = createOsmPlace();
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue(null);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
     expect(result).toBeNull();
-    expect(googlePlacesFetcher.findPlaceByTextSearch).not.toHaveBeenCalled();
-    expect(googlePlacesFetcher.findPlaceByLocation).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.findPlaceByTextSearch).not.toHaveBeenCalled();
+    expect(googlePlacesFetcherService.findPlaceByLocation).not.toHaveBeenCalled();
   });
 
   it("returns null when no Google place found (text search and fallback both fail)", async () => {
-    const place = createOsmPlace({ name: "Marbella Club Hotel" });
+    const placeEntity = createOsmPlace({ name: "Marbella Club Hotel" });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
-    jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue(null);
-    jest.spyOn(googlePlacesFetcher, "findPlaceByLocation").mockResolvedValue(null);
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByTextSearch").mockResolvedValue(null);
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByLocation").mockResolvedValue(null);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
     expect(result).toBeNull();
     expect(placeService.updateGooglePlaceId).not.toHaveBeenCalled();
-    expect(googlePlacesFetcher.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
-    expect(googlePlacesFetcher.findPlaceByLocation).toHaveBeenCalledWith(36.516, -4.43, 50);
+    expect(googlePlacesFetcherService.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
+    expect(googlePlacesFetcherService.findPlaceByLocation).toHaveBeenCalledWith(36.516, -4.43, 50);
   });
 
   it("uses text search result when found, does not call findPlaceByLocation", async () => {
-    const place = createOsmPlace({ name: "Marbella Club Hotel" });
-    const updatedPlace = createOsmPlace({
-      id: place.id,
+    const placeEntity = createOsmPlace({ name: "Marbella Club Hotel" });
+    const updatedPlaceEntity = createOsmPlace({
+      id: placeEntity.id,
       name: "Marbella Club Hotel",
       googlePlaceId: "ChIJMarbellaClub",
     });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
-    jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue("ChIJMarbellaClub");
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByTextSearch").mockResolvedValue("ChIJMarbellaClub");
     jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(null);
-    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlace);
+    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlaceEntity);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
-    expect(result).toEqual(updatedPlace);
-    expect(googlePlacesFetcher.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
-    expect(googlePlacesFetcher.findPlaceByLocation).not.toHaveBeenCalled();
+    expect(result).toEqual(updatedPlaceEntity);
+    expect(googlePlacesFetcherService.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
+    expect(googlePlacesFetcherService.findPlaceByLocation).not.toHaveBeenCalled();
     expect(placeService.updateGooglePlaceId).toHaveBeenCalledWith("osm-place-1", "ChIJMarbellaClub");
   });
 
   it("falls back to findPlaceByLocation when text search returns null", async () => {
-    const place = createOsmPlace({ name: "Marbella Club Hotel" });
-    const updatedPlace = createOsmPlace({ id: place.id, name: "Marbella Club Hotel", googlePlaceId: "ChIJ789" });
+    const placeEntity = createOsmPlace({ name: "Marbella Club Hotel" });
+    const updatedPlaceEntity = createOsmPlace({
+      id: placeEntity.id,
+      name: "Marbella Club Hotel",
+      googlePlaceId: "ChIJ789",
+    });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
-    jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue(null);
-    jest.spyOn(googlePlacesFetcher, "findPlaceByLocation").mockResolvedValue("ChIJ789");
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByTextSearch").mockResolvedValue(null);
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByLocation").mockResolvedValue("ChIJ789");
     jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(null);
-    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlace);
+    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlaceEntity);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
-    expect(result).toEqual(updatedPlace);
-    expect(googlePlacesFetcher.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
-    expect(googlePlacesFetcher.findPlaceByLocation).toHaveBeenCalledWith(36.516, -4.43, 50);
+    expect(result).toEqual(updatedPlaceEntity);
+    expect(googlePlacesFetcherService.findPlaceByTextSearch).toHaveBeenCalledWith("Marbella Club Hotel", 36.516, -4.43);
+    expect(googlePlacesFetcherService.findPlaceByLocation).toHaveBeenCalledWith(36.516, -4.43, 50);
     expect(placeService.updateGooglePlaceId).toHaveBeenCalledWith("osm-place-1", "ChIJ789");
   });
 
   it("returns existing place when Google place already in same city (merge)", async () => {
-    const place = createOsmPlace({ name: "Marbella Club Hotel" });
-    const existingPlace = createGooglePlace({ id: "existing-1", googlePlaceId: "ChIJ456" });
+    const placeEntity = createOsmPlace({ name: "Marbella Club Hotel" });
+    const existingPlaceEntity = createGooglePlace({ id: "existing-1", googlePlaceId: "ChIJ456" });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
-    jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue("ChIJ456");
-    jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(existingPlace);
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByTextSearch").mockResolvedValue("ChIJ456");
+    jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(existingPlaceEntity);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
-    expect(result).toEqual(existingPlace);
+    expect(result).toEqual(existingPlaceEntity);
     expect(placeService.updateGooglePlaceId).not.toHaveBeenCalled();
   });
 
   it("updates OSM place with Google place ID when no existing match (via fallback)", async () => {
-    const place = createOsmPlace({ name: "Marbella Club Hotel" });
-    const updatedPlace = createOsmPlace({ id: place.id, name: "Marbella Club Hotel", googlePlaceId: "ChIJ789" });
+    const placeEntity = createOsmPlace({ name: "Marbella Club Hotel" });
+    const updatedPlaceEntity = createOsmPlace({
+      id: placeEntity.id,
+      name: "Marbella Club Hotel",
+      googlePlaceId: "ChIJ789",
+    });
     jest.spyOn(placeService, "getPlaceCoordinates").mockResolvedValue({ lat: 36.516, lng: -4.43 });
-    jest.spyOn(googlePlacesFetcher, "findPlaceByTextSearch").mockResolvedValue(null);
-    jest.spyOn(googlePlacesFetcher, "findPlaceByLocation").mockResolvedValue("ChIJ789");
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByTextSearch").mockResolvedValue(null);
+    jest.spyOn(googlePlacesFetcherService, "findPlaceByLocation").mockResolvedValue("ChIJ789");
     jest.spyOn(placeService, "findByGooglePlaceIdAndCity").mockResolvedValue(null);
-    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlace);
+    jest.spyOn(placeService, "findById").mockResolvedValue(updatedPlaceEntity);
 
-    const result = await service.resolveOsmPlaceToGoogle(place);
+    const result = await service.resolveOsmPlaceToGoogle(placeEntity);
 
     expect(placeService.updateGooglePlaceId).toHaveBeenCalledWith("osm-place-1", "ChIJ789");
-    expect(result).toEqual(updatedPlace);
+    expect(result).toEqual(updatedPlaceEntity);
   });
 });

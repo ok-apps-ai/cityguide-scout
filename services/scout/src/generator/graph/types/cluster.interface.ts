@@ -1,9 +1,9 @@
-import type { PlaceEntity } from "../../../place/place.entity";
+import type { IPlace } from "@framework/types";
 
 export interface ICluster {
   id: number;
-  places: PlaceEntity[];
+  places: IPlace[];
   centroidLat: number;
   centroidLng: number;
-  seedPlace: PlaceEntity;
+  seedPlace: IPlace;
 }

@@ -1,6 +1,9 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 
+import { RouteTheme } from "@framework/types";
+import type { IPlace } from "@framework/types";
+
 import { THEME_CATEGORY_WEIGHTS } from "../../theme-flavor-weights";
 import { IWeightedPlace, RouteGenerationState } from "../state";
 
@@ -11,6 +14,21 @@ const THEME_CATEGORIES: Record<string, string[]> = {
   shopping: ["street", "square"],
   evening: ["square", "waterfront", "viewpoint", "street"],
   highlights: ["museum", "viewpoint", "monument", "attraction", "square"],
+};
+
+export const computeBaseScoredPlaces = (
+  candidatePlaces: IPlace[],
+  weightedPlaces: IWeightedPlace[],
+  theme: RouteTheme,
+): IWeightedPlace[] => {
+  const themeCategories = THEME_CATEGORIES[theme] ?? [];
+  return candidatePlaces.map(place => {
+    const themeBase = THEME_CATEGORY_WEIGHTS[theme]?.[place.category];
+    const globalWeight = weightedPlaces.find(w => w.place.id === place.id)?.weight ?? 1;
+    const base = themeBase ?? globalWeight;
+    const themeBonus = themeCategories.includes(place.category) ? 5 : 0;
+    return { place, weight: base + themeBonus };
+  });
 };
 
 const rankingsSchema = z.object({
@@ -29,15 +47,7 @@ export const makePoiScoringNode = (openaiApiKey: string) => {
     }
 
     const { theme } = state.currentSeed;
-    const themeCategories = THEME_CATEGORIES[theme] ?? [];
-
-    const baseScored: IWeightedPlace[] = state.candidatePlaces.map(place => {
-      const themeBase = THEME_CATEGORY_WEIGHTS[theme]?.[place.category];
-      const globalWeight = state.weightedPlaces.find(w => w.place.id === place.id)?.weight ?? 1;
-      const base = themeBase ?? globalWeight;
-      const themeBonus = themeCategories.includes(place.category) ? 5 : 0;
-      return { place, weight: base + themeBonus };
-    });
+    const baseScored = computeBaseScoredPlaces(state.candidatePlaces, state.weightedPlaces, theme);
 
     const top20 = [...baseScored].sort((a, b) => b.weight - a.weight).slice(0, 20);
 

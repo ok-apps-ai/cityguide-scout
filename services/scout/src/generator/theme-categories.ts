@@ -1,5 +1,4 @@
-import { PlaceCategory } from "../place/place.entity";
-import { RouteTheme } from "../route/route.entity";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 
 export const THEME_CATEGORIES: Record<RouteTheme, PlaceCategory[]> = {
   [RouteTheme.HISTORY]: [

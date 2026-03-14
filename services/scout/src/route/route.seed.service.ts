@@ -2,8 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { RouteMode, RouteTheme } from "@framework/types";
+
 import { ns } from "../common/constants";
-import { RouteEntity, RouteMode, RouteTheme } from "./route.entity";
+import { RouteEntity } from "./route.entity";
 import { PriceLevel } from "../place/place.entity";
 
 @Injectable()

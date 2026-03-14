@@ -100,7 +100,6 @@ export const RouteMarkers = (props: IRouteMarkersProps) => {
   const { route } = props;
   const map = useMap();
   const markersRef = useRef<google.maps.Marker[]>([]);
-  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- InfoWindow from @types/google.maps */
   const infoWindowRef = useRef<google.maps.InfoWindow | null>(null);
 
   useEffect(() => {

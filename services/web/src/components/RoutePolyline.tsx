@@ -26,7 +26,6 @@ export const RoutePolyline = (props: IRoutePolylineProps) => {
   const { route } = props;
   const map = useMap();
   const mapsLib = useMapsLibrary("maps");
-  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- Polyline from @types/google.maps */
   const polylineRef = useRef<google.maps.Polyline | null>(null);
   const [directionsPath, setDirectionsPath] = useState<Array<{ lat: number; lng: number }> | null>(null);
   const requestIdRef = useRef(0);
@@ -55,7 +54,7 @@ export const RoutePolyline = (props: IRoutePolylineProps) => {
     const directionsService = new google.maps.DirectionsService();
     const waypoints = path.slice(1, -1).map(p => ({ location: p, stopover: true }));
 
-    directionsService.route(
+    void directionsService.route(
       {
         origin: path[0],
         destination: path[path.length - 1],

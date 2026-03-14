@@ -16,8 +16,8 @@ export class OsmPlacesService {
 
   constructor(
     private readonly placeService: PlaceService,
-    private readonly fetcher: OsmOverpassFetcherService,
-    private readonly mapper: OsmPlaceMapperService,
+    private readonly osmOverpassFetcherService: OsmOverpassFetcherService,
+    private readonly osmPlaceMapperService: OsmPlaceMapperService,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
@@ -28,7 +28,7 @@ export class OsmPlacesService {
     const bbox = await this.getBbox(cityEntity.id);
     if (!bbox) return [];
 
-    const elements = await this.fetcher.fetchElements({
+    const elements = await this.osmOverpassFetcherService.fetchElements({
       bbox: { south: bbox.minLat, west: bbox.minLng, north: bbox.maxLat, east: bbox.maxLng },
       tileSizeDeg: options.tileSizeDeg,
     });
@@ -36,8 +36,8 @@ export class OsmPlacesService {
     const results: IOverpassElement[] = [];
     for (const el of elements) {
       if (options.limit !== undefined && results.length >= options.limit) break;
-      const coords = this.mapper.getLatLng(el);
-      const name = this.mapper.getName(el);
+      const coords = this.osmPlaceMapperService.getLatLng(el);
+      const name = this.osmPlaceMapperService.getName(el);
       if (!coords || name === "Unnamed") continue;
       results.push(el);
     }
@@ -81,11 +81,11 @@ export class OsmPlacesService {
   }
 
   private async upsertPlace(cityId: string, element: IOverpassElement): Promise<void> {
-    const coords = this.mapper.getLatLng(element);
+    const coords = this.osmPlaceMapperService.getLatLng(element);
     if (!coords) return;
 
-    const category = this.mapper.toPlaceCategory(element);
-    const name = this.mapper.getName(element);
+    const category = this.osmPlaceMapperService.toPlaceCategory(element);
+    const name = this.osmPlaceMapperService.getName(element);
     if (name === "Unnamed") return;
 
     try {
@@ -97,8 +97,8 @@ export class OsmPlacesService {
         source: PlaceSource.OSM,
         osmId: `${element.type}:${element.id}`,
         category,
-        types: this.mapper.toTypes(element),
-        visitDurationMinutes: this.mapper.toVisitDurationMinutes(category),
+        types: this.osmPlaceMapperService.toTypes(element),
+        visitDurationMinutes: this.osmPlaceMapperService.toVisitDurationMinutes(category),
       });
     } catch (error) {
       this.logger.warn(`Failed to insert OSM place ${element.type}/${element.id}: ${(error as Error).message}`);

@@ -1,6 +1,6 @@
+import { PlaceCategory, PriceLevel, RouteMode, RouteTheme } from "@framework/types";
+
 import { makeCostCalculationNode } from "./cost-calculation.node";
-import { PlaceCategory, PriceLevel } from "../../../place/place.entity";
-import { RouteMode, RouteTheme } from "../../../route/route.entity";
 import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { IRouteStop, RouteGenerationState } from "../state";
 

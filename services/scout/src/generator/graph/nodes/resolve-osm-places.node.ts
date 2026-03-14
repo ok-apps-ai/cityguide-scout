@@ -1,4 +1,5 @@
-import { PlaceSource } from "../../../place/place.entity";
+import { PlaceSource } from "@framework/types";
+
 import { PlaceOsmResolutionService } from "../../../place/place-osm-resolution.service";
 import { IBuiltRoute, IRouteStop, RouteGenerationState } from "../state";
 

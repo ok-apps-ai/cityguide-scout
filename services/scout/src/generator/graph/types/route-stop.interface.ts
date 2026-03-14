@@ -1,7 +1,7 @@
-import type { PlaceEntity } from "../../../place/place.entity";
+import type { IPlace } from "@framework/types";
 
 export interface IRouteStop {
-  place: PlaceEntity;
+  place: IPlace;
   orderIndex: number;
   visitDurationMinutes: number;
 }

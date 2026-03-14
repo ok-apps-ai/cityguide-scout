@@ -1,4 +1,5 @@
-import type { PlaceEntity } from "../../../place/place.entity";
+import type { IPlace } from "@framework/types";
+
 import type { IRouteOptions } from "../../dto";
 import type { IWeightedPlace } from "./weighted-place.interface";
 import type { ICluster } from "./cluster.interface";
@@ -10,12 +11,12 @@ import type { IBuiltRoute } from "./built-route.interface";
 export interface RouteGenerationState {
   cityId: string;
   routeGenerationOptions: IRouteOptions;
-  places: PlaceEntity[];
+  places: IPlace[];
   weightedPlaces: IWeightedPlace[];
   clusters: ICluster[];
   seeds: IRouteSeed[];
   currentSeed: IRouteSeed | null;
-  candidatePlaces: PlaceEntity[];
+  candidatePlaces: IPlace[];
   scoredPlaces: IWeightedPlace[];
   orderedStops: IRouteStop[];
   trimmedStops: IRouteStop[];

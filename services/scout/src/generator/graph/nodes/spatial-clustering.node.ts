@@ -1,8 +1,9 @@
 import { DataSource } from "typeorm";
 
+import type { IPlace } from "@framework/types";
+
 import { ns } from "../../../common/constants";
 import { ICluster, RouteGenerationState } from "../state";
-import { PlaceEntity } from "../../../place/place.entity";
 
 const DBSCAN_MIN_POINTS = 3;
 
@@ -23,8 +24,8 @@ export const makeSpatialClusteringNode = (dataSource: DataSource) => {
       [epsDegrees, DBSCAN_MIN_POINTS, state.cityId],
     );
 
-    const placeById = new Map<string, PlaceEntity>(state.places.map(p => [p.id, p]));
-    const clusterMap = new Map<number, PlaceEntity[]>();
+    const placeById = new Map<string, IPlace>(state.places.map(p => [p.id, p]));
+    const clusterMap = new Map<number, IPlace[]>();
 
     for (const row of rows) {
       if (row.cluster_id === null) continue;

@@ -44,7 +44,6 @@ export const RoutesPanel = (props: IRoutesPanelProps) => {
   const [selectedRoute, setSelectedRoute] = useState<IRoute | null>(null);
   const [routeModeFilter, setRouteModeFilter] = useState<RouteMode>(RouteMode.WALKING);
 
-  /* eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents -- AutocompleteSessionToken from @types/google.maps */
   const sessionTokenRef = useRef<google.maps.places.AutocompleteSessionToken | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
