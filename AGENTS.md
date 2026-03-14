@@ -28,13 +28,27 @@ docker compose up -d
 ## React style
 - Follow existing formatting: 2-space indentation, semicolons, double quotes.
 - Keep imports grouped by external packages then internal modules.
-- DTO and React props should be passed as a single variable, then spread on the first line inside the function.
-  - Example (DTO): `create(dto: CreateAssetDto) { const { title, description } = dto; ... }`
-  - Example (props): `export const Button = (props: IButtonProps) => { const { text, isLoading } = props; ... }`
 - Function components only.
-- Props interfaces use `I<ComponentName>Props`.
-- Components export prop types.
+- One React component per file. Extract nested or helper components into their own files.
 - MUI styled API is common; styled components live in `styled.ts` next to the component.
+
+### Component props
+- Each component with props has an interface `I<ComponentName>Props` defined in the same file.
+- Component receives `props` as a single variable (no destructuring in the parameter).
+- Destructure props on the first line inside the component body, same as services.
+- Components export prop types when consumed elsewhere.
+
+```tsx
+interface IButtonProps {
+  text: string;
+  isLoading?: boolean;
+}
+
+export const Button = (props: IButtonProps) => {
+  const { text, isLoading } = props;
+  // ...
+};
+```
 
 ## NestJS style
 - Modules typically include `*.module.ts`, `*.service.ts`, `*.controller.ts`, and `*.entity.ts` files (see `services/server/src/marketplace/showroom`).
@@ -81,6 +95,7 @@ collector/google/
 - **Interfaces:** Module-specific interfaces live in `interfaces/` with an `index.ts` barrel. Import from `./interfaces` or the specific file.
 - **Shared types:** Import directly from `@framework/types`; do not re-export.
 - **DTOs:** One DTO per file except of nested in `dto/` (e.g. `generate-routes-body.dto.ts`)
+- **Interface naming:** Interfaces for DTOs use the `Dto` suffix (e.g. `ICreateCityDto`, `IFindRoutesDto`). Interfaces for message payloads use the `Payload` suffix (e.g. `ICreateCityPayload`, `IDeleteCityPayload`).
 
 
 ### Imports

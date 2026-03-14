@@ -1,9 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
 
-import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
-import { PlaceEntity, PlaceCategory, PlaceSource } from "./place.entity";
+import { GooglePlacesFetcherService } from "../../collector/google/fetcher/fetcher.service";
+import { PlaceEntity, PlaceCategory, PlaceSource } from "../place.entity";
 import { PlaceOsmResolutionService } from "./place-osm-resolution.service";
-import { PlaceService } from "./place.service";
+import { PlaceService } from "../place.service";
 
 const createOsmPlace = (overrides: Partial<PlaceEntity> = {}): PlaceEntity =>
   ({

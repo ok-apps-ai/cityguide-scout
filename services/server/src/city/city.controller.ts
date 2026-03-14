@@ -63,9 +63,8 @@ export class CityController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Register a city and trigger POI collection + route generation" })
   public async create(@Body() dto: CreateCityDto): Promise<{ id: string }> {
-    const { name, northeast, southwest } = dto;
-    this.logger.log(`Creating city: ${name}`);
-    return this.send<{ id: string }>(CITY_CREATE, { name, northeast, southwest });
+    this.logger.log(`Creating city: ${dto.name}`);
+    return this.send<{ id: string }>(CITY_CREATE, dto);
   }
 
   @Delete("/:id")
@@ -79,8 +78,7 @@ export class CityController {
   @Post("/:id/routes")
   @ApiOperation({ summary: "List routes for a city, optionally filtered by route mode" })
   public async findRoutesByCityId(@Param("id") cityId: string, @Body() dto: FindRoutesDto): Promise<IRouteListItem[]> {
-    const { routeMode } = dto;
-    return this.send<IRouteListItem[]>(ROUTE_FIND_BY_CITY, { cityId, routeMode });
+    return this.send<IRouteListItem[]>(ROUTE_FIND_BY_CITY, { cityId, routeMode: dto.routeMode });
   }
 
   @Post("/:id/generate-routes")

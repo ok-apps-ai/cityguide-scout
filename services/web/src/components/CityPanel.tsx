@@ -1,12 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { CircleDot, Loader2, Map, RefreshCw, X } from "lucide-react";
+import { CircleDot, Map, RefreshCw, X } from "lucide-react";
 
 import type { ICity, IPendingCity } from "../types";
 import { CitySearch } from "./CitySearch";
+import { Spinner } from "./Spinner";
 
 const GRID_STEP_DEGREES = Number(import.meta.env.VITE_GRID_STEP_DEGREES ?? 0.02);
-
-const Spinner = () => <Loader2 className="animate-spin h-3.5 w-3.5 text-gray-400" strokeWidth={2} aria-hidden />;
 
 const countGridCells = (city: ICity): number => {
   const coords = city.boundary.coordinates[0];

@@ -12,7 +12,7 @@ import {
 } from "class-validator";
 import { Type } from "class-transformer";
 
-import type { ILatLng } from "@framework/types";
+import type { ILatLng, ICreateCityDto } from "@framework/types";
 
 class LatLngDto implements ILatLng {
   @ApiProperty({ example: 50.59, description: "Latitude (-90 to 90)" })
@@ -39,7 +39,7 @@ class IsBoundingBoxConstraint implements ValidatorConstraintInterface {
   }
 }
 
-export class CreateCityDto {
+export class CreateCityDto implements ICreateCityDto {
   @ApiProperty({ example: "Kyiv, Ukraine" })
   @IsString()
   @IsNotEmpty()

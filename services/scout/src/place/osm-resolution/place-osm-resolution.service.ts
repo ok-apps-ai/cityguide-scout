@@ -3,9 +3,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import type { IPlace } from "@framework/types";
 import { PlaceSource } from "@framework/types";
 
-import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
-import { PlaceEntity } from "./place.entity";
-import { PlaceService } from "./place.service";
+import { GooglePlacesFetcherService } from "../../collector/google/fetcher/fetcher.service";
+import { PlaceEntity } from "../place.entity";
+import { PlaceService } from "../place.service";
 
 @Injectable()
 export class PlaceOsmResolutionService {
