@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { getRepositoryToken, TypeOrmModule } from "@nestjs/typeorm";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { Repository } from "typeorm";
 
 import { RouteMode } from "@framework/types";
@@ -31,6 +32,7 @@ describe("RouteService.findRoutesForApi — route mode filter", () => {
         ConfigModule.forRoot({
           envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
+        EventEmitterModule.forRoot(),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({

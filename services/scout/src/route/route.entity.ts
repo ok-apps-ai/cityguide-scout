@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+import type { IRouteOptions } from "@framework/types";
 import { PriceLevel, RouteMode, RouteTheme } from "@framework/types";
 
 import { ns } from "../common/constants";
@@ -46,6 +47,9 @@ export class RouteEntity {
 
   @Column({ type: "geometry", spatialFeatureType: "LineString", srid: 4326 })
   routeGeometry: string;
+
+  @Column({ type: "jsonb" })
+  generationOptions: IRouteOptions | Record<string, never>;
 
   @OneToMany(() => RouteStopEntity, stop => stop.route, { cascade: true })
   stops: RouteStopEntity[];

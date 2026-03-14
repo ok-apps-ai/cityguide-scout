@@ -17,7 +17,8 @@ import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
 import { PlaceEntity } from "../../place/place.entity";
 import { PlaceSeedModule } from "../../place/place.seed.module";
-import { PlaceSeedService } from "../../place/place.seed.service";
+import { geomFromWkt } from "../../common/seed.utils";
+import { DEFAULT_PLACE_COORDS, PlaceSeedService } from "../../place/place.seed.service";
 import { PlaceModule } from "../../place/place.module";
 import { PlaceService } from "../../place/place.service";
 import { PlaceOsmResolutionService } from "../../place/osm-resolution/place-osm-resolution.service";
@@ -101,7 +102,14 @@ describe("Route graph resume from node — integration", () => {
 
   beforeEach(async () => {
     cityEntity = await citySeedService.seedCity();
-    await placeSeedService.seedPlaces(cityEntity.id);
+    for (let i = 0; i < DEFAULT_PLACE_COORDS.length; i++) {
+      const { lat, lng } = DEFAULT_PLACE_COORDS[i];
+      await placeSeedService.seedPlace({
+        cityId: cityEntity.id,
+        name: `Test Place ${i + 1}`,
+        geom: geomFromWkt(`POINT(${lng} ${lat})`),
+      });
+    }
   });
 
   afterEach(async () => {

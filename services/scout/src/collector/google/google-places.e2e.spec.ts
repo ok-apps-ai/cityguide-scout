@@ -9,7 +9,7 @@ import { CityEntity } from "../../city/city.entity";
 import { PlaceEntity } from "../../place/place.entity";
 import { CitySeedModule } from "../../city/city.seed.module";
 import { CitySeedService } from "../../city/city.seed.service";
-import { PlaceModule } from "../../place/place.module";
+import { PlaceCoreModule } from "../../place/place-core.module";
 import ormconfig from "../../infrastructure/database/database.config";
 
 describe("GooglePlacesService — Vatican City", () => {
@@ -35,7 +35,7 @@ describe("GooglePlacesService — Vatican City", () => {
           inject: [ConfigService],
         }),
         CitySeedModule,
-        PlaceModule,
+        PlaceCoreModule,
         GoogleModule,
       ],
     }).compile();

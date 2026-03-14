@@ -4,9 +4,20 @@ import { Repository } from "typeorm";
 
 import { RouteMode, RouteTheme } from "@framework/types";
 
-import { ns } from "../common/constants";
 import { RouteEntity } from "./route.entity";
 import { PriceLevel } from "../place/place.entity";
+
+const defaultValues = {
+  name: "Test Route",
+  theme: RouteTheme.HIGHLIGHTS,
+  routeMode: RouteMode.WALKING,
+  durationMinutes: 60,
+  distanceKm: 5,
+  priceLevel: PriceLevel.FREE,
+  startPlaceId: null as string | null,
+  routeGeometry: (() => "ST_GeomFromText('LINESTRING(12.45 41.90, 12.46 41.91)', 4326)") as () => string,
+  generationOptions: {} as RouteEntity["generationOptions"],
+};
 
 @Injectable()
 export class RouteSeedService {
@@ -15,35 +26,20 @@ export class RouteSeedService {
     private readonly routeEntityRepository: Repository<RouteEntity>,
   ) {}
 
-  public async seedRoute(
-    overrides: {
-      cityId?: string;
-      name?: string;
-      theme?: RouteTheme;
-      routeMode?: RouteMode;
-      durationMinutes?: number;
-      distanceKm?: number;
-      priceLevel?: PriceLevel;
-    } = {},
-  ): Promise<RouteEntity> {
-    const cityId = overrides.cityId;
-    if (!cityId) {
-      throw new Error("cityId is required for seedRoute");
+  public async seedRoute(overrides: Partial<RouteEntity> & Pick<RouteEntity, "cityId">): Promise<RouteEntity> {
+    const values = Object.assign({}, defaultValues, overrides);
+
+    const result = await this.routeEntityRepository
+      .createQueryBuilder()
+      .insert()
+      .into(RouteEntity)
+      .values(values)
+      .execute();
+
+    const id = result.identifiers[0]?.id ?? (result as { raw?: Array<{ id: string }> }).raw?.[0]?.id;
+    if (!id) {
+      throw new Error("Route insert did not return identifier");
     }
-    const name = overrides.name ?? "Test Route";
-    const theme = overrides.theme ?? RouteTheme.HIGHLIGHTS;
-    const routeMode = overrides.routeMode ?? RouteMode.WALKING;
-    const durationMinutes = overrides.durationMinutes ?? 60;
-    const distanceKm = overrides.distanceKm ?? 5;
-    const priceLevel = overrides.priceLevel ?? PriceLevel.FREE;
-
-    const result = await this.routeEntityRepository.manager.query(
-      `INSERT INTO ${ns}.routes (city_id, name, theme, route_mode, duration_minutes, distance_km, price_level, route_geometry)
-       VALUES ($1, $2, $3::${ns}.route_theme_enum, $4::${ns}.route_mode_enum, $5, $6, $7::${ns}.price_level_enum, ST_GeomFromText('LINESTRING(12.45 41.90, 12.46 41.91)', 4326))
-       RETURNING id`,
-      [cityId, name, theme, routeMode, durationMinutes, distanceKm, priceLevel],
-    );
-
-    return this.routeEntityRepository.findOneOrFail({ where: { id: result[0].id } });
+    return this.routeEntityRepository.findOneOrFail({ where: { id } });
   }
 }

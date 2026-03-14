@@ -194,6 +194,7 @@ describe("makeSaveRouteNode", () => {
         name: "Test Route",
         theme: RouteTheme.HIGHLIGHTS,
         routeMode: RouteMode.WALKING,
+        generationOptions: state.routeGenerationOptions,
         stops: [
           { placeId: "p1", orderIndex: 0, visitDurationMinutes: 30 },
           { placeId: "p2", orderIndex: 1, visitDurationMinutes: 30 },

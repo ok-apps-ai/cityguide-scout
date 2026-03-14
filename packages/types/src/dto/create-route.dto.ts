@@ -1,3 +1,4 @@
+import type { IRouteOptions } from "./route-options.dto";
 import type { PriceLevel, RouteMode, RouteTheme } from "../entities/enums";
 
 export interface ICreateRouteStopPayload {
@@ -16,5 +17,6 @@ export interface ICreateRoutePayload {
   priceLevel: PriceLevel;
   startPlaceId?: string | null;
   routeGeometryWkt: string;
+  generationOptions: IRouteOptions;
   stops: ICreateRouteStopPayload[];
 }

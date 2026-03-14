@@ -1,6 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
+import { EventEmitterModule } from "@nestjs/event-emitter";
 import { Repository } from "typeorm";
 
 import { GooglePlacesService } from "./places/places.service";
@@ -26,6 +27,7 @@ describe("GooglePlacesService integration — Vatican City", () => {
         ConfigModule.forRoot({
           envFilePath: `.env.${process.env.NODE_ENV}`,
         }),
+        EventEmitterModule.forRoot(),
         TypeOrmModule.forRootAsync({
           imports: [ConfigModule],
           useFactory: (configService: ConfigService) => ({

@@ -13,6 +13,7 @@ import { CreatePlacesTable1773218691204 } from "../../migrations/1773218691204-C
 import { CreateRoutesTable1773218696204 } from "../../migrations/1773218696204-CreateRoutesTable";
 import { CreateRouteStopsTable1773218701204 } from "../../migrations/1773218701204-CreateRouteStopsTable";
 import { AddPhotoNameToPlaces1773218711204 } from "../../migrations/1773218711204-AddPhotoNameToPlaces";
+import { AddGenerationOptionsToRoutes1773218716204 } from "../../migrations/1773218716204-AddGenerationOptionsToRoutes";
 
 const config: PostgresConnectionOptions = {
   name: "default",
@@ -32,6 +33,7 @@ const config: PostgresConnectionOptions = {
     CreateRoutesTable1773218696204,
     CreateRouteStopsTable1773218701204,
     AddPhotoNameToPlaces1773218711204,
+    AddGenerationOptionsToRoutes1773218716204,
   ],
 };
 

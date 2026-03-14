@@ -4,25 +4,24 @@ import { Repository } from "typeorm";
 
 import { PlaceCategory, PlaceSource } from "@framework/types";
 
-import { ns } from "../common/constants";
 import { PlaceEntity } from "./place.entity";
 
-export interface ISeedPlaceOverrides {
-  cityId?: string;
-  name?: string;
-  lat?: number;
-  lng?: number;
-  category?: PlaceCategory;
-}
-
-/** Tight cluster (~200m) for DBSCAN with clusterRadiusMeters 500 */
-const DEFAULT_COORDS: Array<{ lat: number; lng: number }> = [
+/** Tight cluster (~200m) for DBSCAN with clusterRadiusMeters 500. Use when seeding multiple places. */
+export const DEFAULT_PLACE_COORDS: Array<{ lat: number; lng: number }> = [
   { lat: 41.9, lng: 12.45 },
   { lat: 41.9005, lng: 12.4505 },
   { lat: 41.8995, lng: 12.4495 },
   { lat: 41.901, lng: 12.451 },
   { lat: 41.899, lng: 12.449 },
 ];
+
+const defaultValues = {
+  name: "Test Place",
+  geom: (() => "ST_GeomFromText('POINT(12.45 41.9)', 4326)") as unknown as () => string,
+  source: PlaceSource.GOOGLE,
+  category: PlaceCategory.PARK,
+  types: [] as string[],
+};
 
 @Injectable()
 export class PlaceSeedService {
@@ -31,31 +30,20 @@ export class PlaceSeedService {
     private readonly placeEntityRepository: Repository<PlaceEntity>,
   ) {}
 
-  public async seedPlaces(cityId: string, overrides: ISeedPlaceOverrides = {}): Promise<PlaceEntity[]> {
-    const { name: nameOverride, category: categoryOverride } = overrides;
-    const coords =
-      overrides.lat != null && overrides.lng != null ? [{ lat: overrides.lat, lng: overrides.lng }] : DEFAULT_COORDS;
+  public async seedPlace(overrides: Partial<PlaceEntity> & Pick<PlaceEntity, "cityId">): Promise<PlaceEntity> {
+    const values = Object.assign({}, defaultValues, overrides);
 
-    const results: PlaceEntity[] = [];
+    const result = await this.placeEntityRepository
+      .createQueryBuilder()
+      .insert()
+      .into(PlaceEntity)
+      .values(values)
+      .execute();
 
-    for (let i = 0; i < coords.length; i++) {
-      const { lat, lng } = coords[i];
-      const name = nameOverride ?? `Test Place ${i + 1}`;
-      const category = categoryOverride ?? PlaceCategory.PARK;
-
-      const result = await this.placeEntityRepository.manager.query(
-        `INSERT INTO ${ns}.places (city_id, name, geom, source, category, types)
-         VALUES ($1, $2, ST_SetSRID(ST_MakePoint($3, $4), 4326), $5::${ns}.place_source_enum, $6::${ns}.place_category_enum, '{}')
-         RETURNING id`,
-        [cityId, name, lng, lat, PlaceSource.GOOGLE, category],
-      );
-
-      const entity = await this.placeEntityRepository.findOneOrFail({
-        where: { id: result[0].id },
-      });
-      results.push(entity);
+    const id = result.identifiers[0]?.id ?? (result as { raw?: Array<{ id: string }> }).raw?.[0]?.id;
+    if (!id) {
+      throw new Error("Place insert did not return identifier");
     }
-
-    return results;
+    return this.placeEntityRepository.findOneOrFail({ where: { id } });
   }
 }

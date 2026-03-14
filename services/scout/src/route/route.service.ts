@@ -34,15 +34,27 @@ export class RouteService {
       priceLevel,
       startPlaceId,
       routeGeometryWkt,
+      generationOptions,
       stops,
     } = payload;
 
     const result: Array<{ id: string }> = await this.routeEntityRepository.query(
       `INSERT INTO ${ns}.routes
-         (city_id, name, theme, route_mode, duration_minutes, distance_km, price_level, start_place_id, route_geometry)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, ST_GeomFromText($9, 4326))
+         (city_id, name, theme, route_mode, duration_minutes, distance_km, price_level, start_place_id, route_geometry, generation_options)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, ST_GeomFromText($9, 4326), $10::jsonb)
        RETURNING id`,
-      [cityId, name, theme, routeMode, durationMinutes, distanceKm, priceLevel, startPlaceId ?? null, routeGeometryWkt],
+      [
+        cityId,
+        name,
+        theme,
+        routeMode,
+        durationMinutes,
+        distanceKm,
+        priceLevel,
+        startPlaceId ?? null,
+        routeGeometryWkt,
+        JSON.stringify(generationOptions),
+      ],
     );
 
     const routeId = result[0].id;

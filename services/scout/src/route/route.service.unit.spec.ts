@@ -4,6 +4,7 @@ import { Repository } from "typeorm";
 
 import { RouteMode, RouteTheme } from "@framework/types";
 
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../generator/route-presets";
 import { RouteService } from "./route.service";
 import { RouteEntity } from "./route.entity";
 import { RouteStopEntity } from "./route-stop.entity";
@@ -74,6 +75,7 @@ describe("RouteService", () => {
         distanceKm: 5,
         priceLevel: "free" as never,
         routeGeometryWkt: "LINESTRING(12.45 41.90, 12.46 41.91)",
+        generationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
         stops: [],
       });
 
@@ -97,6 +99,7 @@ describe("RouteService", () => {
         distanceKm: 5,
         priceLevel: "free" as never,
         routeGeometryWkt: "LINESTRING(12.45 41.90, 12.46 41.91)",
+        generationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
         stops: [
           { placeId: "place-1", orderIndex: 0, visitDurationMinutes: 30 },
           { placeId: "place-2", orderIndex: 1, visitDurationMinutes: 20 },

@@ -8,9 +8,10 @@ import { OsmOverpassFetcherService } from "../fetcher/fetcher.service";
 import { OsmModule } from "../osm.module";
 import { CityEntity } from "../../../city/city.entity";
 import { PlaceEntity } from "../../../place/place.entity";
+import { geomFromWkt } from "../../../common/seed.utils";
 import { CitySeedModule } from "../../../city/city.seed.module";
 import { CitySeedService } from "../../../city/city.seed.service";
-import { PlaceModule } from "../../../place/place.module";
+import { PlaceCoreModule } from "../../../place/place-core.module";
 import ormconfig from "../../../infrastructure/database/database.config";
 
 /** Tile bbox from discovery script (scripts/find-osm-casino-tile.ts). Contains Casino Marbella. */
@@ -45,7 +46,7 @@ describe("OsmPlacesService — casino filter", () => {
           inject: [ConfigService],
         }),
         CitySeedModule,
-        PlaceModule,
+        PlaceCoreModule,
         OsmModule,
       ],
     }).compile();
@@ -62,12 +63,11 @@ describe("OsmPlacesService — casino filter", () => {
   });
 
   beforeEach(async () => {
+    const { west, south, east, north } = CASINO_TILE_BBOX;
+    const boundaryWkt = `POLYGON((${west} ${south}, ${east} ${south}, ${east} ${north}, ${west} ${north}, ${west} ${south}))`;
     cityEntity = await citySeedService.seedCity({
       name: "Casino tile",
-      swLng: CASINO_TILE_BBOX.west,
-      swLat: CASINO_TILE_BBOX.south,
-      neLng: CASINO_TILE_BBOX.east,
-      neLat: CASINO_TILE_BBOX.north,
+      boundary: geomFromWkt(boundaryWkt),
     });
   });
 

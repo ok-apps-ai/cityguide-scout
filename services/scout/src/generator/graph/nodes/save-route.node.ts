@@ -50,6 +50,7 @@ export const makeSaveRouteNode = (routeService: RouteService, eventEmitter: Even
       priceLevel,
       startPlaceId,
       routeGeometryWkt,
+      generationOptions: state.routeGenerationOptions,
       stops: stops.map(s => ({
         placeId: s.place.id,
         orderIndex: s.orderIndex,
