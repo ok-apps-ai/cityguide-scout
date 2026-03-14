@@ -236,7 +236,46 @@ describe("makeCostCalculationNode", () => {
     expect(result.builtRoute!.routeGeometryWkt).toContain("LINESTRING");
   });
 
-  it("computes price level from place categories (free for parks/attractions)", async () => {
+  it("assigns FREE for non-Shopping theme even when places have price", async () => {
+    const coordCache = new Map<string, { lat: number; lng: number }>();
+    const p1 = createPlace("p1", PlaceCategory.STORE, PriceLevel.MODERATE);
+    const p2 = createPlace("p2", PlaceCategory.STORE, PriceLevel.EXPENSIVE);
+    coordCache.set("p1", { lat: 36.48, lng: -4.98 });
+    coordCache.set("p2", { lat: 36.49, lng: -4.99 });
+
+    const state: RouteGenerationState = {
+      cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
+      places: [],
+      weightedPlaces: [],
+      clusters: [],
+      seeds: [],
+      currentSeed: {
+        theme: RouteTheme.HISTORY,
+        routeMode: RouteMode.WALKING,
+        durationBudgetMinutes: 90,
+        startPlace: p1,
+        cluster: {} as RouteGenerationState["currentSeed"] extends { cluster: infer C } ? C : never,
+      },
+      candidatePlaces: [],
+      scoredPlaces: [],
+      orderedStops: [],
+      trimmedStops: [createStop(p1), createStop(p2)],
+      builtRoute: null,
+      savedRoutes: [],
+      error: null,
+    };
+
+    const node = makeCostCalculationNode(coordCache);
+    const result = await node(state);
+
+    expect(result.builtRoute).toBeDefined();
+    expect(result.builtRoute!.priceLevel).toEqual(PriceLevel.FREE);
+  });
+
+  it("computes price level from place priceLevel for Shopping theme", async () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const p1 = createPlace("p1", PlaceCategory.PARK);
     const p2 = createPlace("p2", PlaceCategory.TOURIST_ATTRACTION);
@@ -253,7 +292,7 @@ describe("makeCostCalculationNode", () => {
       clusters: [],
       seeds: [],
       currentSeed: {
-        theme: RouteTheme.HIGHLIGHTS,
+        theme: RouteTheme.SHOPPING,
         routeMode: RouteMode.WALKING,
         durationBudgetMinutes: 90,
         startPlace: p1,
@@ -281,7 +320,7 @@ describe("makeCostCalculationNode", () => {
     ]).toContain(result.builtRoute!.priceLevel);
   });
 
-  it("assigns MODERATE price level when avg score in range [1.2, 2.2)", async () => {
+  it("assigns MODERATE price level when avg score in range [1.2, 2.2) for Shopping theme", async () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const p1 = createPlace("p1", PlaceCategory.STORE, PriceLevel.MODERATE);
     const p2 = createPlace("p2", PlaceCategory.STORE, PriceLevel.MODERATE);
@@ -298,7 +337,7 @@ describe("makeCostCalculationNode", () => {
       clusters: [],
       seeds: [],
       currentSeed: {
-        theme: RouteTheme.HIGHLIGHTS,
+        theme: RouteTheme.SHOPPING,
         routeMode: RouteMode.WALKING,
         durationBudgetMinutes: 90,
         startPlace: p1,
@@ -320,7 +359,7 @@ describe("makeCostCalculationNode", () => {
     expect(result.builtRoute!.priceLevel).toEqual(PriceLevel.MODERATE);
   });
 
-  it("assigns EXPENSIVE price level when avg score in range [2.2, 3.2)", async () => {
+  it("assigns EXPENSIVE price level when avg score in range [2.2, 3.2) for Shopping theme", async () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const p1 = createPlace("p1", PlaceCategory.STORE, PriceLevel.MODERATE);
     const p2 = createPlace("p2", PlaceCategory.STORE, PriceLevel.EXPENSIVE);
@@ -337,7 +376,7 @@ describe("makeCostCalculationNode", () => {
       clusters: [],
       seeds: [],
       currentSeed: {
-        theme: RouteTheme.HIGHLIGHTS,
+        theme: RouteTheme.SHOPPING,
         routeMode: RouteMode.WALKING,
         durationBudgetMinutes: 90,
         startPlace: p1,
@@ -359,7 +398,7 @@ describe("makeCostCalculationNode", () => {
     expect(result.builtRoute!.priceLevel).toEqual(PriceLevel.EXPENSIVE);
   });
 
-  it("assigns VERY_EXPENSIVE price level when avg score >= 3.2", async () => {
+  it("assigns VERY_EXPENSIVE price level when avg score >= 3.2 for Shopping theme", async () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const p1 = createPlace("p1", PlaceCategory.STORE, PriceLevel.EXPENSIVE);
     const p2 = createPlace("p2", PlaceCategory.STORE, PriceLevel.VERY_EXPENSIVE);
@@ -376,7 +415,7 @@ describe("makeCostCalculationNode", () => {
       clusters: [],
       seeds: [],
       currentSeed: {
-        theme: RouteTheme.HIGHLIGHTS,
+        theme: RouteTheme.SHOPPING,
         routeMode: RouteMode.WALKING,
         durationBudgetMinutes: 90,
         startPlace: p1,

@@ -45,4 +45,5 @@ export enum RouteTheme {
   SHOPPING = "shopping",
   EVENING = "evening",
   HIGHLIGHTS = "highlights",
+  // GASTRO = "gastro", // reminder: restaurants, cafes, bars
 }

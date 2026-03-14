@@ -1,4 +1,4 @@
-import { PlaceCategory, PriceLevel, RouteTheme } from "@framework/types";
+import { PriceLevel, RouteTheme } from "@framework/types";
 
 import { ROUTE_MODE_SPEED_KMH } from "../../route-mode-constants";
 import { haversineMeters } from "../utils/haversine";
@@ -11,18 +11,6 @@ const PRICE_SCORE: Record<PriceLevel, number> = {
   [PriceLevel.EXPENSIVE]: 3,
   [PriceLevel.VERY_EXPENSIVE]: 4,
 };
-
-const FREE_CATEGORIES = new Set<PlaceCategory>([
-  PlaceCategory.POINT_OF_INTEREST,
-  PlaceCategory.PARK,
-  PlaceCategory.NATURAL_FEATURE,
-  PlaceCategory.HIKING_AREA,
-  PlaceCategory.TOURIST_ATTRACTION,
-  PlaceCategory.VIEWPOINT,
-  PlaceCategory.MONUMENT,
-  PlaceCategory.SQUARE,
-  PlaceCategory.STREET,
-]);
 
 const THEME_NAMES: Record<RouteTheme, string> = {
   history: "Historic Walk",
@@ -43,7 +31,6 @@ export const makeCostCalculationNode = (coordCache: Map<string, { lat: number; l
     const stops = state.trimmedStops;
     const speedKmh = ROUTE_MODE_SPEED_KMH[routeMode];
 
-    let totalScore = 0;
     let totalDurationMinutes = 0;
     let totalDistanceMeters = 0;
 
@@ -51,9 +38,6 @@ export const makeCostCalculationNode = (coordCache: Map<string, { lat: number; l
       const stop = stops[i];
       const place = stop.place;
 
-      const pl = FREE_CATEGORIES.has(place.category) ? PriceLevel.FREE : (place.priceLevel ?? PriceLevel.FREE);
-
-      totalScore += PRICE_SCORE[pl];
       totalDurationMinutes += stop.visitDurationMinutes;
 
       if (i > 0) {
@@ -66,13 +50,23 @@ export const makeCostCalculationNode = (coordCache: Map<string, { lat: number; l
       }
     }
 
-    const avgScore = totalScore / stops.length;
     let priceLevel: PriceLevel;
-    if (avgScore < 0.3) priceLevel = PriceLevel.FREE;
-    else if (avgScore < 1.2) priceLevel = PriceLevel.INEXPENSIVE;
-    else if (avgScore < 2.2) priceLevel = PriceLevel.MODERATE;
-    else if (avgScore < 3.2) priceLevel = PriceLevel.EXPENSIVE;
-    else priceLevel = PriceLevel.VERY_EXPENSIVE;
+    if (theme !== RouteTheme.SHOPPING) {
+      // Only restaurants, cafes, stores return price; other themes use FREE
+      priceLevel = PriceLevel.FREE;
+    } else {
+      let totalScore = 0;
+      for (const stop of stops) {
+        const pl = stop.place.priceLevel ?? PriceLevel.FREE;
+        totalScore += PRICE_SCORE[pl];
+      }
+      const avgScore = totalScore / stops.length;
+      if (avgScore < 0.3) priceLevel = PriceLevel.FREE;
+      else if (avgScore < 1.2) priceLevel = PriceLevel.INEXPENSIVE;
+      else if (avgScore < 2.2) priceLevel = PriceLevel.MODERATE;
+      else if (avgScore < 3.2) priceLevel = PriceLevel.EXPENSIVE;
+      else priceLevel = PriceLevel.VERY_EXPENSIVE;
+    }
 
     const coords = stops
       .map(s => coordCache.get(s.place.id))

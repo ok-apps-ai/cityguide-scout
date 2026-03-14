@@ -29,30 +29,52 @@ export const makeRouteOptimizationNode = (coordCache: Map<string, ICoord>) => {
       .slice(0, maxPoints)
       .map(w => w.place);
 
+    const startCoord = getCoord(startPlace, coordCache);
+
+    // Find nearest-to-start; reserve it for the end so user finishes close to start
+    let nearestToStart: IPlace | null = null;
+    let nearestDist = Infinity;
+    for (const p of top) {
+      if (p.id === startPlace.id) continue;
+      const coord = getCoord(p, coordCache);
+      const d = haversineMeters(startCoord.lat, startCoord.lng, coord.lat, coord.lng);
+      if (d < nearestDist) {
+        nearestDist = d;
+        nearestToStart = p;
+      }
+    }
+
     const visited = new Set<string>();
     const ordered: IPlace[] = [startPlace];
     visited.add(startPlace.id);
+    if (nearestToStart) visited.add(nearestToStart.id);
 
     let current = startPlace;
     let elapsedMinutes = 0;
-    // Time: only walking distance; no default visit times per place
-    // const visitDuration = (p: PlaceEntity) => p.visitDurationMinutes ?? PLACE_VISIT_DURATION[p.category] ?? 15;
     const visitDuration = (): number => 0;
 
     elapsedMinutes += visitDuration();
 
-    while (ordered.length < top.length && elapsedMinutes < durationBudgetMinutes) {
+    const middleCandidates = nearestToStart ? top.filter(p => p.id !== nearestToStart.id) : top;
+
+    while (ordered.length < middleCandidates.length && elapsedMinutes < durationBudgetMinutes) {
       const currentCoord = getCoord(current, coordCache);
 
       let bestPlace: IPlace | null = null;
       let bestDist = Infinity;
 
-      for (const candidate of top) {
+      const nearestCoord = nearestToStart ? getCoord(nearestToStart, coordCache) : null;
+
+      for (const candidate of middleCandidates) {
         if (visited.has(candidate.id)) continue;
         const coord = getCoord(candidate, coordCache);
         const dist = haversineMeters(currentCoord.lat, currentCoord.lng, coord.lat, coord.lng);
         const travelMin = dist / 1000 / (speedKmh / 60);
-        const totalAdd = travelMin + visitDuration();
+        const travelBackMin =
+          nearestCoord && nearestToStart
+            ? haversineMeters(coord.lat, coord.lng, nearestCoord.lat, nearestCoord.lng) / 1000 / (speedKmh / 60)
+            : 0;
+        const totalAdd = travelMin + visitDuration() + travelBackMin;
 
         if (elapsedMinutes + totalAdd > durationBudgetMinutes) continue;
         if (dist < bestDist) {
@@ -64,13 +86,21 @@ export const makeRouteOptimizationNode = (coordCache: Map<string, ICoord>) => {
       if (!bestPlace) break;
 
       const coord = getCoord(bestPlace, coordCache);
-      const startCoord = getCoord(current, coordCache);
-      const dist = haversineMeters(startCoord.lat, startCoord.lng, coord.lat, coord.lng);
+      const dist = haversineMeters(
+        getCoord(current, coordCache).lat,
+        getCoord(current, coordCache).lng,
+        coord.lat,
+        coord.lng,
+      );
       elapsedMinutes += dist / 1000 / (speedKmh / 60) + visitDuration();
 
       ordered.push(bestPlace);
       visited.add(bestPlace.id);
       current = bestPlace;
+    }
+
+    if (nearestToStart) {
+      ordered.push(nearestToStart);
     }
 
     const orderedStops: IRouteStop[] = ordered.map((place, i) => ({
