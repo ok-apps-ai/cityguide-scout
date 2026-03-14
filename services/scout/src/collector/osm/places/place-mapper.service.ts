@@ -1,8 +1,10 @@
 import { Injectable } from "@nestjs/common";
 
-import { PlaceCategory } from "../../../place/place.entity";
+import { PlaceCategory } from "@framework/types";
+
 import { PLACE_VISIT_DURATION } from "../../../place/place.constants";
 import type { IOverpassElement } from "../fetcher/types";
+import { EXCLUDED_OSM_TAG_VALUES, INCLUDED_OSM_TAG_KEYS } from "./osm-place-types";
 
 /**
  * Maps OSM tag values to PlaceCategory.
@@ -66,7 +68,7 @@ const OSM_TAG_TO_CATEGORY: Record<string, PlaceCategory> = {
 export class OsmPlaceMapperService {
   public toPlaceCategory(element: IOverpassElement): PlaceCategory {
     const tags = element.tags ?? {};
-    for (const key of ["tourism", "historic", "amenity", "leisure", "natural", "man_made", "building", "shop"]) {
+    for (const key of INCLUDED_OSM_TAG_KEYS) {
       const value = tags[key];
       if (value && OSM_TAG_TO_CATEGORY[value]) {
         return OSM_TAG_TO_CATEGORY[value];
@@ -79,7 +81,7 @@ export class OsmPlaceMapperService {
   public toTypes(element: IOverpassElement): string[] {
     const tags = element.tags ?? {};
     const result: string[] = [];
-    for (const key of ["tourism", "historic", "amenity", "leisure", "natural", "man_made", "building", "shop"]) {
+    for (const key of INCLUDED_OSM_TAG_KEYS) {
       const value = tags[key];
       if (value) {
         result.push(`${key}:${value}`);
@@ -104,5 +106,14 @@ export class OsmPlaceMapperService {
 
   public getName(element: IOverpassElement): string {
     return element.tags?.name ?? "Unnamed";
+  }
+
+  public isExcluded(element: IOverpassElement): boolean {
+    const tags = element.tags ?? {};
+    for (const kv of EXCLUDED_OSM_TAG_VALUES) {
+      const [key, value] = kv.split(":");
+      if (tags[key] === value) return true;
+    }
+    return false;
   }
 }

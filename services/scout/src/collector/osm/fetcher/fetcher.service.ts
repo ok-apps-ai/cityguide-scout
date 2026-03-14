@@ -4,6 +4,8 @@ import { firstValueFrom } from "rxjs";
 
 import { withRetry } from "../../../common/retry";
 import type { IBbox, IOverpassElement, IOverpassFetcherOptions, IOverpassResponse } from "./types";
+import { buildOverpassQuery } from "./overpass-query";
+import { INCLUDED_OSM_TAG_KEYS } from "../places/osm-place-types";
 
 const OVERPASS_BASE_URL = "https://overpass-api.de/api/interpreter";
 
@@ -23,30 +25,6 @@ function splitBbox(bbox: IBbox, nLat: number, nLng: number): IBbox[] {
     }
   }
   return tiles;
-}
-
-function buildQuery(bbox: IBbox, query?: string): string {
-  if (query) return query;
-  return `[out:json][timeout:25];
-      (
-        node["tourism"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["historic"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["amenity"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["leisure"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["natural"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["man_made"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["shop"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        node["building"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["tourism"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["historic"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["leisure"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["amenity"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["natural"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["man_made"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["building"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-        way["shop"]["name"](${bbox.south},${bbox.west},${bbox.north},${bbox.east});
-      );
-      out body center;`;
 }
 
 @Injectable()
@@ -92,7 +70,7 @@ export class OsmOverpassFetcherService {
     tileIndex?: number,
     totalTiles?: number,
   ): Promise<IOverpassElement[]> {
-    const q = buildQuery(bbox, query);
+    const q = query ?? buildOverpassQuery(bbox, INCLUDED_OSM_TAG_KEYS);
     const url = `${OVERPASS_BASE_URL}?data=${encodeURIComponent(q)}`;
     this.logger.debug(
       totalTiles != null && tileIndex != null

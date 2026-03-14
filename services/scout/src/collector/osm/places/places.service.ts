@@ -36,6 +36,7 @@ export class OsmPlacesService {
     const results: IOverpassElement[] = [];
     for (const el of elements) {
       if (options.limit !== undefined && results.length >= options.limit) break;
+      if (this.osmPlaceMapperService.isExcluded(el)) continue;
       const coords = this.osmPlaceMapperService.getLatLng(el);
       const name = this.osmPlaceMapperService.getName(el);
       if (!coords || name === "Unnamed") continue;
