@@ -12,4 +12,6 @@ export interface INearbyPlace {
   rating?: number;
   user_ratings_total?: number;
   price_level?: number;
+  description?: string | null;
+  photoName?: string | null;
 }

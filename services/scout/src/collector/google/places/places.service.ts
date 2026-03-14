@@ -115,6 +115,8 @@ export class GooglePlacesService {
         reviewCount: place.user_ratings_total ?? null,
         priceLevel: this.googlePlaceMapperService.toPriceLevel(place.price_level),
         visitDurationMinutes: this.googlePlaceMapperService.toVisitDurationMinutes(category),
+        description: place.description ?? null,
+        photoName: place.photoName ?? null,
       });
     } catch (error) {
       this.logger.warn(`Failed to insert place ${place.place_id}: ${(error as Error).message}`);

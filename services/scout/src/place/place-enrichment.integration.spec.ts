@@ -4,7 +4,7 @@ import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { EventEmitter2, EventEmitterModule } from "@nestjs/event-emitter";
 
-import { PlaceEnrichmentService } from "./place-enrichment.service";
+import { PlaceEnrichmentService } from "./enrichment/place-enrichment.service";
 import { PlaceService } from "./place.service";
 import { PlaceCategory, PlaceEntity, PlaceSource } from "./place.entity";
 import { PLACE_ACCEPTED } from "./place.patterns";

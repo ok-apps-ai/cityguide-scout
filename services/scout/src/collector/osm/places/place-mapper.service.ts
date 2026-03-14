@@ -108,6 +108,29 @@ export class OsmPlaceMapperService {
     return element.tags?.name ?? "Unnamed";
   }
 
+  public getDescription(element: IOverpassElement): string | null {
+    return element.tags?.description ?? null;
+  }
+
+  /**
+   * Resolves image URL from OSM tags.
+   * - tags.image: use if it looks like a URL (starts with http)
+   * - tags.wikimedia_commons: format "File:Name.jpg" -> Commons FilePath URL
+   */
+  public getMediaUrl(element: IOverpassElement): string | null {
+    const tags = element.tags ?? {};
+    const image = tags.image;
+    if (image && (image.startsWith("http://") || image.startsWith("https://"))) {
+      return image;
+    }
+    const wikimediaCommons = tags.wikimedia_commons;
+    if (wikimediaCommons) {
+      const filename = wikimediaCommons.startsWith("File:") ? wikimediaCommons.slice(5) : wikimediaCommons;
+      return `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(filename)}`;
+    }
+    return null;
+  }
+
   public isExcluded(element: IOverpassElement): boolean {
     const tags = element.tags ?? {};
     for (const kv of EXCLUDED_OSM_TAG_VALUES) {

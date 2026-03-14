@@ -76,6 +76,48 @@ describe("GooglePlacesFetcherService", () => {
     expect(httpService.post).toHaveBeenCalledTimes(1);
   });
 
+  it("maps editorialSummary and photos to description and photoName", async () => {
+    const placeWithDetails = {
+      ...newApiPlace("p1", "Museum A", ["museum"]),
+      editorialSummary: { text: "A leading contemporary art museum." },
+      photos: [{ name: "places/ChIJ123/photos/Atxxx" }],
+    };
+
+    jest.spyOn(httpService, "post").mockReturnValue(
+      of({
+        data: { places: [placeWithDetails] },
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config: {} as never,
+      }),
+    );
+
+    const result = await service.fetchNearbyPlaces({ ...baseOptions });
+
+    expect(result).toHaveLength(1);
+    expect(result[0].description).toEqual("A leading contemporary art museum.");
+    expect(result[0].photoName).toEqual("places/ChIJ123/photos/Atxxx");
+  });
+
+  it("sends field mask including editorialSummary and photos", async () => {
+    const postSpy = jest.spyOn(httpService, "post").mockReturnValue(
+      of({
+        data: { places: [] },
+        status: 200,
+        statusText: "OK",
+        headers: {},
+        config: {} as never,
+      }),
+    );
+
+    await service.fetchNearbyPlaces({ ...baseOptions });
+
+    const headers = postSpy.mock.calls[0][2] as { headers?: Record<string, string> };
+    expect(headers.headers?.["X-Goog-FieldMask"]).toContain("places.editorialSummary");
+    expect(headers.headers?.["X-Goog-FieldMask"]).toContain("places.photos");
+  });
+
   it("deduplicates places that appear in multiple batches", async () => {
     const shared = newApiPlace("p-shared", "Shared Place", ["museum", "tourist_attraction"]);
     const batch1Only = newApiPlace("p1", "Batch 1 Only", ["type_0"]);

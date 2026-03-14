@@ -9,6 +9,7 @@ import type { IBuiltRoute } from "./built-route.interface";
 // eslint-disable-next-line @typescript-eslint/naming-convention -- LangGraph state type
 export interface RouteGenerationState {
   cityId: string;
+  location: string;
   theme: RouteTheme;
   routeGenerationOptions: IRouteOptions;
   places: IPlace[];

@@ -10,4 +10,6 @@ export interface INewApiPlace {
   rating?: number;
   userRatingCount?: number;
   priceLevel?: string;
+  editorialSummary?: { text?: string };
+  photos?: Array<{ name?: string }>;
 }

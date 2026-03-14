@@ -4,7 +4,7 @@ import { DataSource } from "typeorm";
 
 import type { IPlace, IRouteOptions, RouteTheme } from "@framework/types";
 
-import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
+import { PlaceOsmResolutionService } from "../../place/osm-resolution/place-osm-resolution.service";
 import { PlaceService } from "../../place/place.service";
 import { RouteService } from "../../route/route.service";
 import { IBuiltRoute, ICluster, IRouteSeed, IRouteStop, IWeightedPlace } from "./state";
@@ -44,6 +44,7 @@ export const savedRoutesReducer = (a: string[], b: string[]): string[] => [...a,
 
 const StateAnnotation = Annotation.Root({
   cityId: Annotation<string>,
+  location: Annotation<string>(),
   theme: Annotation<RouteTheme>(),
   routeGenerationOptions: Annotation<IRouteOptions>(),
   places: Annotation<IPlace[]>,

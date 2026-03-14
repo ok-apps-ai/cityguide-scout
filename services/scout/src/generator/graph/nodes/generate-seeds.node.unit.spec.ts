@@ -29,6 +29,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
@@ -66,6 +67,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
@@ -103,6 +105,7 @@ describe("generateSeedsNode", () => {
 
     const stateWithMin2: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 2 },
       places: [],
@@ -147,6 +150,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.NATURE,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
@@ -184,6 +188,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.SHOPPING,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
@@ -223,6 +228,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.SHOPPING,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],

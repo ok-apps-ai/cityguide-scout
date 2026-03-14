@@ -84,6 +84,8 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
@@ -116,6 +118,8 @@ describe("makePoiScoringNode", () => {
   it("returns empty when currentSeed null", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -141,6 +145,8 @@ describe("makePoiScoringNode", () => {
     const place = createPlace("p1", PlaceCategory.PARK);
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [{ place, weight: 10 }],
@@ -172,6 +178,8 @@ describe("makePoiScoringNode", () => {
     const place = createPlace("p1", PlaceCategory.PARK);
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [{ place, weight: 10 }],
@@ -217,6 +225,8 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
@@ -257,6 +267,8 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
@@ -287,6 +299,86 @@ describe("makePoiScoringNode", () => {
     expect(result.scoredPlaces![0].weight).toBe(15);
   });
 
+  it("passes prompt with table format including name, category, rating, review count, description", async () => {
+    const p1 = createPlace("p1", PlaceCategory.MUSEUM);
+    (p1 as IPlace & { reviewCount: number }).reviewCount = 12000;
+    (p1 as IPlace & { description: string }).description = "A leading contemporary art museum in the heart of Rome.";
+    const weightedPlaces: IWeightedPlace[] = [{ place: p1, weight: 8 }];
+    mockInvoke.mockResolvedValue({ rankings: [{ index: 1, bonus: 3 }] });
+
+    const state: RouteGenerationState = {
+      cityId: "city1",
+      location: "Marbella, Spain",
+      theme: RouteTheme.HIGHLIGHTS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
+      places: [],
+      weightedPlaces,
+      clusters: [],
+      seeds: [],
+      currentSeed: {
+        theme: RouteTheme.HIGHLIGHTS,
+        routeMode: RouteMode.WALKING,
+        durationBudgetMinutes: 60,
+        startPlace: p1,
+        cluster: {} as ICluster,
+      },
+      candidatePlaces: [p1],
+      scoredPlaces: [],
+      orderedStops: [],
+      trimmedStops: [],
+      builtRoute: null,
+      savedRoutes: [],
+      error: null,
+    };
+
+    await makePoiScoringNode("key")(state);
+
+    const prompt = mockInvoke.mock.calls[0][0] as string;
+    expect(prompt).toContain("## Role");
+    expect(prompt).toContain("## Context");
+    expect(prompt).toContain("## Task");
+    expect(prompt).toContain("Location: Marbella, Spain");
+    expect(prompt).toContain("| Index | Name | Category | Rating | Review count | Description |");
+    expect(prompt).toContain("A leading contemporary art museum in the heart of Rome.");
+  });
+
+  it("uses — for missing description and review count in table", async () => {
+    const p1 = createPlace("p1", PlaceCategory.PARK);
+    const weightedPlaces: IWeightedPlace[] = [{ place: p1, weight: 10 }];
+    mockInvoke.mockResolvedValue({ rankings: [{ index: 1, bonus: 2 }] });
+
+    const state: RouteGenerationState = {
+      cityId: "city1",
+      location: "Vatican City",
+      theme: RouteTheme.HIGHLIGHTS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
+      places: [],
+      weightedPlaces,
+      clusters: [],
+      seeds: [],
+      currentSeed: {
+        theme: RouteTheme.NATURE,
+        routeMode: RouteMode.WALKING,
+        durationBudgetMinutes: 60,
+        startPlace: p1,
+        cluster: {} as ICluster,
+      },
+      candidatePlaces: [p1],
+      scoredPlaces: [],
+      orderedStops: [],
+      trimmedStops: [],
+      builtRoute: null,
+      savedRoutes: [],
+      error: null,
+    };
+
+    await makePoiScoringNode("key")(state);
+
+    const prompt = mockInvoke.mock.calls[0][0] as string;
+    expect(prompt).toContain("Location: Vatican City");
+    expect(prompt).toMatch(/\| 1 \| Test \| park \| — \| — \| — \|/);
+  });
+
   it("merges AI-scored top20 with rest of baseScored when more than 20 places", async () => {
     const places = Array.from({ length: 25 }, (_, i) => createPlace(`p${i}`, PlaceCategory.MUSEUM));
     const weightedPlaces = places.map(p => ({ place: p, weight: 10 - places.indexOf(p) * 0.1 }));
@@ -296,6 +388,8 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,

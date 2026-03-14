@@ -101,6 +101,8 @@ export class OsmPlacesService {
         category,
         types: this.osmPlaceMapperService.toTypes(element),
         visitDurationMinutes: this.osmPlaceMapperService.toVisitDurationMinutes(category),
+        description: this.osmPlaceMapperService.getDescription(element),
+        mediaUrl: this.osmPlaceMapperService.getMediaUrl(element),
       });
     } catch (error) {
       this.logger.warn(`Failed to insert OSM place ${element.type}/${element.id}: ${(error as Error).message}`);

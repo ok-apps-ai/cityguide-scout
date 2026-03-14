@@ -87,13 +87,13 @@ describe("GeneratorService — integration", () => {
       const eventEmitter = testModule.get(EventEmitter2);
       await eventEmitter.emitAsync(CITY_CREATED_EVENT, cityEntity);
 
-      expect(generateSpy).toHaveBeenCalledWith(cityEntity.id);
+      expect(generateSpy).toHaveBeenCalledWith(cityEntity);
     });
   });
 
   describe("generateForCity", () => {
     it("invokes graph for city and returns saved route ids", async () => {
-      const result = await generatorService.generateForCity(cityEntity.id);
+      const result = await generatorService.generateForCity(cityEntity);
 
       expect(result).toBeInstanceOf(Array);
       expect(result.every(id => typeof id === "string")).toBe(true);

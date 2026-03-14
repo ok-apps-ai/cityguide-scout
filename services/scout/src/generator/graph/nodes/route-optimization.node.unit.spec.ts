@@ -21,6 +21,8 @@ describe("makeRouteOptimizationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [
@@ -60,6 +62,8 @@ describe("makeRouteOptimizationNode", () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -88,6 +92,8 @@ describe("makeRouteOptimizationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

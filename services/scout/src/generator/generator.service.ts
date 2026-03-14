@@ -8,7 +8,7 @@ import { RouteTheme } from "@framework/types";
 
 import { CityEntity } from "../city/city.entity";
 import { CITY_CREATED_EVENT } from "../city/city.service";
-import { PlaceOsmResolutionService } from "../place/place-osm-resolution.service";
+import { PlaceOsmResolutionService } from "../place/osm-resolution/place-osm-resolution.service";
 import { PlaceService } from "../place/place.service";
 import { RouteService } from "../route/route.service";
 import {
@@ -43,12 +43,15 @@ export class GeneratorService {
   @OnEvent(CITY_CREATED_EVENT)
   public async onCityCreated(cityEntity: CityEntity): Promise<void> {
     this.logger.log(`city.created event received for: ${cityEntity.name} — starting route generation`);
-    await this.generateForCity(cityEntity.id);
+    await this.generateForCity(cityEntity);
   }
 
-  public async generateForCity(cityId: string): Promise<string[]> {
+  public async generateForCity(cityEntity: CityEntity): Promise<string[]> {
     const openaiApiKey = this.configService.get<string>("OPENAI_API_KEY", "");
     const recursionLimit = this.configService.get<number>("ROUTE_GRAPH_RECURSION_LIMIT", 500);
+
+    const cityId = cityEntity.id;
+    const location = cityEntity.name;
 
     const graph = buildRouteGraph({
       placeService: this.placeService,
@@ -64,6 +67,7 @@ export class GeneratorService {
       for (const theme of Object.values(RouteTheme)) {
         const initialState: Partial<RouteGenerationState> = {
           cityId,
+          location,
           theme,
           routeGenerationOptions: preset,
         };
@@ -74,7 +78,7 @@ export class GeneratorService {
       }
     }
 
-    this.logger.log(`Route generation complete for city ${cityId}: ${allSaved.length} routes saved`);
+    this.logger.log(`Route generation complete for city ${cityEntity.id}: ${allSaved.length} routes saved`);
     return allSaved;
   }
 }

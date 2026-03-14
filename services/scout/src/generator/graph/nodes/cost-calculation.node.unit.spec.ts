@@ -28,6 +28,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -66,6 +68,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -99,6 +103,8 @@ describe("makeCostCalculationNode", () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -125,6 +131,8 @@ describe("makeCostCalculationNode", () => {
     const p1 = createPlace("p1", PlaceCategory.PARK);
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -161,6 +169,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -196,6 +206,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -233,6 +245,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -276,6 +290,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -313,6 +329,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -350,6 +368,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -386,6 +406,8 @@ describe("makeCostCalculationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

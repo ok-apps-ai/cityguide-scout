@@ -13,7 +13,7 @@ import {
   shouldContinueBranch,
 } from "./route.graph";
 import { PlaceService } from "../../place/place.service";
-import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
+import { PlaceOsmResolutionService } from "../../place/osm-resolution/place-osm-resolution.service";
 import { RouteService } from "../../route/route.service";
 import type { ICluster, IRouteSeed } from "./state";
 

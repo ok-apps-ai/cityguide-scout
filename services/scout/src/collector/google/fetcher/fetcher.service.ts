@@ -22,6 +22,8 @@ function toPlace(p: INewApiPlace): INearbyPlace {
   const lng = p.location?.longitude ?? 0;
   const high = p.viewport?.high;
   const low = p.viewport?.low;
+  const description = typeof p.editorialSummary?.text === "string" ? p.editorialSummary.text : null;
+  const photoName = p.photos?.[0]?.name ?? null;
   return {
     place_id: placeId,
     name: p.displayName?.text ?? "",
@@ -39,6 +41,8 @@ function toPlace(p: INewApiPlace): INearbyPlace {
     rating: p.rating,
     user_ratings_total: p.userRatingCount,
     price_level: p.priceLevel === "PRICE_LEVEL_FREE" ? 0 : undefined,
+    description,
+    photoName,
   };
 }
 
@@ -134,7 +138,7 @@ export class GooglePlacesFetcherService {
             "Content-Type": "application/json",
             "X-Goog-Api-Key": apiKey,
             "X-Goog-FieldMask":
-              "places.id,places.displayName,places.location,places.viewport,places.types,places.rating,places.userRatingCount,places.priceLevel",
+              "places.id,places.displayName,places.location,places.viewport,places.types,places.rating,places.userRatingCount,places.priceLevel,places.editorialSummary,places.photos",
           },
         }),
       ),
@@ -194,7 +198,7 @@ export class GooglePlacesFetcherService {
               "Content-Type": "application/json",
               "X-Goog-Api-Key": apiKey,
               "X-Goog-FieldMask":
-                "places.id,places.displayName,places.location,places.viewport,places.types,places.rating,places.userRatingCount,places.priceLevel",
+                "places.id,places.displayName,places.location,places.viewport,places.types,places.rating,places.userRatingCount,places.priceLevel,places.editorialSummary,places.photos",
             },
           },
         ),

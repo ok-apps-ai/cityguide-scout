@@ -1,4 +1,4 @@
-import { PlaceCategory } from "@framework/types";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 
 import { selectTopClusters, selectCentersNode } from "./select-centers.node";
 import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
@@ -73,6 +73,8 @@ describe("selectCentersNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, maxClusters: 2 },
       places: [],
       weightedPlaces,
@@ -98,6 +100,8 @@ describe("selectCentersNode", () => {
   it("returns empty clusters when state has no clusters", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, maxClusters: 5 },
       places: [],
       weightedPlaces: [],

@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Repository } from "typeorm";
 
 import type { IUpsertPlacePayload } from "@framework/types";
 
@@ -83,6 +83,11 @@ export class PlaceService {
 
   public findById(id: string): Promise<PlaceEntity | null> {
     return this.placeEntityRepository.findOne({ where: { id } });
+  }
+
+  public findByIds(ids: string[]): Promise<PlaceEntity[]> {
+    if (ids.length === 0) return Promise.resolve([]);
+    return this.placeEntityRepository.find({ where: { id: In(ids) } });
   }
 
   public async getPlaceCoordinates(placeId: string): Promise<{ lat: number; lng: number } | null> {

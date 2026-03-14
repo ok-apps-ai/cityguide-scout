@@ -1,4 +1,4 @@
-import { PlaceCategory } from "@framework/types";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { makeLoadPoiNode } from "./load-poi.node";
@@ -20,6 +20,8 @@ describe("makeLoadPoiNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city-123",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -50,6 +52,8 @@ describe("makeLoadPoiNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city-456",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

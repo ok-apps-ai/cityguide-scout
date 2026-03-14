@@ -66,6 +66,9 @@ export class PlaceEntity {
   description: string | null;
 
   @Column({ type: "text", nullable: true })
+  photoName: string | null;
+
+  @Column({ type: "text", nullable: true })
   mediaUrl: string | null;
 
   @CreateDateColumn()

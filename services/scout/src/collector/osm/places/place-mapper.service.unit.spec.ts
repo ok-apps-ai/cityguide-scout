@@ -179,6 +179,32 @@ describe("OsmPlaceMapperService", () => {
     });
   });
 
+  describe("getDescription", () => {
+    it("returns description from tags", () => {
+      const element = overpassElement({ tags: { description: "A historic museum." } });
+
+      const result = service.getDescription(element);
+
+      expect(result).toEqual("A historic museum.");
+    });
+
+    it("returns null when no description tag", () => {
+      const element = overpassElement({ tags: { tourism: "museum" } });
+
+      const result = service.getDescription(element);
+
+      expect(result).toBeNull();
+    });
+
+    it("returns null when tags empty", () => {
+      const element = overpassElement({ tags: {} });
+
+      const result = service.getDescription(element);
+
+      expect(result).toBeNull();
+    });
+  });
+
   describe("isExcluded", () => {
     it("returns true for amenity:casino", () => {
       const element = overpassElement({ tags: { amenity: "casino" } });

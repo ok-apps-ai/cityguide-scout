@@ -60,6 +60,7 @@ describe("computeWeightsNode", () => {
     const place = createPlace("p1", PlaceCategory.MUSEUM);
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [place],
@@ -87,6 +88,7 @@ describe("computeWeightsNode", () => {
   it("returns empty weightedPlaces when places is empty", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
       theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],

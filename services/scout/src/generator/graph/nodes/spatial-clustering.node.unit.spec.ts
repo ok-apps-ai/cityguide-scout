@@ -1,4 +1,4 @@
-import { PlaceCategory } from "@framework/types";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { makeSpatialClusteringNode } from "./spatial-clustering.node";
@@ -19,6 +19,8 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -64,6 +66,8 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [p1, p2, p3],
       weightedPlaces,
@@ -104,6 +108,8 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [p1],
       weightedPlaces,

@@ -1,23 +1,11 @@
 import { Module } from "@nestjs/common";
-import { HttpModule } from "@nestjs/axios";
-import { ConfigModule } from "@nestjs/config";
 
-import { GooglePlacesFetcherModule } from "../collector/google/fetcher/fetcher.module";
 import { PlaceCoreModule } from "./place-core.module";
-import { PlaceEnrichmentService } from "./place-enrichment.service";
-import { PlaceOsmResolutionService } from "./place-osm-resolution.service";
-import { GooglePlaceMediaUrlProvider } from "./google-place-media-url-provider.service";
+import { EnrichmentModule } from "./enrichment/enrichment.module";
+import { OsmResolutionModule } from "./osm-resolution/osm-resolution.module";
 
 @Module({
-  imports: [ConfigModule, HttpModule, PlaceCoreModule, GooglePlacesFetcherModule],
-  providers: [
-    PlaceEnrichmentService,
-    PlaceOsmResolutionService,
-    {
-      provide: "IPlaceMediaUrlProvider",
-      useClass: GooglePlaceMediaUrlProvider,
-    },
-  ],
-  exports: [PlaceCoreModule, PlaceOsmResolutionService],
+  imports: [PlaceCoreModule, EnrichmentModule, OsmResolutionModule],
+  exports: [PlaceCoreModule, EnrichmentModule, OsmResolutionModule],
 })
 export class PlaceModule {}

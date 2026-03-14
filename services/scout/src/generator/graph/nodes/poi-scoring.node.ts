@@ -32,6 +32,25 @@ const rankingsSchema = z.object({
   ),
 });
 
+/** Escapes pipe and newline so table structure is preserved. */
+function escapeTableCell(value: string): string {
+  return value.replace(/\|/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function buildPlacesTable(top20: IWeightedPlace[]): string {
+  const header = "| Index | Name | Category | Rating | Review count | Description |";
+  const separator = "|-------|------|----------|--------|---------------|-------------|";
+  const rows = top20.map((w, i) => {
+    const name = escapeTableCell(w.place.name);
+    const category = String(w.place.category);
+    const rating = w.place.rating != null ? String(w.place.rating) : "—";
+    const reviewCount = w.place.reviewCount != null ? String(w.place.reviewCount) : "—";
+    const description = w.place.description ? escapeTableCell(w.place.description) : "—";
+    return `| ${i + 1} | ${name} | ${category} | ${rating} | ${reviewCount} | ${description} |`;
+  });
+  return [header, separator, ...rows].join("\n");
+}
+
 export const makePoiScoringNode = (openaiApiKey: string) => {
   return async (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
     if (!state.currentSeed || state.candidatePlaces.length === 0) {
@@ -56,13 +75,24 @@ export const makePoiScoringNode = (openaiApiKey: string) => {
 
       const structured = model.withStructuredOutput(rankingsSchema);
 
-      const placeList = top20
-        .map((w, i) => `${i + 1}. ${w.place.name} (${w.place.category}, rating: ${w.place.rating ?? "n/a"})`)
-        .join("\n");
+      const placesTable = buildPlacesTable(top20);
 
-      const result = await structured.invoke(
-        `You are a tourist route expert. Given the theme "${theme}", score each place with a bonus (0-5) based on how well it fits the theme and tourist value.\n\nPlaces:\n${placeList}`,
-      );
+      const prompt = `## Role
+You are a tourist route expert.
+
+## Context
+Location: ${state.location}
+Theme: ${theme}
+Places to score:
+${placesTable}
+
+## Task
+Score each place with a bonus (0-5) based on how well it fits the theme and tourist value. Use the description when available to assess relevance.
+
+## Desired result
+Return rankings with index and bonus for each place.`;
+
+      const result = await structured.invoke(prompt);
 
       const bonusMap = new Map<number, number>(
         result.rankings.map((r: { index: number; bonus: number }) => [r.index - 1, r.bonus]),

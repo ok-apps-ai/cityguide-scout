@@ -1,6 +1,6 @@
 import { PlaceSource } from "@framework/types";
 
-import { PlaceOsmResolutionService } from "../../../place/place-osm-resolution.service";
+import { PlaceOsmResolutionService } from "../../../place/osm-resolution/place-osm-resolution.service";
 import { IBuiltRoute, IRouteStop, RouteGenerationState } from "../state";
 
 export const makeResolveOsmPlacesNode = (placeOsmResolutionService: PlaceOsmResolutionService) => {

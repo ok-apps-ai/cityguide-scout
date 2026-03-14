@@ -1,4 +1,4 @@
-import { PlaceCategory } from "@framework/types";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { makePopulateCoordCacheNode } from "./populate-coord-cache.node";
@@ -23,6 +23,8 @@ describe("makePopulateCoordCacheNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [createPlace("p1"), createPlace("p2")],
       weightedPlaces: [],
@@ -53,6 +55,8 @@ describe("makePopulateCoordCacheNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

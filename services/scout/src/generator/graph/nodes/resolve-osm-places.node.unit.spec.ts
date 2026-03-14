@@ -41,6 +41,8 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
@@ -86,6 +88,8 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [],
       weightedPlaces: [],
@@ -117,6 +121,8 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -160,6 +166,8 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],

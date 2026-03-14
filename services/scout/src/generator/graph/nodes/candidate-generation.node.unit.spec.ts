@@ -32,6 +32,8 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [p1, p2],
       weightedPlaces: [],
@@ -61,6 +63,8 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [p1, p2],
       weightedPlaces: [],
@@ -89,6 +93,8 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -118,6 +124,8 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 3 },
       places: [p1],
       weightedPlaces: [],
@@ -149,6 +157,8 @@ describe("makeCandidateGenerationCyclingNode (BICYCLING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...BICYCLING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [p1],
       weightedPlaces: [],
@@ -180,6 +190,8 @@ describe("makeCandidateGenerationDrivingNode (DRIVING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...DRIVING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [p1],
       weightedPlaces: [],

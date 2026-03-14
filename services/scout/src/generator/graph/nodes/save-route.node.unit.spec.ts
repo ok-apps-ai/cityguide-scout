@@ -93,6 +93,8 @@ describe("makeSaveRouteNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
@@ -126,6 +128,8 @@ describe("makeSaveRouteNode", () => {
     const p1 = createPlace("p1");
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
@@ -160,6 +164,8 @@ describe("makeSaveRouteNode", () => {
     const p2 = createPlace("p2");
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: {
         ...WALKING_ROUTE_GENERATION_OPTIONS,
         minPoints: 2,
@@ -209,6 +215,8 @@ describe("makeSaveRouteNode", () => {
     const p2 = createPlace("p2");
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: {
         ...WALKING_ROUTE_GENERATION_OPTIONS,
         minPoints: 2,
@@ -244,6 +252,8 @@ describe("makeSaveRouteNode", () => {
     const p2 = createPlace("p2");
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: {
         ...WALKING_ROUTE_GENERATION_OPTIONS,
         minDurationMinutes: 60,
@@ -281,6 +291,8 @@ describe("makeSaveRouteNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      location: "Test City",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

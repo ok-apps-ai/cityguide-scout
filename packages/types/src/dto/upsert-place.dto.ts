@@ -16,4 +16,6 @@ export interface IUpsertPlacePayload {
   priceLevel?: PriceLevel | null;
   visitDurationMinutes?: number | null;
   description?: string | null;
+  photoName?: string | null;
+  mediaUrl?: string | null;
 }

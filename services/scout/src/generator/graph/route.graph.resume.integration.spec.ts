@@ -20,7 +20,7 @@ import { PlaceSeedModule } from "../../place/place.seed.module";
 import { PlaceSeedService } from "../../place/place.seed.service";
 import { PlaceModule } from "../../place/place.module";
 import { PlaceService } from "../../place/place.service";
-import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
+import { PlaceOsmResolutionService } from "../../place/osm-resolution/place-osm-resolution.service";
 import { RouteEntity } from "../../route/route.entity";
 import { RouteStopEntity } from "../../route/route-stop.entity";
 import { RouteModule } from "../../route/route.module";
@@ -31,6 +31,7 @@ const createResumeState = (
   overrides: Partial<RouteGenerationState>,
 ): RouteGenerationState => ({
   cityId: "",
+  location: "Vatican City",
   theme: RouteTheme.HIGHLIGHTS,
   routeGenerationOptions: routeOptions,
   places: [],
