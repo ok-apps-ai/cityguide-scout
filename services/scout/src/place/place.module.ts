@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { HttpModule } from "@nestjs/axios";
 import { ConfigModule } from "@nestjs/config";
 
-import { GooglePlacesFetcherModule } from "../collector/google";
+import { GooglePlacesFetcherModule } from "../collector/google/fetcher/fetcher.module";
 import { PlaceCoreModule } from "./place-core.module";
 import { PlaceEnrichmentService } from "./place-enrichment.service";
 import { PlaceOsmResolutionService } from "./place-osm-resolution.service";

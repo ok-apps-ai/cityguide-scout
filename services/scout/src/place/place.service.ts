@@ -2,9 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import type { IUpsertPlacePayload } from "@framework/types";
+
 import { ns } from "../common/constants";
 import { PlaceEntity, PlaceSource } from "./place.entity";
-import type { IUpsertPlacePayload } from "./types";
 
 @Injectable()
 export class PlaceService {

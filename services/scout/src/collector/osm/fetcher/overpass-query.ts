@@ -1,4 +1,4 @@
-import type { IBbox } from "./types";
+import type { IBbox } from "@framework/types";
 
 export function buildOverpassQuery(bbox: IBbox, includedTagKeys: readonly string[]): string {
   const bboxStr = `${bbox.south},${bbox.west},${bbox.north},${bbox.east}`;

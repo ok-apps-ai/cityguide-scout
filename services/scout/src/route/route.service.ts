@@ -2,12 +2,13 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesFetcherService } from "../collector/google";
+import type { ICreateRoutePayload } from "@framework/types";
+
+import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
 import { ns } from "../common/constants";
 import { PlaceService } from "../place/place.service";
 import { RouteEntity } from "./route.entity";
 import { RouteStopEntity } from "./route-stop.entity";
-import type { ICreateRoutePayload } from "./types";
 
 @Injectable()
 export class RouteService {

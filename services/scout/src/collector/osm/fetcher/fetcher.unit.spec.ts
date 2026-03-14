@@ -2,8 +2,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { HttpModule, HttpService } from "@nestjs/axios";
 import { of, throwError } from "rxjs";
 
+import type { IOverpassElement } from "@framework/types";
+
 import { OsmOverpassFetcherService } from "./fetcher.service";
-import type { IOverpassElement } from "./types";
 
 const bbox = { south: 36.5, west: -5.0, north: 36.6, east: -4.9 };
 

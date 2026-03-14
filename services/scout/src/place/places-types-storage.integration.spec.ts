@@ -3,15 +3,17 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService , GoogleModule } from "./google";
-import { OsmPlacesService , OsmModule } from "./osm";
-import { PlaceEntity, PlaceSource } from "../place/place.entity";
+import { GooglePlacesService } from "../collector/google/places/places.service";
+import { GoogleModule } from "../collector/google/google.module";
+import { OsmPlacesService } from "../collector/osm/places/places.service";
+import { OsmModule } from "../collector/osm/osm.module";
+import { PlaceEntity, PlaceSource } from "./place.entity";
 import { CityEntity } from "../city/city.entity";
 import { RouteEntity } from "../route/route.entity";
 import { RouteStopEntity } from "../route/route-stop.entity";
 import { CitySeedModule } from "../city/city.seed.module";
 import { CitySeedService } from "../city/city.seed.service";
-import { PlaceModule } from "../place/place.module";
+import { PlaceModule } from "./place.module";
 import ormconfig from "../infrastructure/database/database.config";
 
 /**

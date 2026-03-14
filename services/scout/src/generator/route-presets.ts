@@ -1,6 +1,5 @@
 import { RouteMode } from "@framework/types";
-
-import type { IRouteOptions } from "./dto";
+import type { IRouteOptions } from "@framework/types";
 
 export const ROUTE_MODE_RADIUS_METERS: Record<RouteMode, number> = {
   [RouteMode.WALKING]: 3000,

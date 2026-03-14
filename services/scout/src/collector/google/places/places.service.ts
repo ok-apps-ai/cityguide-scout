@@ -3,13 +3,14 @@ import { ConfigService } from "@nestjs/config";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
+import type { INearbyPlace } from "@framework/types";
+
 import { ns } from "../../../common/constants";
 import { PlaceEntity, PlaceSource } from "../../../place/place.entity";
 import { PlaceService } from "../../../place/place.service";
 import { CityEntity } from "../../../city/city.entity";
 import { INCLUDED_SEARCH_TYPES, EXCLUDED_SEARCH_TYPES } from "../../../place/google-place-types";
 import { GooglePlacesFetcherService } from "../fetcher/fetcher.service";
-import type { INearbyPlace } from "../fetcher/types";
 import { GooglePlaceMapperService } from "./place-mapper.service";
 import { NEARBY_RADIUS_METERS } from "./constants";
 

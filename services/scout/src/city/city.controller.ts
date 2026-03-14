@@ -1,8 +1,9 @@
 import { Controller, Logger } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
+import type { ICreateCityPayload } from "@framework/types";
+
 import { CityService } from "./city.service";
-import type { ICreateCityPayload } from "./types";
 import { CITY_CREATE, CITY_DELETE, CITY_FIND_ALL } from "./city.patterns";
 
 @Controller()

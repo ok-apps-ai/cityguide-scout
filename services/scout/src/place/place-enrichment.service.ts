@@ -2,9 +2,9 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { OnEvent } from "@nestjs/event-emitter";
 
-import { GooglePlacesFetcherService } from "../collector/google";
+import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
 import { sleep, withRetry } from "../common/retry";
-import type { IPlaceMediaUrlProvider } from "./types";
+import type { IPlaceMediaUrlProvider } from "./interfaces";
 import { PlaceService } from "./place.service";
 import { PLACE_ACCEPTED } from "./place.patterns";
 

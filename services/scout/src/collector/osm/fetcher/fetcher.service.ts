@@ -2,8 +2,9 @@ import { Injectable, Logger } from "@nestjs/common";
 import { HttpService } from "@nestjs/axios";
 import { firstValueFrom } from "rxjs";
 
+import type { IBbox, IOverpassElement, IOverpassFetcherOptions, IOverpassResponse } from "@framework/types";
+
 import { withRetry } from "../../../common/retry";
-import type { IBbox, IOverpassElement, IOverpassFetcherOptions, IOverpassResponse } from "./types";
 import { buildOverpassQuery } from "./overpass-query";
 import { INCLUDED_OSM_TAG_KEYS } from "../places/osm-place-types";
 

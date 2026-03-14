@@ -1,12 +1,9 @@
 # Project
 **/dist/
 /postgres/
-/contracts/typechain-types/
-/contracts/artifacts/
-/contracts/cache/
-/contracts/coverage/
 /besu/
 /services/server/temp/
+services/scout/coverage
 coverage.json
 
 # IDE

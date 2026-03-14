@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { PlaceCoreModule } from "../../../place/place-core.module";
-import { OsmOverpassFetcherModule } from "../fetcher";
+import { OsmOverpassFetcherModule } from "../fetcher/fetcher.module";
 import { OsmPlaceMapperService } from "./place-mapper.service";
 import { OsmPlacesService } from "./places.service";
 

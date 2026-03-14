@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { GooglePlacesService } from "./places";
+import { GooglePlacesService } from "./places/places.service";
 import { GoogleModule } from "./google.module";
 import { CityEntity } from "../../city/city.entity";
 import { PlaceEntity } from "../../place/place.entity";

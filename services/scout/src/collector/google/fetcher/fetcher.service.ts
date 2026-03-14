@@ -3,8 +3,9 @@ import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { firstValueFrom } from "rxjs";
 
+import type { INearbyPlace, IFetcherOptions, INewApiPlace, INewApiResponse } from "@framework/types";
+
 import { withRetry } from "../../../common/retry";
-import type { INearbyPlace, IFetcherOptions, INewApiPlace, INewApiResponse } from "./types";
 import { DEFAULT_RADIUS, NEW_API_BASE_URL, SEARCH_TEXT_URL, TYPES_BATCH_SIZE } from "./constants";
 
 function chunk<T>(arr: readonly T[], size: number): T[][] {

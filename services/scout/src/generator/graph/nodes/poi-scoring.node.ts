@@ -4,17 +4,9 @@ import { z } from "zod";
 import { RouteTheme } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
+import { THEME_CATEGORIES } from "../../theme-categories";
 import { THEME_CATEGORY_WEIGHTS } from "../../theme-flavor-weights";
 import { IWeightedPlace, RouteGenerationState } from "../state";
-
-const THEME_CATEGORIES: Record<string, string[]> = {
-  history: ["monument", "church", "museum", "square", "attraction"],
-  nature: ["park", "waterfront", "bridge"],
-  viewpoints: ["viewpoint", "bridge", "waterfront"],
-  shopping: ["street", "square"],
-  evening: ["square", "waterfront", "viewpoint", "street"],
-  highlights: ["museum", "viewpoint", "monument", "attraction", "square"],
-};
 
 export const computeBaseScoredPlaces = (
   candidatePlaces: IPlace[],

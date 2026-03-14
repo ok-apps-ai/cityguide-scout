@@ -1,5 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
+import type { INearbyPlace } from "@framework/types";
+
 import { PlaceCategory, PriceLevel } from "../../../place/place.entity";
 import { PLACE_VISIT_DURATION } from "../../../place/place.constants";
 import {
@@ -8,7 +10,6 @@ import {
   GOOGLE_TYPE_TO_PLACE_CATEGORY,
   type GooglePlaceType,
 } from "../../../place/google-place-types";
-import type { INearbyPlace } from "../fetcher/types";
 
 const GOOGLE_PRICE_TO_ENUM: Record<number, PriceLevel> = {
   0: PriceLevel.FREE,

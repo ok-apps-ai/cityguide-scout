@@ -3,10 +3,11 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import type { ICreateCityPayload } from "@framework/types";
+
 import { CollectorService } from "../collector/collector.service";
 import { ns } from "../common/constants";
 import { CityEntity } from "./city.entity";
-import type { ICreateCityPayload } from "./types";
 
 export const CITY_CREATED_EVENT = "city.created";
 

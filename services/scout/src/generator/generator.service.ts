@@ -4,6 +4,8 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
+import type { IRouteOptions } from "@framework/types";
+
 import { CityEntity } from "../city/city.entity";
 import { CITY_CREATED_EVENT } from "../city/city.service";
 import { PlaceOsmResolutionService } from "../place/place-osm-resolution.service";
@@ -11,7 +13,7 @@ import { PlaceService } from "../place/place.service";
 import { RouteService } from "../route/route.service";
 import { buildRouteGraph } from "./graph/route.graph";
 import { RouteGenerationState } from "./graph/state";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS, type IRouteOptions } from "./generator.options";
+import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "./generator.options";
 
 type AnyRecord = Record<string, any>;
 
@@ -34,7 +36,10 @@ export class GeneratorService {
     await this.generateForCity(cityEntity.id);
   }
 
-  public async generateForCity(cityId: string, preset: IRouteOptions = DEFAULT_ROUTE_GENERATION_OPTIONS): Promise<string[]> {
+  public async generateForCity(
+    cityId: string,
+    preset: IRouteOptions = DEFAULT_ROUTE_GENERATION_OPTIONS,
+  ): Promise<string[]> {
     const openaiApiKey = this.configService.get<string>("OPENAI_API_KEY", "");
 
     const graph = buildRouteGraph({

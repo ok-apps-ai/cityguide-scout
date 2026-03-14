@@ -36,6 +36,22 @@ describe("selectTopClusters", () => {
     expect(result[1].id).toEqual(1);
   });
 
+  it("returns empty when clusters is empty", () => {
+    const result = selectTopClusters([], [], 5);
+    expect(result).toHaveLength(0);
+  });
+
+  it("uses weight 0 for places not in weightedPlaces", () => {
+    const p1 = createPlace("p1", PlaceCategory.PARK);
+    const p2 = createPlace("p2", PlaceCategory.PARK);
+    const cluster = createCluster(0, [p1, p2], p1);
+    const weightedPlaces: IWeightedPlace[] = [{ place: p1, weight: 5 }];
+
+    const result = selectTopClusters([cluster], weightedPlaces, 1);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toEqual(0);
+  });
+
   it("limits to maxClusters", () => {
     const p1 = createPlace("p1", PlaceCategory.PARK);
     const cluster1 = createCluster(0, [p1], p1);
@@ -77,5 +93,27 @@ describe("selectCentersNode", () => {
     expect(result.clusters).toBeDefined();
     expect(result.clusters).toHaveLength(1);
     expect(result.clusters![0].id).toEqual(0);
+  });
+
+  it("returns empty clusters when state has no clusters", async () => {
+    const state: RouteGenerationState = {
+      cityId: "city1",
+      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, maxClusters: 5 },
+      places: [],
+      weightedPlaces: [],
+      clusters: [],
+      seeds: [],
+      currentSeed: null,
+      candidatePlaces: [],
+      scoredPlaces: [],
+      orderedStops: [],
+      trimmedStops: [],
+      builtRoute: null,
+      savedRoutes: [],
+      error: null,
+    };
+
+    const result = await selectCentersNode(state);
+    expect(result.clusters).toEqual([]);
   });
 });

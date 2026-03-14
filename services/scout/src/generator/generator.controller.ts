@@ -1,7 +1,9 @@
 import { Controller, Logger } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
-import { DEFAULT_ROUTE_GENERATION_OPTIONS, type IRouteOptions } from "./generator.options";
+import type { IRouteOptions } from "@framework/types";
+
+import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "./generator.options";
 import { ROUTE_GENERATE } from "./generator.patterns";
 import { GeneratorService } from "./generator.service";
 

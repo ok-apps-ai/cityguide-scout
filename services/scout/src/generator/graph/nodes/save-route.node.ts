@@ -1,9 +1,10 @@
 import { EventEmitter2 } from "@nestjs/event-emitter";
 
+import type { IRouteOptions } from "@framework/types";
+
 import { RouteService } from "../../../route/route.service";
 import { PLACE_ACCEPTED } from "../../../place/place.patterns";
 import type { IBuiltRoute } from "../state";
-import type { IRouteOptions } from "../../dto";
 import { RouteGenerationState } from "../state";
 
 export const isRouteWithinConstraints = (builtRoute: IBuiltRoute, options: IRouteOptions): boolean => {

@@ -3,15 +3,15 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule, getRepositoryToken } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import { OsmPlacesService } from "./places";
-import { OsmOverpassFetcherService } from "./fetcher";
-import { OsmModule } from "./osm.module";
-import { CityEntity } from "../../city/city.entity";
-import { PlaceEntity } from "../../place/place.entity";
-import { CitySeedModule } from "../../city/city.seed.module";
-import { CitySeedService } from "../../city/city.seed.service";
-import { PlaceModule } from "../../place/place.module";
-import ormconfig from "../../infrastructure/database/database.config";
+import { OsmPlacesService } from "./places.service";
+import { OsmOverpassFetcherService } from "../fetcher/fetcher.service";
+import { OsmModule } from "../osm.module";
+import { CityEntity } from "../../../city/city.entity";
+import { PlaceEntity } from "../../../place/place.entity";
+import { CitySeedModule } from "../../../city/city.seed.module";
+import { CitySeedService } from "../../../city/city.seed.service";
+import { PlaceModule } from "../../../place/place.module";
+import ormconfig from "../../../infrastructure/database/database.config";
 
 /** Tile bbox from discovery script (scripts/find-osm-casino-tile.ts). Contains Casino Marbella. */
 const CASINO_TILE_BBOX = {

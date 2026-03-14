@@ -2,7 +2,7 @@ import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
-import type { IPlace } from "@framework/types";
+import type { IPlace, IRouteOptions } from "@framework/types";
 
 import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
 import { PlaceService } from "../../place/place.service";
@@ -36,9 +36,11 @@ export interface IGraphDeps {
   eventEmitter: EventEmitter2;
 }
 
+export const savedRoutesReducer = (a: string[], b: string[]): string[] => [...a, ...b];
+
 const StateAnnotation = Annotation.Root({
   cityId: Annotation<string>,
-  routeGenerationOptions: Annotation<import("../generator.options").IRouteOptions>(),
+  routeGenerationOptions: Annotation<IRouteOptions>(),
   places: Annotation<IPlace[]>,
   weightedPlaces: Annotation<IWeightedPlace[]>,
   clusters: Annotation<ICluster[]>,
@@ -50,7 +52,7 @@ const StateAnnotation = Annotation.Root({
   trimmedStops: Annotation<IRouteStop[]>,
   builtRoute: Annotation<IBuiltRoute | null>,
   savedRoutes: Annotation<string[]>({
-    reducer: (a, b) => [...a, ...b],
+    reducer: savedRoutesReducer,
     default: () => [],
   }),
   error: Annotation<string | null>,
@@ -58,16 +60,16 @@ const StateAnnotation = Annotation.Root({
 
 type GraphState = typeof StateAnnotation.State;
 
-const pickNextSeedNode = (state: GraphState): Promise<Partial<GraphState>> => {
+export const pickNextSeedNode = (state: GraphState): Promise<Partial<GraphState>> => {
   const { currentSeed, seeds } = pickNextSeed(state.seeds);
   return Promise.resolve({ currentSeed, seeds });
 };
 
-const shouldContinueBranch = (state: GraphState): "pickNextSeed" | typeof END => {
+export const shouldContinueBranch = (state: GraphState): "pickNextSeed" | typeof END => {
   return shouldContinue(state.seeds) ? "pickNextSeed" : END;
 };
 
-const routeModeBranchNode = (state: GraphState) => routeModeBranch(state.currentSeed?.routeMode);
+export const routeModeBranchNode = (state: GraphState) => routeModeBranch(state.currentSeed?.routeMode);
 
 export const buildRouteGraph = (deps: IGraphDeps) => {
   const { placeService, placeOsmResolutionService, routeService, dataSource, openaiApiKey, eventEmitter } = deps;

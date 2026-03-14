@@ -2,12 +2,13 @@ import { Injectable, Logger } from "@nestjs/common";
 import { InjectDataSource } from "@nestjs/typeorm";
 import { DataSource } from "typeorm";
 
+import type { IOverpassElement } from "@framework/types";
+
 import { ns } from "../../../common/constants";
 import { PlaceService } from "../../../place/place.service";
 import { PlaceSource } from "../../../place/place.entity";
 import { CityEntity } from "../../../city/city.entity";
 import { OsmOverpassFetcherService } from "../fetcher/fetcher.service";
-import type { IOverpassElement } from "../fetcher/types";
 import { OsmPlaceMapperService } from "./place-mapper.service";
 
 @Injectable()

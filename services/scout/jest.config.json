@@ -1,5 +1,10 @@
 {
   "coverageDirectory": "../coverage",
+  "coveragePathIgnorePatterns": [
+    "\\.entity\\.ts$",
+    "collector/google/places/places\\.service\\.ts",
+    "collector/osm/places/places\\.service\\.ts"
+  ],
   "moduleNameMapper": {
     "^(\\.{1,2}/.*)\\.js$": "$1"
   },

@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 
 import { PlaceCategory } from "@framework/types";
+import type { IOverpassElement } from "@framework/types";
 
 import { PLACE_VISIT_DURATION } from "../../../place/place.constants";
-import type { IOverpassElement } from "../fetcher/types";
 import { EXCLUDED_OSM_TAG_VALUES, INCLUDED_OSM_TAG_KEYS } from "./osm-place-types";
 
 /**

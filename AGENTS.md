@@ -51,8 +51,7 @@ Scout modules follow a consistent layout. Use this structure when creating or re
 
 ### Folder layout
 
-- **`types/`** — One interface per file, re-exported from `types/index.ts`
-- **`dto/`** — One DTO per file, re-exported from `dto/index.ts`
+- **`interfaces/`** — Interfaces used and defined in the module (one interface per file). Re-export from `interfaces/index.ts`. Import from `./interfaces` or the specific file.
 - **Subfolders** — Split by responsibility (e.g. `fetcher/` and `places/` for collector sources)
 
 ### Collector modules (Google, OSM)
@@ -67,30 +66,30 @@ collector/google/
 ├── fetcher/
 │   ├── fetcher.module.ts
 │   ├── fetcher.service.ts
-│   └── types/
+│   └── interfaces/
 │       ├── index.ts
 │       └── *.interface.ts
 ├── places/
 │   ├── places.module.ts
 │   ├── places.service.ts
 │   └── ...
-├── google.module.ts
-└── index.ts
+└── google.module.ts
 ```
 
 ### Types and DTOs
 
-- **Types:** One interface per file (e.g. `nearby-place.interface.ts` → `INearbyPlace`)
-- **DTOs:** One DTO or interface per file in `dto/` (e.g. `generate-routes-body.dto.ts`)
-- **Re-exports:** Each `types/` and `dto/` folder has an `index.ts` that re-exports all
+- **Interfaces:** Module-specific interfaces live in `interfaces/` with an `index.ts` barrel. Import from `./interfaces` or the specific file.
+- **Shared types:** Import directly from `@framework/types`; do not re-export.
+- **DTOs:** One DTO per file except of nested in `dto/` (e.g. `generate-routes-body.dto.ts`)
+
 
 ### Imports
 
-Import from the barrel files:
+Import types from the barrel:
 
 ```ts
-import { INearbyPlace, IFetcherOptions } from "./types";
-import { IGenerateRoutesBody } from "./dto";
+import type { INearbyPlace, IFetcherOptions } from "@framework/types";
+import type { IRouteOptions } from "./interfaces";
 ```
 
 ## Build and development

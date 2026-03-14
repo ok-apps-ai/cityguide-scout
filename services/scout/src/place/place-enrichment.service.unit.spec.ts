@@ -1,7 +1,7 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigModule } from "@nestjs/config";
 
-import { GooglePlacesFetcherService } from "../collector/google";
+import { GooglePlacesFetcherService } from "../collector/google/fetcher/fetcher.service";
 import { PlaceEnrichmentService } from "./place-enrichment.service";
 import { PlaceService } from "./place.service";
 import { PlaceCategory, PlaceEntity } from "./place.entity";

@@ -3,7 +3,7 @@ import { HttpService } from "@nestjs/axios";
 import { ConfigService } from "@nestjs/config";
 import { firstValueFrom } from "rxjs";
 
-import type { IPlaceMediaUrlProvider } from "./types";
+import type { IPlaceMediaUrlProvider } from "./interfaces";
 
 const MEDIA_BASE_URL = "https://places.googleapis.com/v1";
 const DEFAULT_MAX_WIDTH = 800;

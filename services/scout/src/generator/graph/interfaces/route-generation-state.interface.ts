@@ -1,6 +1,5 @@
-import type { IPlace } from "@framework/types";
+import type { IPlace, IRouteOptions } from "@framework/types";
 
-import type { IRouteOptions } from "../../dto";
 import type { IWeightedPlace } from "./weighted-place.interface";
 import type { ICluster } from "./cluster.interface";
 import type { IRouteSeed } from "./route-seed.interface";
