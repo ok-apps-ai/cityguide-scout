@@ -2,7 +2,7 @@ import { PlaceCategory } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { makeLoadPoiNode } from "./load-poi.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { RouteGenerationState } from "../state";
 
 const createPlace = (id: string): IPlace =>
@@ -20,7 +20,7 @@ describe("makeLoadPoiNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city-123",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -50,7 +50,7 @@ describe("makeLoadPoiNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city-456",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],

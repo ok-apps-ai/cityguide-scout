@@ -12,7 +12,7 @@ jest.mock("@langchain/openai", () => ({
 }));
 
 import { computeBaseScoredPlaces, makePoiScoringNode } from "./poi-scoring.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 
 const createPlace = (id: string, category: PlaceCategory): IPlace =>
@@ -84,7 +84,7 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [],
@@ -116,7 +116,7 @@ describe("makePoiScoringNode", () => {
   it("returns empty when currentSeed null", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -141,7 +141,7 @@ describe("makePoiScoringNode", () => {
     const place = createPlace("p1", PlaceCategory.PARK);
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [{ place, weight: 10 }],
       clusters: [],
@@ -172,7 +172,7 @@ describe("makePoiScoringNode", () => {
     const place = createPlace("p1", PlaceCategory.PARK);
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [{ place, weight: 10 }],
       clusters: [],
@@ -217,7 +217,7 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [],
@@ -257,7 +257,7 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [],
@@ -296,7 +296,7 @@ describe("makePoiScoringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [],

@@ -1,7 +1,7 @@
 import { PlaceCategory, RouteMode, RouteTheme } from "@framework/types";
 
 import { makeDurationLimitingNode } from "./duration-limiting.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IRouteStop, RouteGenerationState } from "../state";
 
 const createPlace = (id: string) => ({ id, category: PlaceCategory.PARK }) as unknown as IRouteStop["place"];
@@ -26,7 +26,7 @@ describe("makeDurationLimitingNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -59,7 +59,7 @@ describe("makeDurationLimitingNode", () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],

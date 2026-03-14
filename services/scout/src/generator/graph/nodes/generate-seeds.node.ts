@@ -24,7 +24,7 @@ const THEMES = [
 
 export const generateSeedsNode = (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
   const seeds: IRouteSeed[] = [];
-  const { minThemePlaces, routeModes, durationPresetsMinutes, seedsPerCluster } = state.routeGenerationOptions;
+  const { minThemePlaces, routeMode, durationPresetsMinutes, seedsPerCluster } = state.routeGenerationOptions;
 
   for (const cluster of state.clusters) {
     for (const theme of THEMES) {
@@ -45,16 +45,14 @@ export const generateSeedsNode = (state: RouteGenerationState): Promise<Partial<
       const startPlaces = sortedByWeight.slice(0, seedsPerCluster);
 
       for (const startPlace of startPlaces) {
-        for (const routeMode of routeModes) {
-          for (const durationBudgetMinutes of durationPresetsMinutes) {
-            seeds.push({
-              theme,
-              routeMode,
-              durationBudgetMinutes,
-              startPlace,
-              cluster,
-            });
-          }
+        for (const durationBudgetMinutes of durationPresetsMinutes) {
+          seeds.push({
+            theme,
+            routeMode,
+            durationBudgetMinutes,
+            startPlace,
+            cluster,
+          });
         }
       }
     }

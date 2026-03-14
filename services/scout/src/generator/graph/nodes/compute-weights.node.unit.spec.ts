@@ -2,7 +2,7 @@ import { PlaceCategory } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { computePlaceWeights, computeWeightsNode } from "./compute-weights.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { RouteGenerationState } from "../state";
 
 const createPlace = (id: string, category: PlaceCategory, overrides?: Partial<IPlace>) =>
@@ -49,7 +49,7 @@ describe("computeWeightsNode", () => {
     const place = createPlace("p1", PlaceCategory.MUSEUM);
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [place],
       weightedPlaces: [],
       clusters: [],
@@ -75,7 +75,7 @@ describe("computeWeightsNode", () => {
   it("returns empty weightedPlaces when places is empty", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],

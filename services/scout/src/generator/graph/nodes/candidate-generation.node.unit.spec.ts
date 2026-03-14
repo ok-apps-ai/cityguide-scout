@@ -5,7 +5,11 @@ import {
   makeCandidateGenerationDrivingNode,
   makeCandidateGenerationNode,
 } from "./candidate-generation.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../route-presets";
+import {
+  BICYCLING_ROUTE_GENERATION_OPTIONS,
+  DRIVING_ROUTE_GENERATION_OPTIONS,
+  WALKING_ROUTE_GENERATION_OPTIONS,
+} from "../../route-presets";
 import type { ICluster, IRouteSeed, RouteGenerationState } from "../state";
 
 const createPlace = (id: string) => ({ id, category: PlaceCategory.PARK }) as unknown as IRouteSeed["startPlace"];
@@ -18,7 +22,37 @@ const createSeed = (routeMode: RouteMode): IRouteSeed => ({
   cluster: {} as ICluster,
 });
 
+/** WALKING is the main/default route generation mode. */
 describe("makeCandidateGenerationNode (WALKING)", () => {
+  it("calls query with walking radius", async () => {
+    const p1 = createPlace("p1");
+    const p2 = createPlace("p2");
+    const query = jest.fn().mockResolvedValue([{ id: "p1" }, { id: "p2" }]);
+    const dataSource = { query } as unknown as Parameters<typeof makeCandidateGenerationNode>[0];
+
+    const state: RouteGenerationState = {
+      cityId: "city1",
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
+      places: [p1, p2],
+      weightedPlaces: [],
+      clusters: [],
+      seeds: [],
+      currentSeed: createSeed(RouteMode.WALKING),
+      candidatePlaces: [],
+      scoredPlaces: [],
+      orderedStops: [],
+      trimmedStops: [],
+      builtRoute: null,
+      savedRoutes: [],
+      error: null,
+    };
+
+    const node = makeCandidateGenerationNode(dataSource);
+    await node(state);
+
+    expect(query).toHaveBeenCalled();
+  });
+
   it("returns candidate places within radius from query", async () => {
     const p1 = createPlace("p1");
     const p2 = createPlace("p2");
@@ -27,7 +61,7 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [p1, p2],
       weightedPlaces: [],
       clusters: [],
@@ -55,7 +89,7 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -84,7 +118,7 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 3 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 3 },
       places: [p1],
       weightedPlaces: [],
       clusters: [],
@@ -106,6 +140,7 @@ describe("makeCandidateGenerationNode (WALKING)", () => {
   });
 });
 
+/** BICYCLING is supplementary; WALKING is the default. */
 describe("makeCandidateGenerationCyclingNode (BICYCLING)", () => {
   it("calls query with cycling radius", async () => {
     const p1 = createPlace("p1");
@@ -114,7 +149,7 @@ describe("makeCandidateGenerationCyclingNode (BICYCLING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
+      routeGenerationOptions: { ...BICYCLING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [p1],
       weightedPlaces: [],
       clusters: [],
@@ -136,6 +171,7 @@ describe("makeCandidateGenerationCyclingNode (BICYCLING)", () => {
   });
 });
 
+/** DRIVING is supplementary; WALKING is the default. */
 describe("makeCandidateGenerationDrivingNode (DRIVING)", () => {
   it("calls query with driving radius", async () => {
     const p1 = createPlace("p1");
@@ -144,7 +180,7 @@ describe("makeCandidateGenerationDrivingNode (DRIVING)", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
+      routeGenerationOptions: { ...DRIVING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [p1],
       weightedPlaces: [],
       clusters: [],

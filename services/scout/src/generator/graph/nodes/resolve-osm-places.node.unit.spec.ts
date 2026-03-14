@@ -1,7 +1,7 @@
 import { PlaceCategory, PlaceSource, RouteMode, RouteTheme } from "@framework/types";
 
 import { makeResolveOsmPlacesNode } from "./resolve-osm-places.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../route-presets";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../route-presets";
 import type { IBuiltRoute, IRouteStop, RouteGenerationState } from "../state";
 
 const createPlace = (id: string, source: PlaceSource) =>
@@ -41,7 +41,7 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -86,7 +86,7 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 1 },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -117,7 +117,7 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -160,7 +160,7 @@ describe("makeResolveOsmPlacesNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
       clusters: [],

@@ -4,7 +4,7 @@ import { PlaceCategory, PriceLevel, RouteMode, RouteTheme } from "@framework/typ
 
 import { isRouteWithinConstraints, makeSaveRouteNode } from "./save-route.node";
 import { PLACE_ACCEPTED } from "../../../place/place.patterns";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { IBuiltRoute, IRouteStop, RouteGenerationState } from "../state";
 
 const createPlace = (id: string) =>
@@ -41,12 +41,13 @@ const createEventEmitter = () => {
 describe("isRouteWithinConstraints", () => {
   it("returns true when all constraints satisfied", () => {
     const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)]);
-    expect(isRouteWithinConstraints(route, DEFAULT_ROUTE_GENERATION_OPTIONS)).toBe(true);
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2, maxPoints: 50 };
+    expect(isRouteWithinConstraints(route, options)).toBe(true);
   });
 
   it("returns false when stops below minPoints", () => {
     const route = createBuiltRoute([createStop(createPlace("p1"), 0)]);
-    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 2 };
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 };
     expect(isRouteWithinConstraints(route, options)).toBe(false);
   });
 
@@ -55,7 +56,7 @@ describe("isRouteWithinConstraints", () => {
     const p2 = createPlace("p2");
     const p3 = createPlace("p3");
     const route = createBuiltRoute([createStop(p1, 0), createStop(p2, 1), createStop(p3, 2)]);
-    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, maxPoints: 2 };
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, maxPoints: 2 };
     expect(isRouteWithinConstraints(route, options)).toBe(false);
   });
 
@@ -63,7 +64,7 @@ describe("isRouteWithinConstraints", () => {
     const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
       durationMinutes: 30,
     });
-    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minDurationMinutes: 60 };
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, minDurationMinutes: 60 };
     expect(isRouteWithinConstraints(route, options)).toBe(false);
   });
 
@@ -71,20 +72,15 @@ describe("isRouteWithinConstraints", () => {
     const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
       durationMinutes: 150,
     });
-    const options = { ...DEFAULT_ROUTE_GENERATION_OPTIONS, maxDurationMinutes: 120 };
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, maxDurationMinutes: 120 };
     expect(isRouteWithinConstraints(route, options)).toBe(false);
   });
 
-  it("returns false when distance below minDistanceKm for route mode", () => {
+  it("returns false when distance below minDistanceKm", () => {
     const route = createBuiltRoute([createStop(createPlace("p1"), 0), createStop(createPlace("p2"), 1)], {
-      routeMode: RouteMode.WALKING,
       distanceKm: 1,
     });
-    const options = {
-      ...DEFAULT_ROUTE_GENERATION_OPTIONS,
-      minDistanceKm: { [RouteMode.WALKING]: 2, [RouteMode.BICYCLING]: 5, [RouteMode.DRIVING]: 10 },
-      maxDistanceKm: { [RouteMode.WALKING]: 8, [RouteMode.BICYCLING]: 25, [RouteMode.DRIVING]: 50 },
-    };
+    const options = { ...WALKING_ROUTE_GENERATION_OPTIONS, minDistanceKm: 2, maxDistanceKm: 8 };
     expect(isRouteWithinConstraints(route, options)).toBe(false);
   });
 });
@@ -97,7 +93,7 @@ describe("makeSaveRouteNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -130,7 +126,7 @@ describe("makeSaveRouteNode", () => {
     const p1 = createPlace("p1");
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minPoints: 2 },
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -165,7 +161,8 @@ describe("makeSaveRouteNode", () => {
     const state: RouteGenerationState = {
       cityId: "city1",
       routeGenerationOptions: {
-        ...DEFAULT_ROUTE_GENERATION_OPTIONS,
+        ...WALKING_ROUTE_GENERATION_OPTIONS,
+        minPoints: 2,
       },
       places: [],
       weightedPlaces: [],
@@ -213,17 +210,10 @@ describe("makeSaveRouteNode", () => {
     const state: RouteGenerationState = {
       cityId: "city1",
       routeGenerationOptions: {
-        ...DEFAULT_ROUTE_GENERATION_OPTIONS,
-        minDistanceKm: {
-          [RouteMode.WALKING]: undefined,
-          [RouteMode.BICYCLING]: undefined,
-          [RouteMode.DRIVING]: undefined,
-        },
-        maxDistanceKm: {
-          [RouteMode.WALKING]: undefined,
-          [RouteMode.BICYCLING]: undefined,
-          [RouteMode.DRIVING]: undefined,
-        },
+        ...WALKING_ROUTE_GENERATION_OPTIONS,
+        minPoints: 2,
+        minDistanceKm: undefined,
+        maxDistanceKm: undefined,
       },
       places: [],
       weightedPlaces: [],
@@ -255,7 +245,7 @@ describe("makeSaveRouteNode", () => {
     const state: RouteGenerationState = {
       cityId: "city1",
       routeGenerationOptions: {
-        ...DEFAULT_ROUTE_GENERATION_OPTIONS,
+        ...WALKING_ROUTE_GENERATION_OPTIONS,
         minDurationMinutes: 60,
         maxDurationMinutes: 120,
       },
@@ -291,7 +281,7 @@ describe("makeSaveRouteNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],

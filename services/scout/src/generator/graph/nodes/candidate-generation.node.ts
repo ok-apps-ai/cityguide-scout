@@ -7,7 +7,7 @@ import { ns } from "../../../common/constants";
 import { RouteGenerationState } from "../state";
 import { THEME_CATEGORIES } from "../../theme-categories";
 
-const buildCandidateNode = (dataSource: DataSource, routeMode: RouteMode) => {
+const buildCandidateNode = (dataSource: DataSource, _routeMode: RouteMode) => {
   return async (state: RouteGenerationState): Promise<Partial<RouteGenerationState>> => {
     if (!state.currentSeed) {
       return { candidatePlaces: [] };
@@ -15,7 +15,7 @@ const buildCandidateNode = (dataSource: DataSource, routeMode: RouteMode) => {
 
     const { startPlace, theme } = state.currentSeed;
     const { candidateRadiusMeters, minPoints } = state.routeGenerationOptions;
-    const radiusMeters = candidateRadiusMeters[routeMode];
+    const radiusMeters = candidateRadiusMeters;
     const allowedCategories = (THEME_CATEGORIES[theme] ?? []).map(c => c as string);
 
     const rows: Array<{ id: string }> = await dataSource.query(

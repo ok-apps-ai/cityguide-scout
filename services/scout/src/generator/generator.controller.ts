@@ -1,9 +1,6 @@
 import { Controller, Logger } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
-import type { IRouteOptions } from "@framework/types";
-
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "./generator.options";
 import { ROUTE_GENERATE } from "./generator.patterns";
 import { GeneratorService } from "./generator.service";
 
@@ -14,15 +11,9 @@ export class GeneratorController {
   constructor(private readonly generatorService: GeneratorService) {}
 
   @MessagePattern(ROUTE_GENERATE)
-  public async generateRoutes(
-    @Payload() payload: { cityId: string; options?: Partial<IRouteOptions> },
-  ): Promise<{ routeIds: string[] }> {
-    const preset: IRouteOptions = {
-      ...DEFAULT_ROUTE_GENERATION_OPTIONS,
-      ...(payload.options ?? {}),
-    };
-    this.logger.log(`TCP ${ROUTE_GENERATE}: ${payload.cityId}`, JSON.stringify(preset));
-    const routeIds = await this.generatorService.generateForCity(payload.cityId, preset);
+  public async generateRoutes(@Payload() payload: { cityId: string }): Promise<{ routeIds: string[] }> {
+    this.logger.log(`TCP ${ROUTE_GENERATE}: ${payload.cityId}`);
+    const routeIds = await this.generatorService.generateForCity(payload.cityId);
     return { routeIds };
   }
 }

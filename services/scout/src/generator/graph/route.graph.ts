@@ -1,4 +1,4 @@
-import { Annotation, END, START, StateGraph } from "@langchain/langgraph";
+import { Annotation, BaseCheckpointSaver, END, START, StateGraph } from "@langchain/langgraph";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
@@ -36,6 +36,10 @@ export interface IGraphDeps {
   eventEmitter: EventEmitter2;
 }
 
+export interface IGraphCompileOptions {
+  checkpointer?: BaseCheckpointSaver;
+}
+
 export const savedRoutesReducer = (a: string[], b: string[]): string[] => [...a, ...b];
 
 const StateAnnotation = Annotation.Root({
@@ -71,7 +75,7 @@ export const shouldContinueBranch = (state: GraphState): "pickNextSeed" | typeof
 
 export const routeModeBranchNode = (state: GraphState) => routeModeBranch(state.currentSeed?.routeMode);
 
-export const buildRouteGraph = (deps: IGraphDeps) => {
+export const buildRouteGraph = (deps: IGraphDeps, compileOptions?: IGraphCompileOptions) => {
   const { placeService, placeOsmResolutionService, routeService, dataSource, openaiApiKey, eventEmitter } = deps;
 
   const coordCache = new Map<string, { lat: number; lng: number }>();
@@ -118,5 +122,5 @@ export const buildRouteGraph = (deps: IGraphDeps) => {
       [END]: END,
     });
 
-  return graph.compile();
+  return graph.compile(compileOptions ?? {});
 };

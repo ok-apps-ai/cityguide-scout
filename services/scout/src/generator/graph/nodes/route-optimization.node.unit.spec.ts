@@ -1,7 +1,7 @@
 import { PlaceCategory, RouteMode, RouteTheme } from "@framework/types";
 
 import { makeRouteOptimizationNode } from "./route-optimization.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 
 const createPlace = (id: string, _lat: number, _lng: number) =>
@@ -21,7 +21,7 @@ describe("makeRouteOptimizationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [
         { place: p1, weight: 10 },
@@ -60,7 +60,7 @@ describe("makeRouteOptimizationNode", () => {
     const coordCache = new Map<string, { lat: number; lng: number }>();
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -88,7 +88,7 @@ describe("makeRouteOptimizationNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],

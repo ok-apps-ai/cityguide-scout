@@ -8,15 +8,14 @@ import type { IBuiltRoute } from "../state";
 import { RouteGenerationState } from "../state";
 
 export const isRouteWithinConstraints = (builtRoute: IBuiltRoute, options: IRouteOptions): boolean => {
-  const { durationMinutes, distanceKm, routeMode, stops } = builtRoute;
+  const { durationMinutes, distanceKm, stops } = builtRoute;
   const { minPoints, maxPoints, minDurationMinutes, maxDurationMinutes, minDistanceKm, maxDistanceKm } = options;
 
   const durationOk =
     (minDurationMinutes == null || durationMinutes >= minDurationMinutes) &&
     (maxDurationMinutes == null || durationMinutes <= maxDurationMinutes);
-  const minDist = minDistanceKm[routeMode];
-  const maxDist = maxDistanceKm[routeMode];
-  const distanceOk = (minDist == null || distanceKm >= minDist) && (maxDist == null || distanceKm <= maxDist);
+  const distanceOk =
+    (minDistanceKm == null || distanceKm >= minDistanceKm) && (maxDistanceKm == null || distanceKm <= maxDistanceKm);
 
   return stops.length >= minPoints && stops.length <= maxPoints && durationOk && distanceOk;
 };

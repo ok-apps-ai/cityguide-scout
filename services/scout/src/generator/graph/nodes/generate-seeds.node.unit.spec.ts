@@ -1,7 +1,7 @@
 import { PlaceCategory, RouteTheme } from "@framework/types";
 
 import { generateSeedsNode } from "./generate-seeds.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { ICluster, IWeightedPlace, RouteGenerationState } from "../state";
 
 const createPlace = (id: string, category: PlaceCategory) => ({ id, category }) as unknown as ICluster["places"][0];
@@ -29,7 +29,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
       clusters: [cluster],
@@ -65,7 +65,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
       clusters: [cluster],
@@ -101,7 +101,7 @@ describe("generateSeedsNode", () => {
 
     const stateWithMin2: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minThemePlaces: 2 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 2 },
       places: [],
       weightedPlaces,
       clusters: [cluster],
@@ -122,7 +122,7 @@ describe("generateSeedsNode", () => {
 
     const stateWithMin3: RouteGenerationState = {
       ...stateWithMin2,
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
     };
 
     const resultMin3 = await generateSeedsNode(stateWithMin3);
@@ -144,7 +144,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [cluster],
@@ -180,7 +180,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
       clusters: [cluster],
@@ -218,7 +218,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: { ...DEFAULT_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
+      routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
       clusters: [cluster],

@@ -2,7 +2,7 @@ import { PlaceCategory } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { makeSpatialClusteringNode } from "./spatial-clustering.node";
-import { DEFAULT_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
+import { WALKING_ROUTE_GENERATION_OPTIONS } from "../../generator.options";
 import type { IWeightedPlace, RouteGenerationState } from "../state";
 
 const createPlace = (id: string): IPlace =>
@@ -19,7 +19,7 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],
       clusters: [],
@@ -64,7 +64,7 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [p1, p2, p3],
       weightedPlaces,
       clusters: [],
@@ -104,7 +104,7 @@ describe("makeSpatialClusteringNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
-      routeGenerationOptions: DEFAULT_ROUTE_GENERATION_OPTIONS,
+      routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [p1],
       weightedPlaces,
       clusters: [],
