@@ -3,7 +3,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
-import type { ICreateCityPayload } from "@framework/types";
+import type { ICreateCityPayload, IDeleteCityPayload } from "@framework/types";
 
 import { CollectorService } from "../collector/collector.service";
 import { ns } from "../common/constants";
@@ -54,7 +54,8 @@ export class CityService {
     return { id };
   }
 
-  public async delete(id: string): Promise<void> {
+  public async delete(payload: IDeleteCityPayload): Promise<void> {
+    const { id } = payload;
     await this.cityEntityRepository.delete({ id });
     this.logger.log(`City deleted: ${id}`);
   }

@@ -109,7 +109,7 @@ describe("CityService", () => {
     it("deletes city by id", async () => {
       cityEntityRepository.delete.mockResolvedValue({ affected: 1 } as never);
 
-      await service.delete("city-1");
+      await service.delete({ id: "city-1" });
 
       expect(cityEntityRepository.delete).toHaveBeenCalledWith({ id: "city-1" });
     });

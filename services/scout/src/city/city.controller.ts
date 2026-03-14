@@ -1,7 +1,7 @@
 import { Controller, Logger } from "@nestjs/common";
 import { MessagePattern, Payload } from "@nestjs/microservices";
 
-import type { ICreateCityPayload } from "@framework/types";
+import type { ICreateCityPayload, IDeleteCityPayload } from "@framework/types";
 
 import { CityService } from "./city.service";
 import { CITY_CREATE, CITY_DELETE, CITY_FIND_ALL } from "./city.patterns";
@@ -24,9 +24,9 @@ export class CityController {
   }
 
   @MessagePattern(CITY_DELETE)
-  public async delete(@Payload() payload: { id: string }): Promise<{ deleted: true }> {
+  public async delete(@Payload() payload: IDeleteCityPayload): Promise<{ deleted: true }> {
     this.logger.log(`TCP ${CITY_DELETE}: ${payload.id}`);
-    await this.cityService.delete(payload.id);
+    await this.cityService.delete(payload);
     return { deleted: true };
   }
 }
