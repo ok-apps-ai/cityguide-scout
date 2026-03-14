@@ -1,4 +1,4 @@
-import type { IPlace, IRouteOptions } from "@framework/types";
+import type { IPlace, IRouteOptions, RouteTheme } from "@framework/types";
 
 import type { IWeightedPlace } from "./weighted-place.interface";
 import type { ICluster } from "./cluster.interface";
@@ -9,6 +9,7 @@ import type { IBuiltRoute } from "./built-route.interface";
 // eslint-disable-next-line @typescript-eslint/naming-convention -- LangGraph state type
 export interface RouteGenerationState {
   cityId: string;
+  theme: RouteTheme;
   routeGenerationOptions: IRouteOptions;
   places: IPlace[];
   weightedPlaces: IWeightedPlace[];

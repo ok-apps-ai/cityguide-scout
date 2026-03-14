@@ -4,6 +4,8 @@ import { InjectDataSource } from "@nestjs/typeorm";
 import { EventEmitter2, OnEvent } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
+import { RouteTheme } from "@framework/types";
+
 import { CityEntity } from "../city/city.entity";
 import { CITY_CREATED_EVENT } from "../city/city.service";
 import { PlaceOsmResolutionService } from "../place/place-osm-resolution.service";
@@ -59,14 +61,17 @@ export class GeneratorService {
 
     const allSaved: string[] = [];
     for (const preset of ROUTE_PRESETS) {
-      const initialState: Partial<RouteGenerationState> = {
-        cityId,
-        routeGenerationOptions: preset,
-      };
-      const result = (await graph.invoke(initialState as AnyRecord, {
-        recursionLimit,
-      })) as RouteGenerationState;
-      allSaved.push(...result.savedRoutes);
+      for (const theme of Object.values(RouteTheme)) {
+        const initialState: Partial<RouteGenerationState> = {
+          cityId,
+          theme,
+          routeGenerationOptions: preset,
+        };
+        const result = (await graph.invoke(initialState as AnyRecord, {
+          recursionLimit,
+        })) as RouteGenerationState;
+        allSaved.push(...result.savedRoutes);
+      }
     }
 
     this.logger.log(`Route generation complete for city ${cityId}: ${allSaved.length} routes saved`);

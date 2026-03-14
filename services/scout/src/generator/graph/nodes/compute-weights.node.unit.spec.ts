@@ -1,4 +1,4 @@
-import { PlaceCategory } from "@framework/types";
+import { PlaceCategory, RouteTheme } from "@framework/types";
 import type { IPlace } from "@framework/types";
 
 import { computePlaceWeights, computeWeightsNode } from "./compute-weights.node";
@@ -42,6 +42,17 @@ describe("computePlaceWeights", () => {
     const result = computePlaceWeights([withReviews, withoutReviews]);
     expect(result[0].weight).toBeGreaterThan(result[1].weight);
   });
+
+  it("uses theme category weights when theme provided", () => {
+    const mall = createPlace("m1", PlaceCategory.SHOPPING_MALL);
+    const store = createPlace("s1", PlaceCategory.STORE);
+    const withoutTheme = computePlaceWeights([mall, store]);
+    const withShoppingTheme = computePlaceWeights([mall, store], RouteTheme.SHOPPING);
+
+    expect(withShoppingTheme[0].weight).toBeGreaterThan(withShoppingTheme[1].weight);
+    expect(withShoppingTheme[0].place.category).toEqual(PlaceCategory.SHOPPING_MALL);
+    expect(withoutTheme[0].weight).not.toEqual(withShoppingTheme[0].weight);
+  });
 });
 
 describe("computeWeightsNode", () => {
@@ -49,6 +60,7 @@ describe("computeWeightsNode", () => {
     const place = createPlace("p1", PlaceCategory.MUSEUM);
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [place],
       weightedPlaces: [],
@@ -75,6 +87,7 @@ describe("computeWeightsNode", () => {
   it("returns empty weightedPlaces when places is empty", async () => {
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.HIGHLIGHTS,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces: [],

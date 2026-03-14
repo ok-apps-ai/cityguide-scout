@@ -2,7 +2,7 @@ import { Annotation, BaseCheckpointSaver, END, START, StateGraph } from "@langch
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { DataSource } from "typeorm";
 
-import type { IPlace, IRouteOptions } from "@framework/types";
+import type { IPlace, IRouteOptions, RouteTheme } from "@framework/types";
 
 import { PlaceOsmResolutionService } from "../../place/place-osm-resolution.service";
 import { PlaceService } from "../../place/place.service";
@@ -44,6 +44,7 @@ export const savedRoutesReducer = (a: string[], b: string[]): string[] => [...a,
 
 const StateAnnotation = Annotation.Root({
   cityId: Annotation<string>,
+  theme: Annotation<RouteTheme>(),
   routeGenerationOptions: Annotation<IRouteOptions>(),
   places: Annotation<IPlace[]>,
   weightedPlaces: Annotation<IWeightedPlace[]>,

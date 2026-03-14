@@ -29,6 +29,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
@@ -65,6 +66,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
@@ -101,6 +103,7 @@ describe("generateSeedsNode", () => {
 
     const stateWithMin2: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.NATURE,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 2 },
       places: [],
       weightedPlaces,
@@ -144,6 +147,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.NATURE,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
@@ -180,6 +184,7 @@ describe("generateSeedsNode", () => {
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.SHOPPING,
       routeGenerationOptions: WALKING_ROUTE_GENERATION_OPTIONS,
       places: [],
       weightedPlaces,
@@ -211,13 +216,14 @@ describe("generateSeedsNode", () => {
     const cluster = createCluster(0, [mall, store1, store2], mall);
 
     const weightedPlaces: IWeightedPlace[] = [
-      { place: mall, weight: 7 },
-      { place: store1, weight: 8 },
-      { place: store2, weight: 6 },
+      { place: mall, weight: 8 },
+      { place: store1, weight: 4 },
+      { place: store2, weight: 4 },
     ];
 
     const state: RouteGenerationState = {
       cityId: "city1",
+      theme: RouteTheme.SHOPPING,
       routeGenerationOptions: { ...WALKING_ROUTE_GENERATION_OPTIONS, minThemePlaces: 3 },
       places: [],
       weightedPlaces,
